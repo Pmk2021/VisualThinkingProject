@@ -1,0 +1,17 @@
+data:
+  train_path: /path/to/train/data
+  val_path: /path/to/validation/data  
+  test_path: /path/to/test/data
+
+
+trajectory_predictor:
+  model_type: IDK
+
+
+feature_extractor:
+  features: [feature1, feature2, feature3]
+
+training:
+  batch_size: 64
+  num_epochs: 100
+  learning_rate: 0.001
