@@ -1,27 +1,41 @@
 from AnytimeTrajectoryPredictor.models import TrajectoryPredictor
-from AnytimeTrajectoryPredictor.data import BuildTrajectoryDataset
+from AnytimeTrajectoryPredictor.Data.feature_extractor import FeatureDataset
 from AnytimeTrajectoryPredictor.trainer import Trainer, trainer
 import argparse
 import yaml
 from box import Box
 import torch
+from torch.utils.data import DataLoader
 
 
 def make_dataloaders(args):
     """
     Create dataloaders for training and validation datasets.
     """
-    train_dataset = BuildTrajectoryDataset(
-        data_path=args.data.train_path, features=args.data.features
+    train_dataset = FeatureDataset(
+        args.feature_extractor.train_feature_path,
+        args.feature_extractor,
+        data_path=args.data.train_path,
     )
-    val_dataset = BuildTrajectoryDataset(
-        data_path=args.data.val_path, features=args.data.features
+
+    val_dataset = FeatureDataset(
+        args.feature_extractor.val_feature_path,
+        args.feature_extractor,
+        data_path=args.data.val_path,
     )
 
-    return train_dataset, val_dataset
+    train_loader = DataLoader(
+        train_dataset, batch_size=args.training.batch_size, shuffle=True
+    )
+
+    val_loader = DataLoader(
+        val_dataset, batch_size=args.training.batch_size, shuffle=False
+    )
+
+    return train_loader, val_loader
 
 
-def main():
+def main(args):
     """Main function to set up data, model, optimizer, and trainer."""
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

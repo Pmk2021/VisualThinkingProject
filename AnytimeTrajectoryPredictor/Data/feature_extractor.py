@@ -3,6 +3,7 @@ from torch.utils.data import dataset
 from torchvision.io import read_video
 import pandas as pd
 import os
+import tqdm
 
 from features.dummy_feature_1 import DummyFeatureExtractor
 
@@ -41,17 +42,22 @@ class FeatureDataset(dataset.Dataset):
             data_path: Path to folder containing raw video data (required if regenerate_features is True)
         """
 
-        self.features = args.feature_extractor.features
+        self.features = args.features
         self.feature_extractors = {
             feature: FEATUREDICT[feature](args) for feature in self.features
         }
 
         # Regenerate features if specified in the config
-        if args.data.regenerate_features:
+        if args.data.regenerate_features or not os.path.exists(feature_path):
             assert data_path is not None, (
-                "data_path must be provided if regenerate_features is True"
+                "data_path must be provided if regenerate_features is True or if feature directory does not exist."
             )
+
+            print("Regenerating features from raw data...")
             self.extract_features(data_path, feature_path)
+            print(
+                "Features successfully extracted and saved to:", feature_path
+            )
 
     def extract_features(self, raw_data_path, output_path) -> None:
         """iterate through every video in the raw data path,
@@ -63,7 +69,7 @@ class FeatureDataset(dataset.Dataset):
             output_path: The file path where extracted features will be saved.
         """
 
-        for file in os.listdir(raw_data_path):
+        for file in tqdm.tqdm(os.listdir(raw_data_path)):
             video, audio, info = read_video(
                 os.path.join(raw_data_path, file), pts_unit="sec"
             )
