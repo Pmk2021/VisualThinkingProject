@@ -26,8 +26,29 @@ class linear_model(nn.Module):
 
         return self.A(x)
 
-    def get_loss(self, x, trajectory):
-        """Calculate the negative log-likelihood loss for the predicted trajectory distribution.
+    def get_loss(self, frames_features, trajectories):
+        """Calculate the average negative log-likelihood loss for the predicted trajectory distribution across all frames in the batch.
+        Args:
+            frames_features: The input state features for all frames. Shape: (batch_size, num_frames, num_objects, feature_dim)
+            trajectories: The ground truth trajectories for all frames. Shape: (batch_size, num_frames, num_objects, 2)
+
+        Returns:
+            loss: The computed average negative log-likelihood loss across the batch.
+        """
+
+        b, num_frames, num_objects, feature_dim = frames_features.shape
+
+        total_loss = 0
+        for i in range(1, len(frames_features) + 1):
+            trajectory = trajectories[i]
+
+            loss = self.get_single_loss(frames_features[:i], trajectory)
+            total_loss += loss
+
+        return total_loss / len(frames_features)
+
+    def get_single_loss(self, x, trajectory):
+        """Calculate the negative log-likelihood loss for the predicted trajectory distribution for a single frame.
         Only calculates loss using the "best" predicted trajectory (the one with the closest mean to the true trajectory).
         Args:
             x: The input state features. Shape: (batch_size, state_dim)

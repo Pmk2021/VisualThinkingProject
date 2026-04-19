@@ -26,7 +26,15 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     train_loader, val_loader = make_dataloaders(args)
-    model = TrajectoryPredictor(args.model).to(device)
+
+    # Check if model exists and load it, otherwise create a new one
+    if args.training.load_path:
+        print("Loading model from:", args.training.load_path)
+        model = TrajectoryPredictor(args.model).to(device)
+        model.load_state_dict(torch.load(args.training.load_path))
+    else:
+        print("No pre-trained model specified. Initializing new model.")
+        model = TrajectoryPredictor(args.model).to(device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.training.lr)
 
@@ -38,7 +46,11 @@ def main():
         device=args.device,
     )
 
+    print("Starting training...")
     trainer.train(num_epochs=args.training.num_epochs)
+
+    print("Training complete! Model saved to:", args.training.save_path)
+    trainer.save_model(args.training.save_path)
 
 
 if __name__ == "__main__":
