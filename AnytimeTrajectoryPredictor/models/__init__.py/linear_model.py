@@ -51,62 +51,68 @@ class linear_model(nn.Module):
         """Calculate the negative log-likelihood loss for the predicted trajectory distribution for a single frame.
         Only calculates loss using the "best" predicted trajectory (the one with the closest mean to the true trajectory).
         Args:
-            x: The input state features. Shape: (batch_size, state_dim)
-            trajectory: The ground truth trajectory. Shape: (batch_size, 2)
+            x: The input state features. Shape: (batch_size, num_frames, num_objects, feature_dim)
+            trajectory: The ground truth trajectory. Shape: (batch_size, num_frames, num_objects, 2)
 
         Returns:
             loss: The computed negative log-likelihood loss.
         """
-        b, _ = x.shape
 
-        output = self.forward(x)  # Shape: (b, output_dim)
+        # Get the features for the last frame in the sequence
+        x = x[:, -1, :, :]
 
-        x_velocity_mean = output[:, 0 : self.num_trajectory_possibilities]
-        y_velocity_mean = output[
-            :,
-            self.num_trajectory_possibilities : 2
-            * self.num_trajectory_possibilities,
-        ]
-        covariances = output[:, 2 * self.num_trajectory_possibilities :]
+        b, n_objects, _ = x.shape
 
         loss = 0
-        for batch_idx in range(b):
-            # Calculate the closest mean to the true trajectory
-            x_velocity_mean_batch = x_velocity_mean[batch_idx]
-            y_velocity_mean_batch = y_velocity_mean[batch_idx]
-            distances = torch.sqrt(
-                (x_velocity_mean_batch - trajectory[batch_idx, 0]) ** 2
-                + (y_velocity_mean_batch - trajectory[batch_idx, 1]) ** 2
-            )
+        for obj_idx in range(n_objects):
+            x_ = x[:, obj_idx, :]  # Shape: (b, feature_dim)
+            output = self.forward(x_)  # Shape: (b, output_dim)
 
-            closest_mean_idx = torch.argmin(distances)
-            closest_covariance = covariances[
-                batch_idx,
-                closest_mean_idx * 4 : (closest_mean_idx + 1) * 4,
+            x_velocity_mean = output[:, 0 : self.num_trajectory_possibilities]
+            y_velocity_mean = output[
+                :,
+                self.num_trajectory_possibilities : 2
+                * self.num_trajectory_possibilities,
             ]
+            covariances = output[:, 2 * self.num_trajectory_possibilities :]
 
-            # Reshape the covariance parameters into a 2x2 matrix
-            covariance_matrix = closest_covariance.view(2, 2)
+            for batch_idx in range(b):
+                # Calculate the closest mean to the true trajectory
+                x_velocity_mean_batch = x_velocity_mean[batch_idx]
+                y_velocity_mean_batch = y_velocity_mean[batch_idx]
+                distances = torch.sqrt(
+                    (x_velocity_mean_batch - trajectory[batch_idx, 0]) ** 2
+                    + (y_velocity_mean_batch - trajectory[batch_idx, 1]) ** 2
+                )
 
-            mean_vector = torch.tensor(
-                [
-                    x_velocity_mean_batch[closest_mean_idx],
-                    y_velocity_mean_batch[closest_mean_idx],
+                closest_mean_idx = torch.argmin(distances)
+                closest_covariance = covariances[
+                    batch_idx,
+                    closest_mean_idx * 4 : (closest_mean_idx + 1) * 4,
                 ]
-            )
 
-            # Calculate the negative log-likelihood loss for the closest mean and covariance
-            trajectory_vector = trajectory[batch_idx]
-            diff = trajectory_vector - mean_vector
+                # Reshape the covariance parameters into a 2x2 matrix
+                covariance_matrix = closest_covariance.view(2, 2)
 
-            # torch.linalg.solve(A, b) is used to solve the linear system Ax = b,
-            # where A is the covariance matrix and b is the difference between
-            # the trajectory and the mean vector.
-            # This is more numerically stable than directly computing the inverse of A.
-            nll_loss = 0.5 * (
-                torch.logdet(covariance_matrix)
-                + diff.T @ torch.linalg.solve(covariance_matrix, diff)
-            )
-            loss += nll_loss
+                mean_vector = torch.tensor(
+                    [
+                        x_velocity_mean_batch[closest_mean_idx],
+                        y_velocity_mean_batch[closest_mean_idx],
+                    ]
+                )
 
-        return loss / b
+                # Calculate the negative log-likelihood loss for the closest mean and covariance
+                trajectory_vector = trajectory[batch_idx]
+                diff = trajectory_vector - mean_vector
+
+                # torch.linalg.solve(A, b) is used to solve the linear system Ax = b,
+                # where A is the covariance matrix and b is the difference between
+                # the trajectory and the mean vector.
+                # This is more numerically stable than directly computing the inverse of A.
+                nll_loss = 0.5 * (
+                    torch.logdet(covariance_matrix)
+                    + diff.T @ torch.linalg.solve(covariance_matrix, diff)
+                )
+                loss += nll_loss
+
+        return loss / b / n_objects
