@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from linear_model import linear_model
+from architectures.linear_model import linear_model
 
 
 class TrajectoryPredictor(nn.Module):
