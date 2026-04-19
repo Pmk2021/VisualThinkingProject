@@ -2,6 +2,10 @@ from AnytimeTrajectoryPredictor.Data import FeatureExtractor
 
 
 class DummyFeatureExtractor(FeatureExtractor):
+    def __init__(self, args):
+        super().__init__(args)
+        self.feature_type = "DUMMY_FEATURE"
+
     def compute_feature(self, frames, dt_per_frame):
         """
         A dummy feature extractor that returns a constant value for each frame.
