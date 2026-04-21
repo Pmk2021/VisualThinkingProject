@@ -1,0 +1,34 @@
+{
+  "splits": [
+    "training",
+    "validation",
+    "testing"
+  ],
+  "tables": {
+    "images": {
+      "path": "dataset/rgb_trajectory_dataset/images.parquet",
+      "rows": 2810,
+      "description": "One row per standalone RGB camera image."
+    },
+    "ego_poses": {
+      "path": "dataset/rgb_trajectory_dataset/ego_poses.parquet",
+      "rows": 562,
+      "description": "One row per vehicle pose timestep from v2 vehicle_pose."
+    },
+    "trajectories": {
+      "path": "dataset/rgb_trajectory_dataset/trajectories.parquet",
+      "rows": 219,
+      "description": "One row per scene/object 3D trajectory from box labels."
+    },
+    "image_trajectories": {
+      "path": "dataset/rgb_trajectory_dataset/image_trajectories.parquet",
+      "rows": 10375,
+      "description": "Visible trajectory IDs and 2D projected boxes for each image."
+    },
+    "prediction_targets": {
+      "path": "dataset/rgb_trajectory_dataset/prediction_targets.parquet",
+      "rows": 1251,
+      "description": "WOMD tracks_to_predict with observed history and optional future labels."
+    }
+  }
+}
