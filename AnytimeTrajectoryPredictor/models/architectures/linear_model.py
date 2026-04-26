@@ -21,11 +21,30 @@ class linear_model(nn.Module):
         # State transition matrix
         self.A = nn.Linear(state_dim, self.output_dim)
 
-    def forward(self, x):
-        b, _ = x.shape
+    
+    def forward(self, frames, f_, hidden_state=None):
+        """
+        Given a sequence of frames, return a batch X num_frames X self.output_dim tensor representing the trajectory
+        Parameters:
+            frames: batch x number of frames x self.state_dim tensor containing frame featurs
+            f_: number of frames length list containing number of iterations to spend on each frame
+            hidden_state: hidden state(optional, depends on model)
+        Returns:
+            predicted_trajectories: batch X num_frames X self.output_dim tensor representing trajectory
+            hidden_state: hidden_state(optional, depends on model)
+        """
+        b, num_frames, _, _ = frames.shape
 
-        return self.A(x)
 
+        f_ = [1,2,3...] #number of iterations per frame
+        predicted_trajectoy_list = []
+        for i in range(frames):
+            for iteration in f_[i]:
+                predicted_trajectory, hidden_state = model(hidden_state, frames[i]), 
+            predicted_trajectory.append(predicted_trajectory)       
+
+        return predicted_trajectoy_list, hidden_state
+    
     def get_loss(self, frames_features, trajectories):
         """Calculate the average negative log-likelihood loss for the predicted trajectory distribution across all frames in the batch.
         Args:
@@ -65,7 +84,7 @@ class linear_model(nn.Module):
 
         loss = 0
         for obj_idx in range(n_objects):
-            x_ = x[:, obj_idx, :]  # Shape: (b, feature_dim)
+            x_ = x[:, :obj_idx, :]  # Shape: (b, feature_dim)
             output = self.forward(x_)  # Shape: (b, output_dim)
 
             x_velocity_mean = output[:, 0 : self.num_trajectory_possibilities]
