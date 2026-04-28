@@ -36,8 +36,8 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 from PIL import Image, ImageDraw, ImageFont
 
-from VisualThinkingProject.waymo_dataset.scripts.build_waymo_web_viewer import build_web_viewer
-from VisualThinkingProject.waymo_dataset.scripts.extract_waymo_motion import iter_tfrecord_records, parse_scenario
+from build_waymo_web_viewer import build_web_viewer
+from extract_waymo_motion import iter_tfrecord_records, parse_scenario
 
 
 CAMERA_NAMES = {
