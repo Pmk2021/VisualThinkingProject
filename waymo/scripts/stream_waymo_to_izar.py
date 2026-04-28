@@ -43,6 +43,15 @@ from typing import Any
 GCS_HTTPS_BASE = "https://storage.googleapis.com"
 TOKEN_LIFETIME = 45 * 60  # seconds; gcloud tokens last ~60 min, refresh at 45
 
+# One persistent SSH connection per run; all subsequent calls reuse the socket.
+# ControlPersist=600 keeps the master alive for 10 min after the last channel closes.
+# %C expands to a hash of (user, host, port) so the socket name is unique per target.
+_SSH_CTL = [
+    "-o", "ControlMaster=auto",
+    "-o", "ControlPath=/tmp/waymo_ssh_%C",
+    "-o", "ControlPersist=600",
+]
+
 DEFAULT_COMPONENTS = (
     "camera_image",
     "vehicle_pose",
@@ -102,9 +111,6 @@ def gcs_uri_to_https(uri: str) -> str:
 def main() -> int:
     args = parse_args()
 
-    local_checkpoint_dir = Path(args.work_dir) / "checkpoints"
-    local_checkpoint_dir.mkdir(parents=True, exist_ok=True)
-
     izar = args.izar
     izar_staging = args.izar_work_dir.rstrip("/") + "/staging"
     izar_output = args.izar_output_dir.rstrip("/")
@@ -113,7 +119,20 @@ def main() -> int:
     require_command("ssh")
 
     if not args.dry_run:
-        ssh(izar, f"mkdir -p {sq(izar_staging)} {sq(izar_output)}")
+        _open_ssh_master(izar)
+
+    try:
+        return _run(args, izar, izar_staging, izar_output)
+    finally:
+        if not args.dry_run:
+            _close_ssh_master(izar)
+
+
+def _run(args: argparse.Namespace, izar: str, izar_staging: str, izar_output: str) -> int:
+    local_checkpoint_dir = Path(args.work_dir) / "checkpoints"
+    local_checkpoint_dir.mkdir(parents=True, exist_ok=True)
+
+    ssh(izar, f"mkdir -p {sq(izar_staging)} {sq(izar_output)}")
 
     components = tuple(c.strip() for c in args.components.split(",") if c.strip())
     splits = [normalize_split(s) for s in args.splits.split(",") if s.strip()]
@@ -332,18 +351,43 @@ def convert_on_izar(
 
 # ── remote helpers ────────────────────────────────────────────────────────────
 
+def _open_ssh_master(izar: str) -> None:
+    """Open the ControlMaster socket explicitly so the first real command isn't slower."""
+    subprocess.run(
+        ["ssh", *_SSH_CTL, "-M", "-N", "-f", izar],
+        check=True,
+    )
+    print(f"[ssh] ControlMaster open for {izar}")
+
+
+def _close_ssh_master(izar: str) -> None:
+    subprocess.run(
+        ["ssh", *_SSH_CTL, "-O", "exit", izar],
+        stderr=subprocess.DEVNULL,
+    )
+
+
 def _run_script_on_izar(izar: str, script: str) -> None:
-    subprocess.run(["ssh", izar, "bash -s"], input=script.encode(), check=True)
+    # --norc --noprofile: skip .bashrc (and conda init) on every invocation.
+    subprocess.run(
+        ["ssh", *_SSH_CTL, izar, "bash", "--norc", "--noprofile", "-s"],
+        input=script.encode(),
+        check=True,
+    )
 
 
 def ssh(izar: str, cmd: str) -> None:
     print(f"+ssh {izar} {cmd[:120]}")
-    subprocess.run(["ssh", izar, cmd], check=True)
+    subprocess.run(
+        ["ssh", *_SSH_CTL, izar, "bash", "--norc", "--noprofile", "-c", cmd],
+        check=True,
+    )
 
 
 def izar_dir_size(izar: str, path: str) -> int:
     result = subprocess.run(
-        ["ssh", izar, f"du -sb {sq(path)} 2>/dev/null | awk '{{print $1}}'"],
+        ["ssh", *_SSH_CTL, izar, "bash", "--norc", "--noprofile", "-c",
+         f"du -sb {sq(path)} 2>/dev/null | awk '{{print $1}}'"],
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -358,7 +402,8 @@ def wait_for_izar_space(izar: str, path: str, min_free_gb: float) -> None:
     needed = int(min_free_gb * 1024**3)
     while True:
         result = subprocess.run(
-            ["ssh", izar, f"df -B1 {sq(path)} | tail -1 | awk '{{print $4}}'"],
+            ["ssh", *_SSH_CTL, izar, "bash", "--norc", "--noprofile", "-c",
+             f"df -B1 {sq(path)} | tail -1 | awk '{{print $4}}'"],
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
