@@ -17,7 +17,14 @@ setup(
         "torch",
         "torchvision",
         "tqdm",
-    ]
+    ],
+    extras_require={
+        "waymo": [
+            "pandas",
+            "pyarrow",
+            "Pillow",
+        ],
+    },
     include_package_data=True,
     zip_safe=False,
 )
