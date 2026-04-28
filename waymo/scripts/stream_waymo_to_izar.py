@@ -282,7 +282,8 @@ def download_chunk_on_izar(
     Using stdin avoids embedding the token in the process argument list visible
     to ps(1) on the local machine. The remote shell receives it as script text.
     """
-    lines = ["set -euo pipefail"]
+    # Launch all wget calls in parallel using bash background jobs, then wait for all.
+    lines = ["set -euo pipefail", "pids=()"]
     for component in components:
         uri = chunk.files[component]
         url = gcs_uri_to_https(uri)
@@ -291,10 +292,15 @@ def download_chunk_on_izar(
         # GCS tokens are URL-safe base64 (A-Za-z0-9._-) — safe inside double quotes.
         lines += [
             f"mkdir -p {sq(dest_dir)}",
-            f'wget -q --header="Authorization: Bearer {token}" {sq(url)} -O {sq(dest)}',
+            f'wget -q --header="Authorization: Bearer {token}" {sq(url)} -O {sq(dest)} & pids+=($!)',
         ]
+    lines += [
+        'for pid in "${pids[@]}"; do',
+        '  wait "$pid" || { echo "wget failed (pid $pid)" >&2; exit 1; }',
+        "done",
+    ]
     script = "\n".join(lines) + "\n"
-    print(f"+[izar] downloading {len(components)} component(s) for {chunk.chunk_id}")
+    print(f"+[izar] downloading {len(components)} component(s) in parallel for {chunk.chunk_id}")
     _run_script_on_izar(izar, script)
 
 
@@ -311,6 +317,7 @@ def convert_on_izar(
         "--sensory-root", sq(chunk_stage),
         "--output", sq(chunk_out),
         "--splits", chunk.split,
+        "--workers", str(args.izar_workers),
         "--visualize", "0",
         "--no-web-viewer",
         "--prediction-target-splits", "''",
@@ -549,6 +556,13 @@ def parse_args() -> argparse.Namespace:
         default=1,
         help="Number of chunks processed in parallel. Each holds one SSH session "
         "and up to --max-buffer-gb of staging data on izar.",
+    )
+    p.add_argument(
+        "--izar-workers",
+        type=int,
+        default=4,
+        help="Thread-pool size passed to the converter on izar (--workers). "
+        "Controls parallel component loading and JPEG decoding.",
     )
     p.add_argument(
         "--max-chunks",

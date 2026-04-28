@@ -11,8 +11,10 @@ All downloading and conversion runs on **izar**; your local machine only orchest
 local machine                          izar
 ─────────────────                      ──────────────────────────────────────
 gcloud ls  ──── discovers segments ─►
-gcloud auth ─── mints bearer token ──► wget GCS parquet files
+gcloud auth ─── mints bearer token ──► wget GCS parquet files (parallel)
                                        python build_waymo_rgb_trajectory_dataset.py
+                                         ├─ load components in parallel
+                                         └─ decode images in parallel
                                        output written to --izar-output-dir
 checkpoint JSON saved locally ◄──────
 ```
@@ -77,6 +79,7 @@ python waymo/scripts/stream_waymo_to_izar.py \
   --target-gb 100 \
   --max-buffer-gb 5 \
   --min-izar-free-gb 2 \
+  --izar-workers 8 \
   --work-dir dataset/izar_stream_work
 ```
 
@@ -106,9 +109,19 @@ rm dataset/izar_stream_work/checkpoints/<split>__<segment>.json
 | `--max-buffer-gb` | `5.0` | Expected staging size per chunk; size `chunk-workers` accordingly |
 | `--min-izar-free-gb` | `2.0` | Pause before a new chunk if izar free space drops below this |
 | `--chunk-workers` | `1` | Parallel chunks; each uses up to `--max-buffer-gb` of izar staging |
+| `--izar-workers` | `4` | Threads on izar for parallel component loading and JPEG decoding |
 | `--work-dir` | `dataset/izar_stream_work` | Local directory for checkpoint JSON files |
 | `--keep-going` | off | Continue after failed chunks instead of aborting |
 | `--dry-run` | off | Discover and print chunks; make no SSH calls |
+
+### Parallelism guide
+
+| Knob | What it parallelizes | Recommended |
+|---|---|---|
+| `--izar-workers` | Component loading (4 parquet files at once) + JPEG decoding threads | Set to izar core count (e.g. `8`) |
+| `--chunk-workers` | Whole chunks end-to-end (download + convert simultaneously) | `2`–`4` if izar disk allows; each needs `--max-buffer-gb` of free staging |
+
+Downloads within each chunk always run in parallel (all 4 components fetched simultaneously via `wget` background jobs).
 
 ### Finding the conda Python path on izar
 

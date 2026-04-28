@@ -27,6 +27,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import BytesIO
 from pathlib import Path
 from typing import Any
@@ -107,16 +108,15 @@ def main() -> int:
             continue
 
         print(f"[split] {split}")
-        images = load_component(split_dir, "camera_image")
-        vehicle_pose = load_component(split_dir, "vehicle_pose")
-        projected = load_component(split_dir, "projected_lidar_box")
-        lidar_boxes = load_component(split_dir, "lidar_box")
+        images, vehicle_pose, projected, lidar_boxes = load_all_components(
+            split_dir, args.workers
+        )
 
         if images.empty:
             print(f"  no camera_image rows in {split_dir}")
             continue
 
-        split_images = build_images_table(images, split)
+        split_images = build_images_table(images, split, args.workers)
         split_ego_poses = build_ego_poses_table(vehicle_pose, images, split)
         all_ego_poses.extend(split_ego_poses)
         if projected.empty:
@@ -225,17 +225,32 @@ def load_component(split_dir: Path, component: str) -> pd.DataFrame:
     component_dir = split_dir / component
     if not component_dir.exists():
         return pd.DataFrame()
-    frames = []
-    for path in sorted(component_dir.glob("*.parquet")):
+    paths = sorted(component_dir.glob("*.parquet"))
+    if not paths:
+        return pd.DataFrame()
+
+    def _read(path: Path) -> pd.DataFrame:
         frame = pd.read_parquet(path)
         frame["source_file"] = str(path)
-        frames.append(frame)
-    if not frames:
-        return pd.DataFrame()
+        return frame
+
+    with ThreadPoolExecutor(max_workers=min(len(paths), 4)) as ex:
+        frames = list(ex.map(_read, paths))
     return pd.concat(frames, ignore_index=True)
 
 
-def build_images_table(images: pd.DataFrame, split: str) -> list[dict[str, Any]]:
+def load_all_components(
+    split_dir: Path, workers: int
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Load camera_image, vehicle_pose, projected_lidar_box, lidar_box in parallel."""
+    names = ("camera_image", "vehicle_pose", "projected_lidar_box", "lidar_box")
+    with ThreadPoolExecutor(max_workers=min(workers, len(names))) as ex:
+        futures = {ex.submit(load_component, split_dir, n): n for n in names}
+        results = {name: fut.result() for fut, name in [(f, futures[f]) for f in as_completed(futures)]}
+    return results["camera_image"], results["vehicle_pose"], results["projected_lidar_box"], results["lidar_box"]
+
+
+def build_images_table(images: pd.DataFrame, split: str, workers: int = 4) -> list[dict[str, Any]]:
     required = {
         "key.segment_context_name",
         "key.frame_timestamp_micros",
@@ -244,31 +259,31 @@ def build_images_table(images: pd.DataFrame, split: str) -> list[dict[str, Any]]
     }
     require_columns(images, required, "camera_image")
 
-    rows = []
-    for _, row in images.iterrows():
-        scene_id = str(row["key.segment_context_name"])
-        timestamp = int(row["key.frame_timestamp_micros"])
-        camera_name = int(row["key.camera_name"])
-        image_bytes = bytes(row[IMAGE_COL])
-        image_id = make_image_id(scene_id, timestamp, camera_name)
+    records = images.to_dict("records")
+
+    def _build_row(rec: dict[str, Any]) -> dict[str, Any]:
+        scene_id = str(rec["key.segment_context_name"])
+        timestamp = int(rec["key.frame_timestamp_micros"])
+        camera_name = int(rec["key.camera_name"])
+        image_bytes = bytes(rec[IMAGE_COL])
         width, height = image_size(image_bytes)
-        rows.append(
-            {
-                "split": split,
-                "image_id": image_id,
-                "scene_id": scene_id,
-                "frame_timestamp_micros": timestamp,
-                "camera_name": camera_name,
-                "camera_name_text": CAMERA_NAMES.get(camera_name, f"UNKNOWN_{camera_name}"),
-                "image_jpeg": image_bytes,
-                "image_format": "jpeg",
-                "image_width": width,
-                "image_height": height,
-                "visible_trajectory_ids": [],
-                "num_visible_trajectories": 0,
-            }
-        )
-    return rows
+        return {
+            "split": split,
+            "image_id": make_image_id(scene_id, timestamp, camera_name),
+            "scene_id": scene_id,
+            "frame_timestamp_micros": timestamp,
+            "camera_name": camera_name,
+            "camera_name_text": CAMERA_NAMES.get(camera_name, f"UNKNOWN_{camera_name}"),
+            "image_jpeg": image_bytes,
+            "image_format": "jpeg",
+            "image_width": width,
+            "image_height": height,
+            "visible_trajectory_ids": [],
+            "num_visible_trajectories": 0,
+        }
+
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        return list(ex.map(_build_row, records))
 
 
 def build_ego_poses_table(
@@ -290,10 +305,10 @@ def build_ego_poses_table(
     velocity_by_key = camera_velocity_by_key(camera_images)
 
     pose_rows = []
-    for _, row in vehicle_pose.iterrows():
-        scene_id = str(row["key.segment_context_name"])
-        timestamp = int(row["key.frame_timestamp_micros"])
-        transform = [float(v) for v in row[VEHICLE_POSE_COL]]
+    for rec in vehicle_pose.to_dict("records"):
+        scene_id = str(rec["key.segment_context_name"])
+        timestamp = int(rec["key.frame_timestamp_micros"])
+        transform = [float(v) for v in rec[VEHICLE_POSE_COL]]
         x, y, z = transform_translation(transform)
         roll, pitch, yaw = transform_rpy(transform)
         velocity = velocity_by_key.get((scene_id, timestamp), {})
@@ -454,19 +469,19 @@ def build_image_trajectory_table(projected: pd.DataFrame, split: str) -> list[di
     }
     require_columns(projected, required, "projected_lidar_box")
 
-    rows = []
     projected = projected.sort_values(
         ["key.segment_context_name", "key.frame_timestamp_micros", "key.camera_name"]
     )
-    for _, row in projected.iterrows():
-        scene_id = str(row["key.segment_context_name"])
-        timestamp = int(row["key.frame_timestamp_micros"])
-        camera_name = int(row["key.camera_name"])
-        trajectory_id = str(row["key.laser_object_id"])
-        bbox_cx = float(row[PROJECTED_BOX_COLUMNS["bbox_center_x"]])
-        bbox_cy = float(row[PROJECTED_BOX_COLUMNS["bbox_center_y"]])
-        bbox_w = float(row[PROJECTED_BOX_COLUMNS["bbox_width"]])
-        bbox_h = float(row[PROJECTED_BOX_COLUMNS["bbox_height"]])
+    rows = []
+    for rec in projected.to_dict("records"):
+        scene_id = str(rec["key.segment_context_name"])
+        timestamp = int(rec["key.frame_timestamp_micros"])
+        camera_name = int(rec["key.camera_name"])
+        trajectory_id = str(rec["key.laser_object_id"])
+        bbox_cx = float(rec[PROJECTED_BOX_COLUMNS["bbox_center_x"]])
+        bbox_cy = float(rec[PROJECTED_BOX_COLUMNS["bbox_center_y"]])
+        bbox_w = float(rec[PROJECTED_BOX_COLUMNS["bbox_width"]])
+        bbox_h = float(rec[PROJECTED_BOX_COLUMNS["bbox_height"]])
         rows.append(
             {
                 "split": split,
@@ -477,7 +492,7 @@ def build_image_trajectory_table(projected: pd.DataFrame, split: str) -> list[di
                 "camera_name_text": CAMERA_NAMES.get(camera_name, f"UNKNOWN_{camera_name}"),
                 "trajectory_id": trajectory_id,
                 "trajectory_row_id": make_trajectory_row_id(scene_id, trajectory_id),
-                "object_type": int(row[PROJECTED_BOX_COLUMNS["object_type"]]),
+                "object_type": int(rec[PROJECTED_BOX_COLUMNS["object_type"]]),
                 "bbox_center_x": bbox_cx,
                 "bbox_center_y": bbox_cy,
                 "bbox_width": bbox_w,
@@ -728,6 +743,12 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=0,
         help="Limit WOMD scenarios decoded per split for prediction targets. 0 means all.",
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=4,
+        help="Thread-pool size for parallel component loading and image decoding.",
     )
     parser.add_argument(
         "--web-viewer",
