@@ -1,0 +1,33 @@
+feature_extractor:
+  images_path_path: C:\Users\prana\OneDrive\Desktop\VisualThinkingProject\data\waymo\images.parquet
+  ego_poses_path: C:\Users\prana\OneDrive\Desktop\VisualThinkingProject\data\waymo\ego_poses.parquet
+  trajectories_path: C:\Users\prana\OneDrive\Desktop\VisualThinkingProject\data\waymo\trajectories.parquet
+  image_trajectories_path: C:\Users\prana\OneDrive\Desktop\VisualThinkingProject\data\waymo\image_trajectories.parquet
+  prediction_targets_path: C:\Users\prana\OneDrive\Desktop\VisualThinkingProject\data\waymo\prediction_targets.parquet
+  manifest_path: C:\Users\prana\OneDrive\Desktop\VisualThinkingProject\data\waymo\manifest.json
+
+  features: 
+    image_trajectories:
+      - bbox_center_x
+      - bbox_center_y
+      - bbox_width
+      - bbox_height
+    
+
+  #Not using this for now
+  train_feature_path: data/features/train.csv #path to store extracted features
+  val_feature_path: data/features/val.csv #path to store extracted features
+  test_feature_path: data/features/test.csv #path to store extracted features
+  regenerate_features: false # whether to regenerate features or use existing ones
+
+
+training:
+  batch_size: 64
+  num_epochs: 100
+  learning_rate: 0.001
+  from_checkpoint: None
+  save_to: checkpoint/model_paths.pth
+  
+model:
+  type: Linear
+  num_trajectory_possibilities: 3
