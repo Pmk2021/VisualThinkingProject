@@ -13,7 +13,7 @@ class TrajectoryPredictor(nn.Module):
     def create_model(args):
         """Factory method to create a TrajectoryPredictor model based on the provided configuration."""
         model_type = args.model.type
-        if model_type == "linear":
+        if model_type == "Linear":
             return base_model(
                 state_dim=len(args.feature_extractor.features),
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,

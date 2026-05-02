@@ -42,7 +42,7 @@ class FeatureExtractor:
 
 
 class FeatureDataset(dataset.Dataset):
-    def __init__(self, args, window=10, future_frames=5):
+    def __init__(self, args, window=10, future_frames=5, num_objects=5):
         """Dataset class for loading pre-extracted features from CSV files.
         If regenerate_features is True, it will extract features from raw video data.
 
@@ -56,6 +56,7 @@ class FeatureDataset(dataset.Dataset):
 
         # How many frames to look into future to plan trajectory
         self.future_frames = future_frames
+        self.num_objects = num_objects
 
         table = pq.read_table(args.image_trajectories_path)
         print("AAA", table.schema.names)
@@ -99,54 +100,85 @@ class FeatureDataset(dataset.Dataset):
         """
         Returns a dict with the keys:
         'x': shape (num_frames, num_objects, num_features)
-        'y': shape (num_frames, 3(x_velocity, y_velocity, log size velocity))
+        'y': shape (num_frames, num_objects, 3(x_velocity, y_velocity, log size velocity))
+        'mask': shape (num_frames, num_objects, 1)
         """
         traj_id = self._traj_ids[idx]
         row_idxs = self._traj_to_indices[traj_id]
 
-        # extract full trajectory
         table = self.img_traj_table.take(row_idxs)
+        data = table.to_pandas().sort_values(TIME)
 
-        data = table.to_pandas()
-        data = data.sort_values(TIME)
+        grouped = list(data.groupby(TIME))
 
-        # features tensor
-        x = torch.tensor(
-            np.stack(
-                [
-                    data["bbox_center_x"].values,
-                    data["bbox_center_y"].values,
-                    data["bbox_width"].values,
-                    data["bbox_height"].values,
-                ],
-                axis=1,
+        T = min(len(grouped), self.window + self.future_frames)
+        grouped = grouped[:T]
+
+        F = 4
+        O = self.num_objects
+
+        x = torch.zeros((T, O, F))
+        mask = torch.zeros((T, O, 1))
+
+        for t, (_, frame_df) in enumerate(grouped):
+            frame_df = frame_df.head(O)
+            n = len(frame_df)
+
+            x[t, :n] = torch.tensor(
+                frame_df[
+                    [
+                        "bbox_center_x",
+                        "bbox_center_y",
+                        "bbox_width",
+                        "bbox_height",
+                    ]
+                ].values
             )
-        )
 
-        """
-        To generate the target, we interpolate over the next n frames
-        """
+            mask[t, :n] = 1.0
+
+        # --- target ---
         K = self.future_frames
 
-        area = x[:, 2] * x[:, 3]
-        log_area = np.log(area + 1e-6)
+        area = x[:, :, 2] * x[:, :, 3]
+        log_area = torch.log(area + 1e-6)
 
-        vx = (x[K:, 0] - x[:-K, 0]) / K
-        vy = (x[K:, 1] - x[:-K, 1]) / K
+        vx = (x[K:, :, 0] - x[:-K, :, 0]) / K
+        vy = (x[K:, :, 1] - x[:-K, :, 1]) / K
         v_area = (log_area[K:] - log_area[:-K]) / K
 
-        y = torch.tensor(np.stack([vx, vy, v_area], axis=1))
+        y_valid = torch.stack([vx, vy, v_area], dim=-1)
+        pad_len = K
 
-        # only sample values for which we have trajectories
-        if self.future_frames > 0:
-            start_index = random.randint(0, len(x) - self.future_frames)
+        y_pad = torch.zeros((pad_len, x.shape[1], 3))  # (K, O, 3)
 
-        x = x[start_index : start_index + self.future_frames].unsqueeze(1)
-        y = y[start_index : start_index + self.future_frames].unsqueeze(1)
+        y = torch.cat([y_valid, y_pad], dim=0)
+
+        # --- window sampling ---
+        if len(y) - K > self.window:
+            start_index = random.randint(0, len(y) - K - self.window)
+
+            x = x[start_index : start_index + self.window]
+            y = y[start_index : start_index + self.window]
+            mask = mask[start_index : start_index + self.window]
+
+        else:
+            x = x[:-K]
+            y = y[:-K]
+            mask = mask[:-K]
+            pad_len = self.window - len(y)
+
+            # pad tensors along time dimension
+            x = torch.cat([x, torch.zeros((pad_len, O, F))], dim=0)
+
+            y = torch.cat([y, torch.zeros((pad_len, O, 3))], dim=0)
+
+            mask = torch.cat([mask, torch.zeros((pad_len, O, 1))], dim=0)
 
         return {
-            "feature": torch.tensor(x, dtype=torch.float32),
-            "trajectory": torch.tensor(y, dtype=torch.float32),
+            "feature": x.float(),
+            "trajectory": y.float(),
+            "mask": mask.float(),
         }
 
     """

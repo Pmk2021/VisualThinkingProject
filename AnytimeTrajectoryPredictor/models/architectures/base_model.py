@@ -6,20 +6,21 @@ class base_model(nn.Module):
     ### A simple linear model that predicts the mean and covariance of the velocity for each trajectory possibility.
     def __init__(self, state_dim, num_trajectory_possibilities):
         super(base_model, self).__init__()
-        self.state_dim = state_dim
+
+        self.state_dim = 4
         self.num_trajectory_possibilities = num_trajectory_possibilities
 
         # Calculating Mean and covariacne for each trajectory possibility
-        cov_mat_size = 4  # Assuming 2D trajectories
+        cov_mat_size = 9  # Assuming 2D trajectories
         single_trajectory_param_size = (
-            cov_mat_size + 2
+            cov_mat_size + 3
         )  # mean (2) + covariance (4)
         self.output_dim = (
             self.num_trajectory_possibilities * single_trajectory_param_size
         )
 
         # State transition matrix
-        self.A = nn.Linear(state_dim, self.output_dim)
+        self.A = nn.Linear(self.state_dim, self.output_dim)
 
     def forward(self, frames, f_, object_mask=None, hidden_state=None):
         """
@@ -33,17 +34,17 @@ class base_model(nn.Module):
             predicted_trajectories: batch X num_frames X num_objects X self.output_dim tensor representing trajectory
             hidden_state: hidden_state(optional, depends on model)
         """
-        num_frames, b, _, _ = frames.shape
+        num_frames, b, _, f = frames.shape
 
         predicted_trajectory_list = []
-        for i in range(frames):
-            for iteration in f_[i]:
-                predicted_trajectory = (self.A(frames[i]),)
+        for i in range(num_frames):
+            for iteration in range(f_[i]):
+                predicted_trajectory = self.A(frames[i])
             predicted_trajectory_list.append(predicted_trajectory)
 
         return predicted_trajectory_list
 
-    def get_loss(self, frames_features, trajectories, f_):
+    def compute_loss(self, frames_features, trajectories, f_):
         """Calculate the average negative log-likelihood loss for the predicted trajectory distribution across all frames in the batch.
         Args:
             frames_features: The input state features for all frames. Shape: (batch_size, num_frames, num_objects, feature_dim)
@@ -53,13 +54,15 @@ class base_model(nn.Module):
             loss: The computed average negative log-likelihood loss across the batch.
         """
 
-        b, num_frames, num_objects, feature_dim = frames_features.shape
+        num_frames, b, num_objects, feature_dim = frames_features.shape
 
         total_loss = 0
         for i in range(0, num_frames):
-            trajectory = trajectories[:, i]
+            trajectory = trajectories[: i + 1]
 
-            loss = self.get_single_loss(frames_features[:i], trajectory, f_)
+            loss = self.get_single_loss(
+                frames_features[: i + 1], trajectory, f_
+            )
             total_loss += loss
 
         return total_loss / len(frames_features)
@@ -74,7 +77,7 @@ class base_model(nn.Module):
         Returns:
             loss: The computed negative log-likelihood loss.
         """
-        b, frames, n_objects, _ = x.shape
+        frames, b, n_objects, _ = x.shape
 
         loss = 0
         eps = 1e-6
@@ -82,47 +85,65 @@ class base_model(nn.Module):
         output_entire = self.forward(
             x, f_
         )  # (num_frames, batch_siez, num_objects, 3)
+
         for frame in range(frames):
             output = output_entire[frame]
+
             K = self.num_trajectory_possibilities
 
-            x_mu = output[:, 0:K]
-            y_mu = output[:, K : 2 * K]
-            s_mu = output[:, 2 * K : 3 * K]
-
-            covs = output[:, 3 * K :]  # (b, K * 9)
+            x_mu = output[:, :, 0:K]
+            y_mu = output[:, :, K : 2 * K]
+            s_mu = output[:, :, 2 * K : 3 * K]
+            covs = output[:, :, 3 * K : 12 * K]
 
             for obj_idx in range(n_objects):
                 for batch_idx in range(b):
-                    true = trajectory[batch_idx, frame, obj_idx]  # (3,)
+                    true = trajectory[frame, batch_idx, obj_idx]  # (3,)
 
                     # mixture selection
+                    x_mu_b = x_mu[batch_idx, 0]
+                    y_mu_b = y_mu[batch_idx, 0]
+                    s_mu_b = s_mu[batch_idx, 0]
+                    covs_b = covs[batch_idx, 0]
+                    covs_k = covs_b.view(K, 3, 3)
                     d = torch.sqrt(
-                        (x_mu[batch_idx] - true[0]) ** 2
-                        + (y_mu[batch_idx] - true[1]) ** 2
-                        + (s_mu[batch_idx] - true[2]) ** 2
+                        (x_mu_b - true[0]) ** 2
+                        + (y_mu_b - true[1]) ** 2
+                        + (s_mu_b - true[2]) ** 2
                     )
 
                     k = torch.argmin(d)
 
-                    cov = covs[batch_idx, k * 9 : (k + 1) * 9].view(3, 3)
-                    cov = cov + eps * torch.eye(3, device=x.device)
-
                     mean = torch.stack(
                         [
-                            x_mu[batch_idx, k],
-                            y_mu[batch_idx, k],
-                            s_mu[batch_idx, k],
+                            x_mu_b,
+                            y_mu_b,
+                            s_mu_b,
                         ]
                     )
 
                     diff = true - mean
 
-                    log_det = torch.logdet(cov)
-                    solve_term = diff @ torch.linalg.solve(cov, diff)
+                cov = covs_k[k]
 
-                    nll = 0.5 * (log_det + solve_term)
+                # 1. remove NaNs/Infs early
+                cov = torch.nan_to_num(cov)
 
-                    loss += nll
+                # 2. build guaranteed positive-definite matrix
+                cov = cov @ cov.T + 1e-3 * torch.eye(3, device=x.device)
+
+                # 3. stable Cholesky
+                L = torch.linalg.cholesky(cov)
+
+                # 4. stable log-det
+                log_det = 2 * torch.sum(torch.log(torch.diagonal(L)))
+
+                # 5. stable quadratic form (DON'T invert explicitly if possible)
+                solve_term = diff @ torch.cholesky_solve(
+                    diff.unsqueeze(-1), L
+                ).squeeze(-1)
+                nll = 0.5 * (log_det + solve_term)
+
+                loss += torch.mean(nll)
 
         return loss / (b * frames * n_objects)

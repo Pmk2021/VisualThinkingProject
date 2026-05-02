@@ -23,11 +23,12 @@ feature_extractor:
 
 training:
   batch_size: 64
-  num_epochs: 100
+  num_epochs: 2
   learning_rate: 0.001
-  from_checkpoint: None
+  from_checkpoint: false
   save_to: checkpoint/model_paths.pth
-  
+  wandb_project: "Hello"
+
 model:
   type: Linear
   num_trajectory_possibilities: 3
