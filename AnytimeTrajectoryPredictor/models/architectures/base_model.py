@@ -103,10 +103,10 @@ class base_model(nn.Module):
                     true = trajectory[frame, batch_idx, obj_idx]  # (3,)
 
                     # mixture selection
-                    x_mu_b = x_mu[batch_idx, 0]
-                    y_mu_b = y_mu[batch_idx, 0]
-                    s_mu_b = s_mu[batch_idx, 0]
-                    covs_b = covs[batch_idx, 0]
+                    x_mu_b = x_mu[batch_idx, obj_idx]
+                    y_mu_b = y_mu[batch_idx, obj_idx]
+                    s_mu_b = s_mu[batch_idx, obj_idx]
+                    covs_b = covs[batch_idx, obj_idx]
                     covs_k = covs_b.view(K, 3, 3)
                     d = torch.sqrt(
                         (x_mu_b - true[0]) ** 2
@@ -116,13 +116,7 @@ class base_model(nn.Module):
 
                     k = torch.argmin(d)
 
-                    mean = torch.stack(
-                        [
-                            x_mu_b,
-                            y_mu_b,
-                            s_mu_b,
-                        ]
-                    )
+                    mean = torch.stack([x_mu_b[k], y_mu_b[k], s_mu_b[k]])
 
                     diff = true - mean
 
