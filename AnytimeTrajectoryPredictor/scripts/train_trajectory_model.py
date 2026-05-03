@@ -1,3 +1,10 @@
+from pathlib import Path
+import sys
+import math
+
+if __package__ is None or __package__ == "":
+    sys.path.append(str(Path(__file__).resolve().parents[2]))
+
 from AnytimeTrajectoryPredictor.models.TrajectoryPredictor import (
     TrajectoryPredictor,
 )
@@ -7,6 +14,7 @@ import argparse
 import yaml
 from box import Box
 import torch
+import os
 from torch.utils.data import DataLoader
 
 
@@ -33,6 +41,33 @@ def make_dataloaders(args):
     return train_loader, val_loader
 
 
+def make_lr_scheduler(optimizer, args, steps_per_epoch):
+    scheduler_config = getattr(args.training, "lr_scheduler", None)
+    if scheduler_config is None or not scheduler_config.get("enabled", False):
+        return None
+
+    total_steps = max(1, int(args.training.num_epochs) * steps_per_epoch)
+    warmup_epochs = int(scheduler_config.get("warmup_epochs", 1))
+    warmup_steps = int(scheduler_config.get("warmup_steps", warmup_epochs * steps_per_epoch))
+    if total_steps > 1:
+        warmup_steps = max(1, min(warmup_steps, total_steps - 1))
+    else:
+        warmup_steps = 1
+
+    def lr_multiplier(step):
+        if total_steps <= 1:
+            return 0.0
+        if step < warmup_steps:
+            return step / max(1, warmup_steps - 1)
+
+        decay_steps = max(1, total_steps - warmup_steps)
+        progress = (step - warmup_steps + 1) / decay_steps
+        progress = min(1.0, max(0.0, progress))
+        return 0.5 * (1.0 + math.cos(math.pi * progress))
+
+    return torch.optim.lr_scheduler.LambdaLR(optimizer, lr_multiplier)
+
+
 def main(args):
     """Main function to set up data, model, optimizer, and trainer."""
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -51,10 +86,12 @@ def main(args):
     optimizer = torch.optim.Adam(
         model.parameters(), lr=args.training.learning_rate
     )
+    scheduler = make_lr_scheduler(optimizer, args, len(train_loader))
 
     trainer = Trainer(
         model=model,
         optimizer=optimizer,
+        scheduler=scheduler,
         train_loader=train_loader,
         val_loader=val_loader,
         device=device,
@@ -65,7 +102,10 @@ def main(args):
     trainer.train(num_epochs=args.training.num_epochs)
 
     print("Training complete! Model saved to:", args.training.save_to)
-    torch.save(trainer.model.state_dict(), "model.pth")
+    save_dir = os.path.dirname(args.training.save_to)
+    if save_dir:
+        os.makedirs(save_dir, exist_ok=True)
+    torch.save(trainer.model.state_dict(), args.training.save_to)
 
 
 if __name__ == "__main__":
