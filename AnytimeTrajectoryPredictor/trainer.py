@@ -39,9 +39,9 @@ class Trainer:
                 batch["features"].to(self.device),
                 batch["trajectory"].to(self.device),
             )
-
+            f_ = [random.randint(1, 10) for i in range(len(feature))]
             # Compute Loss
-            loss = self.model.compute_loss(feature, trajectory)
+            loss = self.model.compute_loss(feature, trajectory, f_)
             total_loss += loss.item()
 
         wandb.log({"validation_loss": total_loss / len(self.val_loader)})
