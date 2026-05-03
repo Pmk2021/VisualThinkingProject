@@ -17,6 +17,7 @@ setup(
         "torch",
         "torchvision",
         "tqdm",
+        "PyYAML",
         "python-box",
         "wandb",
     ],
