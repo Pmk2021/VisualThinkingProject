@@ -1,7 +1,5 @@
 from torch.utils import data
 from torch.utils.data import dataset
-from torchvision.io import read_video
-import pandas as pd
 import os
 import tqdm
 import pyarrow.parquet as pq
@@ -58,8 +56,6 @@ class FeatureDataset(dataset.Dataset):
         self.future_frames = future_frames
         self.num_objects = num_objects
 
-        table = pq.read_table(args.image_trajectories_path)
-
         # Define datasets
         self.image_trajectory_features = args.features.image_trajectories
         self.img_traj_table = pq.read_table(
@@ -80,7 +76,7 @@ class FeatureDataset(dataset.Dataset):
         for tid, idxs in self._traj_to_indices.items():
             idxs = np.array(idxs)
             idxs = idxs[np.argsort(times[idxs])]
-            self._traj_to_indices[tid] = idxs
+            self._traj_to_indices[tid] = idxs.tolist()
 
         self.valid_traj_ids = []
 
