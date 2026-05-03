@@ -1,3 +1,6 @@
+# Model checkpoint files
+astra/pretrained_weights/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

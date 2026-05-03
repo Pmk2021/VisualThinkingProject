@@ -10,11 +10,19 @@ dependencies:
   - scipy
   - pytorch
   - torchvision
+  - ipykernel
   - tqdm
+  # astra
+  - python-box
+  - torch-geometric
+  - segmentation-models-pytorch
+  - icecream
+  - opencv
   # waymo converter
   - pandas
   - pyarrow
   - pillow
   - pip
   - pip:
+      - opencv-python
       - -e .

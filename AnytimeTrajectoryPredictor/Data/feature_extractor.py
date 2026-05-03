@@ -1,6 +1,5 @@
 from torch.utils import data
 from torch.utils.data import dataset
-from torchvision.io import read_video
 import pandas as pd
 import os
 import tqdm
@@ -18,6 +17,7 @@ import torch
 # Define important columns
 TRAJ_ID = "trajectory_row_id"
 TIME = "frame_timestamp_micros"
+SCENE_ID = "scene_id"
 
 
 class FeatureExtractor:
@@ -58,13 +58,13 @@ class FeatureDataset(dataset.Dataset):
         self.future_frames = future_frames
         self.num_objects = num_objects
 
-        table = pq.read_table(args.image_trajectories_path)
-
         # Define datasets
         self.image_trajectory_features = args.features.image_trajectories
+        self._camera_columns = ["camera_name"]
+
         self.img_traj_table = pq.read_table(
             args.image_trajectories_path,
-            columns=self.image_trajectory_features + [TRAJ_ID, TIME],
+            columns=self.image_trajectory_features + [TRAJ_ID, TIME, SCENE_ID] + self._camera_columns,
         )
 
         # build index: trajectory_id -> row indices
@@ -112,6 +112,8 @@ class FeatureDataset(dataset.Dataset):
 
         # --- extract columns as numpy ---
         times = table.column(TIME).to_numpy()
+        scenes = table.column(SCENE_ID).to_numpy()
+        camera_name = table.column("camera_name").to_numpy()
 
         features = np.stack(
             [
@@ -127,6 +129,8 @@ class FeatureDataset(dataset.Dataset):
         order = np.argsort(times)
         times = times[order]
         features = features[order]
+        scenes = scenes[order]
+        camera_name = camera_name[order]
 
         # --- group by time (no pandas) ---
         unique_times, indices = np.unique(times, return_index=True)
@@ -189,10 +193,13 @@ class FeatureDataset(dataset.Dataset):
 
             mask = torch.cat([mask, torch.zeros((pad_len, O, 1))], dim=0)
 
+        image = f"{scenes[0]};{times[-1]};camera_{camera_name[-1]}"
+        
         return {
             "features": x.float(),
             "trajectory": y.float(),
             "mask": mask.float(),
+            "image_id": image,
         }
 
     """
