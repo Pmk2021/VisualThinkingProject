@@ -30,5 +30,5 @@ training:
   wandb_project: "Hello"
 
 model:
-  type: Linear
+  type: linear
   num_trajectory_possibilities: 3

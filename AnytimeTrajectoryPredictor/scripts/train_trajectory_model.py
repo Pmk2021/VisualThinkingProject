@@ -1,4 +1,6 @@
-from AnytimeTrajectoryPredictor.models import TrajectoryPredictor
+from AnytimeTrajectoryPredictor.models.TrajectoryPredictor import (
+    TrajectoryPredictor,
+)
 from AnytimeTrajectoryPredictor.Data.feature_extractor import FeatureDataset
 from AnytimeTrajectoryPredictor.trainer import Trainer
 import argparse
@@ -39,28 +41,31 @@ def main(args):
 
     # Check if model exists and load it, otherwise create a new one
     if args.training.from_checkpoint:
-        print("Loading model from:", args.training.load_path)
-        model = TrajectoryPredictor(args.model).to(device)
+        print("Loading model from:", args.training.from_checkpoint)
+        model = TrajectoryPredictor.create_model(args).to(device)
         model.load_state_dict(torch.load(args.training.load_path))
     else:
         print("No pre-trained model specified. Initializing new model.")
-        model = TrajectoryPredictor(args.model).to(device)
+        model = TrajectoryPredictor.create_model(args).to(device)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.training.lr)
+    optimizer = torch.optim.Adam(
+        model.parameters(), lr=args.training.learning_rate
+    )
 
     trainer = Trainer(
         model=model,
         optimizer=optimizer,
         train_loader=train_loader,
         val_loader=val_loader,
-        device=args.device,
+        device=device,
+        args=args,
     )
 
     print("Starting training...")
     trainer.train(num_epochs=args.training.num_epochs)
 
-    print("Training complete! Model saved to:", args.training.save_path)
-    trainer.save_model(args.training.save_path)
+    print("Training complete! Model saved to:", args.training.save_to)
+    torch.save(trainer.model.state_dict(), "model.pth")
 
 
 if __name__ == "__main__":
