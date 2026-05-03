@@ -7,7 +7,7 @@ class base_model(nn.Module):
     def __init__(self, state_dim, num_trajectory_possibilities):
         super(base_model, self).__init__()
 
-        self.state_dim = 4
+        self.state_dim = state_dim
         self.num_trajectory_possibilities = num_trajectory_possibilities
 
         # Calculating Mean and covariacne for each trajectory possibility
@@ -40,7 +40,9 @@ class base_model(nn.Module):
         for i in range(num_frames):
             for iteration in range(f_[i]):
                 predicted_trajectory = self.A(frames[i])
-            predicted_trajectory_list.append(predicted_trajectory)
+                # Add only if last iteration
+                if iteration == f_[i] - 1:
+                    predicted_trajectory_list.append(predicted_trajectory)
 
         return predicted_trajectory_list
 
