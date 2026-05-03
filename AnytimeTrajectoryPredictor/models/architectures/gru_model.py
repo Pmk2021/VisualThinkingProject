@@ -8,11 +8,11 @@ class gru_model(base_model):
     """Small GRU-MDN trajectory predictor with iterative refinement.
 
     Each object keeps one hidden state. For each frame, the same ``GRUCell`` can
-    be applied multiple times before emitting the MDN parameters, making the
+    be applied multiple times before emitting MDN parameters, making the
     model queryable after a configurable computation budget.
     """
 
-    params_per_mode = 6 # logit, mean_x, mean_y, log_std_x, log_std_y, correlation rho between x and y
+    params_per_mode = 12  # mean_x, mean_y, mean_log_area, and flattened 3x3 covariance factor
 
     def __init__(
         self,
@@ -36,7 +36,7 @@ class gru_model(base_model):
         self.output_dim = self.num_trajectory_possibilities * self.params_per_mode
 
         # Single GRUCell that is applied iteratively for each frame.
-        self.gru_cell = nn.GRUCell(input_size=state_dim, hidden_size=hidden_dim)
+        self.gru_cell = nn.GRUCell(input_size=self.state_dim, hidden_size=hidden_dim)
 
         # Small MLP to project from GRU hidden state to MDN parameters.
         self.output_head = nn.Sequential(
@@ -81,18 +81,18 @@ class gru_model(base_model):
         Predict trajectory distribution parameters for each frame/object.
 
         Parameters:
-            frames: Tensor shaped ``(batch, frames, objects, state_dim)``.
+            frames: Tensor shaped ``(frames, batch, objects, state_dim)``.
             f_: Optional int or length-``num_frames`` list controlling how many
                 GRU refinement iterations are spent on each frame.
             hidden_state: Optional previous hidden state shaped
                 ``(batch, objects, hidden_dim)`` or ``(batch * objects, hidden_dim)``.
 
         Returns:
-            predicted_trajectories: Tensor shaped
-                ``(batch, frames, objects, output_dim)``.
+            predicted_trajectories: List of ``num_frames`` tensors shaped
+                ``(batch, objects, output_dim)``.
             hidden_state: Final hidden state shaped ``(batch, objects, hidden_dim)``.
         """
-        batch_size, num_frames, num_objects, _ = frames.shape
+        num_frames, batch_size, num_objects, _ = frames.shape
         refinement_steps = self.normalize_refinement_steps(
             f_, num_frames, self.refinement_steps
         )
@@ -106,20 +106,19 @@ class gru_model(base_model):
 
         predictions = []
         for frame_idx, steps in enumerate(refinement_steps):
-            frame_features = frames[:, frame_idx, :, :].reshape(
+            frame_features = frames[frame_idx].reshape(
                 batch_size * num_objects, self.state_dim
             )
             for _ in range(steps):
                 hidden = self.gru_cell(frame_features, hidden)
-                if _ == steps - 1: # only emit predictions on the last iteration for this frame
-                    frame_prediction = self.output_head(hidden).view(
-                        batch_size, num_objects, self.output_dim
-                    )
-                    predictions.append(frame_prediction)
 
-        predictions = torch.stack(predictions, dim=1) # convert from list to (batch, frames, objects, output_dim)
+            frame_prediction = self.output_head(hidden).view(
+                batch_size, num_objects, self.output_dim
+            )
+            predictions.append(frame_prediction)
+
         hidden = hidden.view(batch_size, num_objects, self.hidden_dim) # convert back to (batch, objects, hidden_dim) for output
-        return predictions, hidden
+        return predictions
     
     def normalize_refinement_steps(self, f_, num_frames, default_steps):
         """
@@ -131,11 +130,10 @@ class gru_model(base_model):
         """
         if isinstance(f_, int):
             return [f_] * num_frames
-        elif isinstance(f_, list) and len(f_) == num_frames:
-            return f_
-        else:
-            raise ValueError(
-                "f_ must be either an int or a list of length num_frames"
-            )
+        if isinstance(f_, list) and len(f_) >= num_frames:
+            return f_[:num_frames]
+        raise ValueError(
+            "f_ must be either an int or a list with at least num_frames entries"
+        )
 
 GRUModel = gru_model

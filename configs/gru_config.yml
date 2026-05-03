@@ -1,0 +1,36 @@
+feature_extractor:
+  images_path_path: /Users/leonardamsler/Desktop/EPFL/Master/MA4/Visual Intelligence/VisualThinkingProject/data/waymo/images.parquet
+  ego_poses_path: /Users/leonardamsler/Desktop/EPFL/Master/MA4/Visual Intelligence/VisualThinkingProject/data/waymo/ego_poses.parquet
+  trajectories_path: /Users/leonardamsler/Desktop/EPFL/Master/MA4/Visual Intelligence/VisualThinkingProject/data/waymo/trajectories.parquet
+  image_trajectories_path: /Users/leonardamsler/Desktop/EPFL/Master/MA4/Visual Intelligence/VisualThinkingProject/data/waymo/image_trajectories.parquet
+  prediction_targets_path: /Users/leonardamsler/Desktop/EPFL/Master/MA4/Visual Intelligence/VisualThinkingProject/data/waymo/prediction_targets.parquet
+  manifest_path: /Users/leonardamsler/Desktop/EPFL/Master/MA4/Visual Intelligence/VisualThinkingProject/data/waymo/manifest.json
+
+  features:
+    image_trajectories:
+      - bbox_center_x
+      - bbox_center_y
+      - bbox_width
+      - bbox_height
+
+  #Not using this for now
+  train_feature_path: data/features/train.csv #path to store extracted features
+  val_feature_path: data/features/val.csv #path to store extracted features
+  test_feature_path: data/features/test.csv #path to store extracted features
+  regenerate_features: false # whether to regenerate features or use existing ones
+
+training:
+  batch_size: 64
+  num_epochs: 1000
+  learning_rate: 0.01
+  lr_scheduler:
+    enabled: true
+    warmup_epochs: 50
+  from_checkpoint: false
+  save_to: checkpoint/gru_model_paths.pth
+  wandb_project: "GRUModel"
+
+model:
+  type: gru
+  num_trajectory_possibilities: 8
+  hidden_dim: 64
