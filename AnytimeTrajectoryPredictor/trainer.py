@@ -42,15 +42,16 @@ class Trainer:
         return loss_total / len(self.train_loader)
 
     def validate(self):
-        total_loss = 0.0
-        with torch.no_grad():
-            for batch in self.val_loader:
-                feature, trajectory = self._prepare_batch(batch)
-                f_ = self._sample_refinement_steps(len(feature))
-
-                # Compute Loss
-                loss = self.model.compute_loss(feature, trajectory, f_)
-                total_loss += loss.item()
+        total_loss = 0
+        for batch in self.val_loader:
+            feature, trajectory = (
+                batch["features"].to(self.device),
+                batch["trajectory"].to(self.device),
+            )
+            f_ = [random.randint(1, 10) for i in range(len(feature))]
+            # Compute Loss
+            loss = self.model.compute_loss(feature, trajectory, f_)
+            total_loss += loss.item()
 
         validation_loss = total_loss / len(self.val_loader)
         return validation_loss
