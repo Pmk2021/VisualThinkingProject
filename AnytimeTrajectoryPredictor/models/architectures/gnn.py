@@ -2,10 +2,10 @@ import torch
 import torch.nn as nn
 
 
-class base_model(nn.Module):
+class GNN(nn.Module):
     ### A simple linear model that predicts the mean and covariance of the velocity for each trajectory possibility.
     def __init__(self, state_dim, num_trajectory_possibilities):
-        super(base_model, self).__init__()
+        super(GNN, self).__init__()
 
         self.state_dim = 4
         self.num_trajectory_possibilities = num_trajectory_possibilities
@@ -24,24 +24,42 @@ class base_model(nn.Module):
 
     def forward(self, frames, f_, object_mask=None, hidden_state=None):
         """
-        Given a sequence of frames, return a batch X num_frames X self.output_dim tensor representing the trajectory
-        Parameters:
-            frames_features: The input state features for all frames. Shape: (num_frames, batch_size, num_objects, feature_dim)
-            f_: number of frames length list containing number of iterations to spend on each frame
-            object_mask: 1 if an object in a given batch is on screen at a certain frame, 0 otherwise (num_frames, batch_size, num_objects)
-            hidden_state: hidden state(optional, depends on model)
-        Returns:
-            predicted_trajectories: batch X num_frames X num_objects X self.output_dim tensor representing trajectory
-            hidden_state: hidden_state(optional, depends on model)
+        frames: (T, B, N, F)
+        f_: list[int] length T, refinement steps per frame
         """
-        num_frames, b, _, f = frames.shape
+
+        T, B, N, F = frames.shape
+
+        # initialize hidden state per object
+        if hidden_state is None:
+            h = torch.zeros(B, N, self.state_dim, device=frames.device)
+        else:
+            h = hidden_state
 
         predicted_trajectory_list = []
-        for i in range(num_frames):
-            for iteration in range(f_[i]):
-                predicted_trajectory = self.A(frames[i])
-            predicted_trajectory_list.append(predicted_trajectory)
 
+        for t in range(T):
+            # ----------------------------
+            # 1. Temporal / state update
+            # ----------------------------
+            x_t = frames[t]  # (B, N, F)
+
+
+            # ----------------------------
+            # 2. Graph construction step
+            # ----------------------------
+
+
+            # ----------------------------
+            # 3. Initial trajectory prediction
+            # ----------------------------
+            
+
+            # ----------------------------
+            # 4. Iterative refinement with graph convolution and residuals
+            # ----------------------------
+            for k in range(f_[t]):
+                
         return predicted_trajectory_list
 
     def compute_loss(self, frames_features, trajectories, f_):
@@ -84,7 +102,7 @@ class base_model(nn.Module):
 
         output_entire = self.forward(
             x, f_
-        )  # (num_frames, batch_size, num_objects, 3)
+        )  # (num_frames, batch_siez, num_objects, 3)
 
         for frame in range(frames):
             output = output_entire[frame]
@@ -101,10 +119,10 @@ class base_model(nn.Module):
                     true = trajectory[frame, batch_idx, obj_idx]  # (3,)
 
                     # mixture selection
-                    x_mu_b = x_mu[batch_idx, obj_idx]
-                    y_mu_b = y_mu[batch_idx, obj_idx]
-                    s_mu_b = s_mu[batch_idx, obj_idx]
-                    covs_b = covs[batch_idx, obj_idx]
+                    x_mu_b = x_mu[batch_idx, 0]
+                    y_mu_b = y_mu[batch_idx, 0]
+                    s_mu_b = s_mu[batch_idx, 0]
+                    covs_b = covs[batch_idx, 0]
                     covs_k = covs_b.view(K, 3, 3)
                     d = torch.sqrt(
                         (x_mu_b - true[0]) ** 2
@@ -116,9 +134,9 @@ class base_model(nn.Module):
 
                     mean = torch.stack(
                         [
-                            x_mu_b[k],
-                            y_mu_b[k],
-                            s_mu_b[k],
+                            x_mu_b,
+                            y_mu_b,
+                            s_mu_b,
                         ]
                     )
 
