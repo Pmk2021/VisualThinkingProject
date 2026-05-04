@@ -82,7 +82,7 @@ class base_model(nn.Module):
         frames, b, n_objects, _ = x.shape
 
         loss = 0
-        eps = 1e-6
+        eps = 1e-2
 
         output_entire = self.forward(
             x, f_
@@ -122,11 +122,15 @@ class base_model(nn.Module):
 
                     cov = covs_k[k]
 
+                    # Clamp to ensure stability
+                    cov = torch.nan_to_num(cov, nan=0.0, posinf=20.0, neginf=-20.0)
+                    cov = torch.clamp(cov, min=-20.0, max=20.0)
+
                     # 1. make symmetric
                     cov = 0.5 * (cov + cov.T)
 
                     # 2. build guaranteed positive-definite matrix
-                    cov = cov @ cov.T + 1e-3 * torch.eye(3, device=x.device)
+                    cov = cov @ cov.T + eps * torch.eye(3, device=x.device)
 
                     # 3. stable Cholesky
                     L = torch.linalg.cholesky(cov)
