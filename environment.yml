@@ -17,4 +17,6 @@ dependencies:
   - pillow
   - pip
   - pip:
+      - ultralytics
+      - black
       - -e .
