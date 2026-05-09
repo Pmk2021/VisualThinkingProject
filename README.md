@@ -1,5 +1,15 @@
 # VisualThinkingProject
 
+## ASTRA-EDM Waymo Model
+
+The ASTRA-conditioned EDM diffusion trajectory predictor is documented in:
+
+```text
+docs/astra_edm_diffusion_handoff.md
+```
+
+Start there for the model architecture, code organization, run commands, monitoring/checkpoint notes, and recommended next steps.
+
 ## Instructions for training model
 
 ### Step 1: Add your model

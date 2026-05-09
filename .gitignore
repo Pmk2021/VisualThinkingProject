@@ -1,6 +1,13 @@
 # Model checkpoint files
 astra/pretrained_weights/
 
+# wandb
+wandb/
+
+# results 
+*.gif
+*.png
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

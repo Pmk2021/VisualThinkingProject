@@ -1,0 +1,56 @@
+feature_extractor:
+  dataset_type: waymo_prediction
+  waymo_root: /work/cs-503/santanto/waymo
+  history_steps: 11
+  future_steps: 80
+  validation_fraction: 0.1
+  split_seed: 503
+  min_future_valid: 1
+  max_segments: null
+  max_samples: null
+
+training:
+  batch_size: 64
+  num_epochs: 100
+  learning_rate: 1.0e-4
+  weight_decay: 1.0e-4
+  optimizer: adamw
+  gradient_clip_norm: 1.0
+  mixed_precision: true
+  num_workers: 2
+  pin_memory: true
+  from_checkpoint: false
+  save_to: checkpoints/astra_edm_diffusion_waymo_latest.pth
+  wandb_project: astra-edm-waymo
+  wandb_mode: online
+
+model:
+  type: astra_edm_diffusion
+  input_dim: 6
+  max_agents: 1
+  num_modes_K: 6
+  trajectory_dim_dy: 2
+  d_model: 256
+  context_layers: 2
+  num_layers: 4
+  num_heads: 8
+  dropout: 0.1
+  sigma_data: 1.0
+  sigma_min: 0.01
+  sigma_max: 5.0
+  rho: 7.0
+  num_sampling_steps: 12
+  P_mean: -0.5
+  P_std: 1.0
+  sigma_min_train: 0.01
+  sigma_max_train: 5.0
+  use_edm_loss_weighting: false
+  log_std_min: -5.0
+  log_std_max: 3.0
+  offdiag_clip: 5.0
+  lambda_diff: 1.0
+  lambda_nll: 0.1
+  lambda_ade: 1.0
+  lambda_fde: 1.0
+  lambda_mode: 0.1
+  lambda_cov: 0.01
