@@ -18,7 +18,9 @@ from typing import Any, Dict, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
+import torchvision.io as tvio
 from PIL import Image
+from io import BytesIO
 
 from ultralytics import YOLO
 
@@ -45,10 +47,41 @@ class ObjectTracker:
         feature_components: Sequence[str] = ("bboxes",),
         embedding_layers: Optional[Sequence[str]] = ["model.16", "model.19"], # Defaults to P3 and P4 features
         verbose: bool = False,
+        additional_track_kwargs: Optional[Dict[str, Any]] = None,
     ) -> None:
+        """
+        An object tracker that extracts object and scene features from RGB image using YOLO and ByteTrack.
+
+        Parameters
+        ----------
+        model_name : Union[str, Path], optional
+            The name or path of the YOLO model to use for tracking, by default "yolo11n.pt"
+        tracker_cfg : Union[str, Path], optional
+            The name or path of the ByteTrack tracker config file, by default "bytetrack.yaml"
+        device : Optional[Union[str, int, torch.device]], optional
+            The device to run the model on (e.g., "cpu", "cuda:0"), by default None (automatically selects CUDA if available)
+        conf : float, optional
+            Confidence threshold for detections, by default 0.25
+        imgsz : int, optional
+            Inference image size for the model, by default 640
+        classes : Optional[Sequence[int]], optional
+            Filter detections to only these class IDs, by default None (no filtering)
+        max_det : int, optional
+            Maximum number of detections per frame, by default 300
+        feature_components : Sequence[str], optional
+            Which feature components to include in the output features tensor. Allowed values are "bboxes", "confidences", "class_ids", "embeddings". By default ("bboxes",)    
+        embedding_layers : Optional[Sequence[str]], optional
+            If "embeddings" is included in feature_components, this specifies which model layers to capture as embeddings. Each layer's output will be averaged spatially and concatenated together. By default ["model.16", "model.19"] (P3 and P4 features)
+        verbose : bool, optional
+            If True, prints additional information about the model and tracking process, by default False
+        additional_track_kwargs : Optional[Dict[str, Any]], optional
+            Additional keyword arguments to pass to the track() method of the YOLO model. This allows for further customization of the tracking behavior beyond the main parameters exposed by ObjectTracker. Overrides any conflicting parameters set by the main arguments (e.g., conf, imgsz, classes, max_det) if specified.
+        """
         self.model_name = str(model_name)
         self.tracker_cfg = str(tracker_cfg)
-        self.device = device
+        self.device = device if device is not None else torch.device(
+            "cuda" if torch.cuda.is_available() else "cpu"
+        )
         self.conf = conf
         self.imgsz = imgsz
         self.classes = list(classes) if classes is not None else None
@@ -70,8 +103,29 @@ class ObjectTracker:
             raise ValueError(
                 "feature_components includes 'embeddings' but embedding_layers is None."
             )
-
+        
+        self.track_kwargs: Dict[str, Any] = {
+            "persist": True,
+            "tracker": self.tracker_cfg,
+            "conf": self.conf,
+            "imgsz": self.imgsz,
+            "max_det": self.max_det,
+            "verbose": False,
+        }
+        if self.device is not None:
+            self.track_kwargs["device"] = self.device
+        if self.classes is not None:
+            self.track_kwargs["classes"] = self.classes
+        if additional_track_kwargs is not None:
+            self.track_kwargs.update(additional_track_kwargs)
+        
         self._tracker_model = YOLO(self.model_name)
+        
+        # Optimize for inference:
+        self._tracker_model.fuse()
+        self._tracker_model.eval()
+        torch.set_grad_enabled(False)
+
         self._last_embeddings: Optional[Dict[str, torch.Tensor]] = None
 
         if self.embedding_layers is not None:
@@ -95,7 +149,7 @@ class ObjectTracker:
         hooked_layers = {}
         backbone = self._tracker_model.model
         for layer_name in self.embedding_layers:
-            layer = self._tracker_model.model.get_submodule(layer_name)
+            layer = backbone.get_submodule(layer_name)
             layer.register_forward_hook(get_hook_fn(layer_name))
             hooked_layers[layer_name] = layer.__class__.__name__
         if self.verbose:
@@ -103,8 +157,9 @@ class ObjectTracker:
 
     def __call__(
         self,
-        image: Union[np.ndarray, torch.Tensor, Image.Image],
+        image: Union[np.ndarray, torch.Tensor, Image.Image, str],
         num_objects: Optional[int] = None,
+        jpeg: bool = False,
     ) -> Dict[str, torch.Tensor]:
         """
         Track one RGB frame and return only features and mask.
@@ -115,21 +170,7 @@ class ObjectTracker:
         for layer_name in self.embedding_layers:
             self._last_embeddings[layer_name] = None
 
-        track_kwargs: Dict[str, Any] = {
-            "source": image,
-            "persist": True,
-            "tracker": self.tracker_cfg,
-            "conf": self.conf,
-            "imgsz": self.imgsz,
-            "max_det": self.max_det,
-            "verbose": False,
-        }
-        if self.device is not None:
-            track_kwargs["device"] = self.device
-        if self.classes is not None:
-            track_kwargs["classes"] = self.classes
-
-        results = self._tracker_model.track(**track_kwargs)
+        results = self._tracker_model.track(source=image, **self.track_kwargs)
 
         boxes_xyxy = np.zeros((0, 4), dtype=np.float32)
         confidences = np.zeros((0,), dtype=np.float32)
@@ -240,13 +281,13 @@ class ObjectTracker:
         class_ids: np.ndarray,
         embedding: Optional[torch.Tensor],
     ) -> np.ndarray:
-        if self._last_embeddings is None or len(self._last_embeddings) == 0:
+        if embedding is None or len(embedding) == 0:
             raise RuntimeError(
                 "Embeddings were requested but no embedding hooks have produced outputs yet. "
                 "Check that embedding_layers points to valid layers."
             )
 
-        missing_layers = [layer for layer, value in self._last_embeddings.items() if value is None]
+        missing_layers = [layer for layer, value in embedding.items() if value is None]
         if missing_layers:
             raise RuntimeError(
                 f"Embeddings were requested but no embedding was captured for {missing_layers[0]}. "
@@ -255,7 +296,7 @@ class ObjectTracker:
 
         embeddings = []
         for layer_name in self.embedding_layers:
-            layer_embedding = self._last_embeddings[layer_name]
+            layer_embedding = embedding[layer_name]
 
             # Turn the embedding into (1, C)
             layer_embedding = layer_embedding.mean(dim=[2, 3])
