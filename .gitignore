@@ -222,3 +222,6 @@ checkpoint/
 
 # .DS_Store
 .DS_Store
+
+# Airsim setup (as not used anymore)
+AirSim/
