@@ -67,6 +67,9 @@ def main(args):
     print("Training complete! Model saved to:", args.training.save_to)
     torch.save(trainer.model.state_dict(), "model.pth")
 
+    print("Validating:")
+    trainer.validate()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
