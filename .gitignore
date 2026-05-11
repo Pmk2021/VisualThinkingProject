@@ -219,3 +219,6 @@ wandb/
 
 # checkpoints
 checkpoint/
+
+# .DS_Store
+.DS_Store
