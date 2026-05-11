@@ -4,6 +4,11 @@ import torch.nn as nn
 
 class base_model(nn.Module):
     ### A simple linear model that predicts the mean and covariance of the velocity for each trajectory possibility.
+
+    params_per_mode = 12  # mean (3) + flattened 3x3 covariance factor (9)
+    mean_dim = 3
+    cov_eps = 1e-2
+
     def __init__(self, state_dim, num_trajectory_possibilities):
         super(base_model, self).__init__()
 
@@ -11,16 +16,48 @@ class base_model(nn.Module):
         self.num_trajectory_possibilities = num_trajectory_possibilities
 
         # Calculating Mean and covariacne for each trajectory possibility
-        cov_mat_size = 9  # Assuming 2D trajectories
-        single_trajectory_param_size = (
-            cov_mat_size + 3
-        )  # mean (2) + covariance (4)
         self.output_dim = (
-            self.num_trajectory_possibilities * single_trajectory_param_size
+            self.num_trajectory_possibilities * self.params_per_mode
         )
 
         # State transition matrix
         self.A = nn.Linear(self.state_dim, self.output_dim)
+
+    @classmethod
+    def unpack_gmm_params(cls, output, num_modes):
+        """Split a raw output tensor into GMM means and SPD covariances.
+
+        Works for any leading shape so the same helper is used from the loss
+        (per-frame ``(B, N, K * 12)`` tensors) and from the diversity metrics
+        (frame-stacked ``(T, B, N, K * 12)`` tensors).
+
+        Args:
+            output: tensor with last dim ``num_modes * params_per_mode``.
+            num_modes: ``K``.
+
+        Returns:
+            means: tensor shaped ``(..., K, mean_dim)``.
+            covs:  symmetric positive-definite tensor shaped
+                ``(..., K, mean_dim, mean_dim)``.
+        """
+        K = num_modes
+        d = cls.mean_dim
+
+        x_mu = output[..., 0:K]
+        y_mu = output[..., K : 2 * K]
+        s_mu = output[..., 2 * K : 3 * K]
+        means = torch.stack([x_mu, y_mu, s_mu], dim=-1)  # (..., K, 3)
+
+        cov_raw = output[..., 3 * K : cls.params_per_mode * K]
+        cov_raw = cov_raw.reshape(*output.shape[:-1], K, d, d)
+
+        cov_raw = torch.nan_to_num(cov_raw, nan=0.0, posinf=20.0, neginf=-20.0)
+        cov_raw = torch.clamp(cov_raw, min=-20.0, max=20.0)
+        cov_sym = 0.5 * (cov_raw + cov_raw.transpose(-1, -2))
+        eye = torch.eye(d, device=output.device, dtype=output.dtype)
+        covs = cov_sym @ cov_sym.transpose(-1, -2) + cls.cov_eps * eye
+
+        return means, covs
 
     def forward(self, frames, f_, object_mask=None, hidden_state=None):
         """
@@ -82,63 +119,40 @@ class base_model(nn.Module):
         frames, b, n_objects, _ = x.shape
 
         loss = 0
-        eps = 1e-2
 
         output_entire = self.forward(
             x, f_
         )  # (num_frames, batch_size, num_objects, 3)
 
+        K = self.num_trajectory_possibilities
+
         for frame in range(frames):
-            output = output_entire[frame]
-
-            K = self.num_trajectory_possibilities
-
-            x_mu = output[:, :, 0:K]
-            y_mu = output[:, :, K : 2 * K]
-            s_mu = output[:, :, 2 * K : 3 * K]
-            covs = output[:, :, 3 * K : 12 * K]
+            # means: (B, N, K, 3), covs: (B, N, K, 3, 3) — same SPD recipe as
+            # ``unpack_gmm_params`` (clamp + LL^T + eps*I), shared with the
+            # diversity metrics so both stay in sync.
+            means, covs = self.unpack_gmm_params(output_entire[frame], K)
 
             for obj_idx in range(n_objects):
                 for batch_idx in range(b):
                     true = trajectory[frame, batch_idx, obj_idx]  # (3,)
 
-                    # mixture selection
-                    x_mu_b = x_mu[batch_idx, obj_idx]
-                    y_mu_b = y_mu[batch_idx, obj_idx]
-                    s_mu_b = s_mu[batch_idx, obj_idx]
-                    covs_b = covs[batch_idx, obj_idx]
-                    covs_k = covs_b.view(K, 3, 3)
-                    d = torch.sqrt(
-                        (x_mu_b - true[0]) ** 2
-                        + (y_mu_b - true[1]) ** 2
-                        + (s_mu_b - true[2]) ** 2
-                    )
+                    mu_k = means[batch_idx, obj_idx]   # (K, 3)
+                    cov_k = covs[batch_idx, obj_idx]   # (K, 3, 3)
 
-                    k = torch.argmin(d)
+                    # mixture selection: closest mean wins
+                    k = torch.argmin(torch.linalg.norm(mu_k - true, dim=-1))
 
-                    mean = torch.stack([x_mu_b[k], y_mu_b[k], s_mu_b[k]])
-
+                    mean = mu_k[k]
+                    cov = cov_k[k]
                     diff = true - mean
 
-                    cov = covs_k[k]
-
-                    # Clamp to ensure stability
-                    cov = torch.nan_to_num(cov, nan=0.0, posinf=20.0, neginf=-20.0)
-                    cov = torch.clamp(cov, min=-20.0, max=20.0)
-
-                    # 1. make symmetric
-                    cov = 0.5 * (cov + cov.T)
-
-                    # 2. build guaranteed positive-definite matrix
-                    cov = cov @ cov.T + eps * torch.eye(3, device=x.device)
-
-                    # 3. stable Cholesky
+                    # stable Cholesky on the already-SPD covariance
                     L = torch.linalg.cholesky(cov)
 
-                    # 4. stable log-det
+                    # stable log-det
                     log_det = 2 * torch.sum(torch.log(torch.diagonal(L)))
 
-                    # 5. stable quadratic form (DON'T invert explicitly if possible)
+                    # stable quadratic form (DON'T invert explicitly if possible)
                     solve_term = diff @ torch.cholesky_solve(
                         diff.unsqueeze(-1), L
                     ).squeeze(-1)
