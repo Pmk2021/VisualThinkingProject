@@ -3,6 +3,7 @@ from AnytimeTrajectoryPredictor.models.architectures.base_model import (
     base_model,
 )
 from AnytimeTrajectoryPredictor.models.architectures.gru_model import gru_model
+from AnytimeTrajectoryPredictor.models.architectures.lstm_model import lstm_model
 
 
 class TrajectoryPredictor(nn.Module):
@@ -37,6 +38,13 @@ class TrajectoryPredictor(nn.Module):
             )
         elif model_type == "gru":
             return gru_model(
+                state_dim=state_dim,
+                num_trajectory_possibilities=args.model.num_trajectory_possibilities,
+                hidden_dim=getattr(args.model, "hidden_dim", 64),
+                refinement_steps=getattr(args.model, "refinement_steps", 3),
+            )
+        elif model_type == "lstm":
+            return lstm_model(
                 state_dim=state_dim,
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,
                 hidden_dim=getattr(args.model, "hidden_dim", 64),
