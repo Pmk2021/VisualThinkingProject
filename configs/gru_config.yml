@@ -22,9 +22,9 @@ feature_extractor:
 training:
   batch_size: 64
   num_epochs: 1000
-  learning_rate: 0.01
+  learning_rate: 0.005
   lr_scheduler:
-    enabled: true
+    enabled: false
     warmup_epochs: 50
   from_checkpoint: false
   save_to: checkpoint/gru_model_paths.pth
