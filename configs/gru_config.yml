@@ -21,10 +21,10 @@ feature_extractor:
 
 training:
   batch_size: 64
-  num_epochs: 25
-  learning_rate: 0.005
+  num_epochs: 500
+  learning_rate: 0.01
   lr_scheduler:
-    enabled: false
+    enabled: true
     warmup_epochs: 50
   from_checkpoint: false
   save_to: checkpoint/gru_model_paths_eval.pth
@@ -34,6 +34,8 @@ model:
   type: gru
   num_trajectory_possibilities: 8
   hidden_dim: 64
+  min_refinement_steps: 1
+  max_refinement_steps: 10
 
 evaluation:
   measure_latency: true
@@ -41,3 +43,4 @@ evaluation:
   latency_n_runs: 100
   latency_batch_size: 1
   latency_anytime_max_steps: 10
+  measure_diversity: true

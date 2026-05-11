@@ -3,7 +3,10 @@ import wandb
 import random
 from tqdm import tqdm
 
-from AnytimeTrajectoryPredictor.evaluation import LatencyProfiler
+from AnytimeTrajectoryPredictor.evaluation import (
+    LatencyProfiler,
+    compute_diversity_metrics,
+)
 
 
 class Trainer:
@@ -25,7 +28,9 @@ class Trainer:
         return feature, trajectory
 
     def _sample_refinement_steps(self, num_frames):
-        return [random.randint(1, 10) for _ in range(num_frames)]
+        min_steps = getattr(self.args.model, "min_refinement_steps", 1)
+        max_steps = getattr(self.args.model, "max_refinement_steps", 10)
+        return [random.randint(min_steps, max_steps) for _ in range(num_frames)]
 
     def train_single_epoch(self):
         loss_total = 0.0
@@ -43,8 +48,18 @@ class Trainer:
                 self.scheduler.step()
         return loss_total / len(self.train_loader)
 
+    def _diversity_enabled(self):
+        eval_cfg = getattr(self.args, "evaluation", None)
+        if eval_cfg is None:
+            return False
+        return bool(eval_cfg.get("measure_diversity", False))
+
     def validate(self):
         total_loss = 0
+        apd_sum = 0.0
+        w2_sum = 0.0
+        measure_diversity = self._diversity_enabled()
+        num_modes = self.args.model.num_trajectory_possibilities
         with torch.no_grad():
             for batch in self.val_loader:
                 feature, trajectory = self._prepare_batch(batch)
@@ -52,29 +67,51 @@ class Trainer:
                 # Compute Loss
                 loss = self.model.compute_loss(feature, trajectory, f_)
                 total_loss += loss.item()
+                if measure_diversity:
+                    predictions = self.model(feature, f_)
+                    metrics = compute_diversity_metrics(predictions, num_modes)
+                    apd_sum += metrics["apd"]
+                    w2_sum += metrics["mean_pairwise_w2"]
 
-        validation_loss = total_loss / len(self.val_loader)
-        return validation_loss
+        n_batches = len(self.val_loader)
+        validation_loss = total_loss / n_batches
+        diversity = (
+            {
+                "apd": apd_sum / n_batches,
+                "mean_pairwise_w2": w2_sum / n_batches,
+            }
+            if measure_diversity
+            else None
+        )
+        return validation_loss, diversity
 
     def train(self, num_epochs):
         pbar = tqdm(range(num_epochs), desc="Training")
 
         for epoch in pbar:
             loss = self.train_single_epoch()
-            validation_loss = self.validate()
+            validation_loss, diversity = self.validate()
             learning_rate = self.optimizer.param_groups[0]["lr"]
 
-            pbar.set_postfix(
-                {"loss": loss, "val_loss": validation_loss, "lr": learning_rate}
-            )
-            wandb.log(
-                {
-                    "epoch": epoch,
-                    "loss": loss,
-                    "validation_loss": validation_loss,
-                    "learning_rate": learning_rate,
-                }
-            )
+            postfix = {
+                "loss": loss,
+                "val_loss": validation_loss,
+                "lr": learning_rate,
+            }
+            log_payload = {
+                "epoch": epoch,
+                "loss": loss,
+                "validation_loss": validation_loss,
+                "learning_rate": learning_rate,
+            }
+            if diversity is not None:
+                postfix["apd"] = diversity["apd"]
+                postfix["w2"] = diversity["mean_pairwise_w2"]
+                log_payload["diversity/apd"] = diversity["apd"]
+                log_payload["diversity/mean_pairwise_w2"] = diversity["mean_pairwise_w2"]
+
+            pbar.set_postfix(postfix)
+            wandb.log(log_payload)
 
         self.profile_latency()
 
@@ -186,7 +223,6 @@ class Trainer:
         )
         wandb.log(
             {
-                "latency/anytime_table": table,
                 "latency/anytime_curve": wandb.plot.line(
                     table,
                     x="refinement_steps",
