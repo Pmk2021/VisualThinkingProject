@@ -21,16 +21,23 @@ feature_extractor:
 
 training:
   batch_size: 64
-  num_epochs: 1000
+  num_epochs: 25
   learning_rate: 0.005
   lr_scheduler:
     enabled: false
     warmup_epochs: 50
   from_checkpoint: false
-  save_to: checkpoint/gru_model_paths.pth
+  save_to: checkpoint/gru_model_paths_eval.pth
   wandb_project: "GRUModel"
 
 model:
   type: gru
   num_trajectory_possibilities: 8
   hidden_dim: 64
+
+evaluation:
+  measure_latency: true
+  latency_n_warmup: 10
+  latency_n_runs: 100
+  latency_batch_size: 1
+  latency_anytime_max_steps: 10
