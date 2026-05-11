@@ -20,6 +20,43 @@ TRAJ_ID = "trajectory_row_id"
 TIME = "frame_timestamp_micros"
 
 
+def fit_cubic(signal, K):
+    """
+    Fits a cubic polynomial over sliding windows of size K.
+
+    Args:
+        signal: (T, B) tensor
+        K: window size
+
+    Returns:
+        coeffs: (T-K+1, B, 4)
+    """
+
+    T, B = signal.shape
+    device = signal.device
+
+    # normalized time basis [-1, 1]
+    t = torch.linspace(-1, 1, K, device=device)
+
+    X = torch.stack(
+        [t**0, t**1, t**2, t**3],
+        dim=1,
+    )  # (K, 4)
+
+    # sliding windows
+    sig_win = signal.unfold(0, K, 1)  # (T-K+1, B, K)
+
+    Tn = sig_win.shape[0]
+
+    # flatten batch + time windows
+    sig_flat = sig_win.reshape(Tn * B, K)
+
+    # solve least squares
+    coeffs = torch.linalg.lstsq(X, sig_flat).solution  # (Tn*B, 4)
+
+    return coeffs.view(Tn, B, 4)
+
+
 class FeatureExtractor:
     def __init__(self, args):
         self.args = args
@@ -100,7 +137,7 @@ class FeatureDataset(dataset.Dataset):
         """
         Returns a dict with the keys:
         'x': shape (num_frames, num_objects, num_features)
-        'y': shape (num_frames, num_objects, 3(x_velocity, y_velocity, log size velocity))
+        'y': shape (num_frames, num_objects, 3, 4) the last two dimentions represent x, y, z x 4 coefficients of a 3 degree polynomial
         'mask': shape (num_frames, num_objects, 1)
         """
 
@@ -157,19 +194,24 @@ class FeatureDataset(dataset.Dataset):
         area = x[:, :, 2] * x[:, :, 3]
         log_area = torch.log(area + 1e-6)
 
-        vx = (x[K:, :, 0] - x[:-K, :, 0]) / K
-        vy = (x[K:, :, 1] - x[:-K, :, 1]) / K
-        v_area = (log_area[K:] - log_area[:-K]) / K
+        vx = fit_cubic(x[:, :, 0], K)
+        vy = fit_cubic(x[:, :, 1], K)
+        v_area = fit_cubic(log_area, K)
 
-        y_valid = torch.stack([vx, vy, v_area], dim=-1)
-        pad_len = K
+        y_valid = torch.stack(
+            [vx, vy, v_area], dim=2
+        )  # num_frames, num_objects, (x,y,z), poly_coefficients
 
-        y_pad = torch.zeros((pad_len, x.shape[1], 3))  # (K, O, 3)
+        # Pad all tensors to self.window so we can keep everything the same size
 
-        y = torch.cat([y_valid, y_pad], dim=0)
+        # First make x,y, and mask the same size
+        y = y_valid
         x = x[: len(y)]
+        mask = mask[: len(y)]
+
         # --- window sampling ---
         if len(y) - K > self.window:
+            # If the length of y is greater than the window, cut it down
             start_index = random.randint(0, len(y) - K - self.window)
 
             x = x[start_index : start_index + self.window]
@@ -177,9 +219,7 @@ class FeatureDataset(dataset.Dataset):
             mask = mask[start_index : start_index + self.window]
 
         else:
-            x = x[:-K]
-            y = y[:-K]
-            mask = mask[:-K]
+            # Otherwise, we add padding to everything
             pad_len = self.window - len(y)
 
             # pad tensors along time dimension
