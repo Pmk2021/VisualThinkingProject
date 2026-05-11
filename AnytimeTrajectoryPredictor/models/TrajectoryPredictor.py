@@ -4,6 +4,8 @@ from AnytimeTrajectoryPredictor.models.architectures.base_model import (
     base_model,
 )
 
+from AnytimeTrajectoryPredictor.models.architectures.gnn import GNN
+
 
 class TrajectoryPredictor(nn.Module):
     def __init__(self, model_config):
@@ -14,6 +16,11 @@ class TrajectoryPredictor(nn.Module):
         """Factory method to create a TrajectoryPredictor model based on the provided configuration."""
         model_type = args.model.type
         if model_type == "linear":
+            return base_model(
+                state_dim=len(args.feature_extractor.features),
+                num_trajectory_possibilities=args.model.num_trajectory_possibilities,
+            )
+        if model_type == "GNN":
             return base_model(
                 state_dim=len(args.feature_extractor.features),
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,

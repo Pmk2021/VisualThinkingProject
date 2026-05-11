@@ -43,7 +43,7 @@ class Trainer:
             # Compute Loss
             loss = self.model.compute_loss(feature, trajectory, f_)
             total_loss += loss.item()
-
+        print(total_loss / len(self.val_loader))
         wandb.log({"validation_loss": total_loss / len(self.val_loader)})
 
     def train(self, num_epochs):
@@ -54,3 +54,5 @@ class Trainer:
 
             pbar.set_postfix({"loss": loss})
             wandb.log({"epoch": epoch, "loss": loss})
+            if epoch % 10 == 0:
+                self.validate()
