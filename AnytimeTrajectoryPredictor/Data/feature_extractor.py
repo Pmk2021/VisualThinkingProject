@@ -96,7 +96,14 @@ class FeatureDataset(dataset.Dataset):
         self.num_objects = num_objects
 
         table = pq.read_table(args.image_trajectories_path)
-
+        """
+        if path.is_dir():
+            parquet_files = sorted(path.glob("*.parquet"))
+            tables = [pq.read_table(f) for f in parquet_files]
+            table = pa.concat_tables(tables)
+        else:
+            table = pq.read_table(path)
+        """
         # Define datasets
         self.image_trajectory_features = args.features.image_trajectories
         self.img_traj_table = pq.read_table(
