@@ -28,8 +28,8 @@ class Trainer:
         return feature, trajectory
 
     def _sample_refinement_steps(self, num_frames):
-        min_steps = getattr(self.args.model, "min_refinement_steps", 1)
-        max_steps = getattr(self.args.model, "max_refinement_steps", 10)
+        min_steps = int(self.args.model.min_refinement_steps)
+        max_steps = int(self.args.model.max_refinement_steps)
         return [random.randint(min_steps, max_steps) for _ in range(num_frames)]
 
     def train_single_epoch(self):
@@ -59,7 +59,6 @@ class Trainer:
         apd_sum = 0.0
         w2_sum = 0.0
         measure_diversity = self._diversity_enabled()
-        num_modes = self.args.model.num_trajectory_possibilities
         with torch.no_grad():
             for batch in self.val_loader:
                 feature, trajectory = self._prepare_batch(batch)
@@ -69,7 +68,7 @@ class Trainer:
                 total_loss += loss.item()
                 if measure_diversity:
                     predictions = self.model(feature, f_)
-                    metrics = compute_diversity_metrics(predictions, num_modes)
+                    metrics = compute_diversity_metrics(predictions, self.model)
                     apd_sum += metrics["apd"]
                     w2_sum += metrics["mean_pairwise_w2"]
 

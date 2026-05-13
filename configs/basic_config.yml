@@ -5,6 +5,16 @@ feature_extractor:
   image_trajectories_path: /Users/leonardamsler/Desktop/EPFL/Master/MA4/Visual Intelligence/VisualThinkingProject/data/waymo/image_trajectories.parquet
   prediction_targets_path: /Users/leonardamsler/Desktop/EPFL/Master/MA4/Visual Intelligence/VisualThinkingProject/data/waymo/prediction_targets.parquet
   manifest_path: /Users/leonardamsler/Desktop/EPFL/Master/MA4/Visual Intelligence/VisualThinkingProject/data/waymo/manifest.json
+  window: 4
+  future_frames: 5
+  num_objects: 1
+  polynomial_degree: 3
+  trajectory_dims: 3
+  target_features:
+    x: bbox_center_x
+    y: bbox_center_y
+    width: bbox_width
+    height: bbox_height
 
   features:
     image_trajectories:
@@ -33,3 +43,9 @@ training:
 model:
   type: linear
   num_trajectory_possibilities: 8
+  polynomial_degree: 3
+  spatial_dims:
+    - 0
+    - 1
+  min_refinement_steps: 1
+  max_refinement_steps: 10

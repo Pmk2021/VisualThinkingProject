@@ -107,6 +107,9 @@ def main(args):
         os.makedirs(save_dir, exist_ok=True)
     torch.save(trainer.model.state_dict(), args.training.save_to)
 
+    print("Validating:")
+    trainer.validate()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

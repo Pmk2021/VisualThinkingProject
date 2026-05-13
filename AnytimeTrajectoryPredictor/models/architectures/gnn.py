@@ -1,26 +1,68 @@
+from torch_geometric.utils import dense_to_sparse
+from torch_geometric.nn import MessagePassing
 import torch
+
+from torch_geometric.nn import MessagePassing
+import torch.nn.functional as F
 import torch.nn as nn
+
+
+def fully_connected_edge_index(N, device):
+    adj = torch.ones(N, N, device=device)
+    edge_index, _ = dense_to_sparse(adj)
+    return edge_index
+
+
+class InteractionGNN(MessagePassing):
+    def __init__(self, state_dim):
+        super().__init__(aggr="add")  # sum messages
+
+        self.edge_mlp = nn.Sequential(
+            nn.Linear(2 * state_dim, state_dim),
+            nn.ReLU(),
+            nn.Linear(state_dim, state_dim),
+        )
+
+        self.node_update = nn.Linear(state_dim, state_dim)
+
+    def forward(self, x, edge_index):
+        # x: (B*N, D) OR (N, D) per graph
+        return self.propagate(edge_index, x=x)
+
+    def message(self, x_i, x_j):
+        # x_i = receiver, x_j = sender
+        edge_feat = torch.cat([x_i, x_j], dim=-1)
+        return self.edge_mlp(edge_feat)
+
+    def update(self, aggr_out, x):
+        return x + self.node_update(aggr_out)
 
 
 class GNN(nn.Module):
     ### A simple linear model that predicts the mean and covariance of the velocity for each trajectory possibility.
     def __init__(self, state_dim, num_trajectory_possibilities):
         super(GNN, self).__init__()
-
+        self.hidden_dim = 64
         self.state_dim = 4
         self.num_trajectory_possibilities = num_trajectory_possibilities
 
-        # Calculating Mean and covariacne for each trajectory possibility
-        cov_mat_size = 9  # Assuming 2D trajectories
-        single_trajectory_param_size = (
-            cov_mat_size + 3
-        )  # mean (2) + covariance (4)
-        self.output_dim = (
-            self.num_trajectory_possibilities * single_trajectory_param_size
+        self.node_encoder = nn.Linear(self.hidden_dim, self.hidden_dim)
+        self.gnn = InteractionGNN(
+            self.hidden_dim
+        )  # from earlier PyG-style layer
+        self.traj_head = nn.Linear(
+            self.hidden_dim, self.num_trajectory_possibilities * 11
         )
-
-        # State transition matrix
-        self.A = nn.Linear(self.state_dim, self.output_dim)
+        self.refine_mlp = nn.Sequential(
+            nn.Linear(
+                self.hidden_dim + self.num_trajectory_possibilities * 11,
+                self.hidden_dim,
+            ),
+            nn.ReLU(),
+        )
+        self.delta_head = nn.Linear(
+            self.hidden_dim, self.num_trajectory_possibilities * 11
+        )
 
     def forward(self, frames, f_, object_mask=None, hidden_state=None):
         """
@@ -32,34 +74,75 @@ class GNN(nn.Module):
 
         # initialize hidden state per object
         if hidden_state is None:
-            h = torch.zeros(B, N, self.state_dim, device=frames.device)
+            h = torch.zeros(B, N, self.hidden_dim, device=frames.device)
         else:
             h = hidden_state
+
+        edge_index = fully_connected_edge_index(N, frames.device)
 
         predicted_trajectory_list = []
 
         for t in range(T):
-            # ----------------------------
             # 1. Temporal / state update
-            # ----------------------------
+
             x_t = frames[t]  # (B, N, F)
-
-
-            # ----------------------------
-            # 2. Graph construction step
-            # ----------------------------
-
+            x_emb = self.node_encoder(x_t)  # (B, N, H)
+            h = h + x_emb
 
             # ----------------------------
-            # 3. Initial trajectory prediction
+            # 2. Encode Node Features
             # ----------------------------
-            
+            x_emb = self.node_encoder(x_t)  # (B, N, hidden_state)
 
-            # ----------------------------
+            h = h + x_emb  # residual temporal update
+
+            # 3. Message passing in graph
+
+            h_flat = h.view(B * N, self.hidden_dim)
+
+            h_flat = self.gnn(h_flat, edge_index)
+
+            h = h_flat.view(B, N, self.hidden_dim)
+
+            # 4. Initial trajectory prediction
+
+            y = self.traj_head(h)  # (B, N, P * params)
+
+            y = y.view(B, N, self.num_trajectory_possibilities, -1)
+
             # 4. Iterative refinement with graph convolution and residuals
-            # ----------------------------
+
             for k in range(f_[t]):
-                
+                """
+                We repeate everything k times
+                """
+
+                # 1. Message passing over nodes
+
+                h_flat = h.view(B * N, -1)
+
+                h_flat = self.gnn(h_flat, edge_index)
+
+                h = h_flat.view(B, N, -1)
+
+                # 2. trajectory-aware interaction
+
+                y_flat = y.view(B, N, -1)
+
+                inp = torch.cat([h, y_flat], dim=-1)
+
+                h_ref = self.refine_mlp(inp)
+
+                # 3. Trajectory update
+
+                delta = self.delta_head(h_ref)
+
+                delta = delta.view_as(y)
+
+                y = y + delta
+
+            predicted_trajectory_list.append(y)
+
         return predicted_trajectory_list
 
     def compute_loss(self, frames_features, trajectories, f_):

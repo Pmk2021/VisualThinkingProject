@@ -26,29 +26,65 @@ class TrajectoryPredictor(nn.Module):
         return len(features)
 
     @staticmethod
+    def _require_model_config(args, name):
+        if name not in args.model:
+            raise ValueError(f"model.{name} must be defined in the configuration file")
+        return args.model[name]
+
+    @staticmethod
+    def _require_feature_config(args, name):
+        if name not in args.feature_extractor:
+            raise ValueError(
+                f"feature_extractor.{name} must be defined in the configuration file"
+            )
+        return args.feature_extractor[name]
+
+    @staticmethod
+    def _trajectory_distribution_kwargs(args):
+        return {
+            "polynomial_degree": TrajectoryPredictor._require_model_config(
+                args, "polynomial_degree"
+            ),
+            "trajectory_dims": TrajectoryPredictor._require_feature_config(
+                args, "trajectory_dims"
+            ),
+            "spatial_dims": TrajectoryPredictor._require_model_config(
+                args, "spatial_dims"
+            ),
+        }
+
+    @staticmethod
     def create_model(args):
         """Factory method to create a TrajectoryPredictor model based on the provided configuration."""
         model_type = args.model.type.lower()
         state_dim = TrajectoryPredictor._state_dim(args)
+        trajectory_distribution_kwargs = (
+            TrajectoryPredictor._trajectory_distribution_kwargs(args)
+        )
 
         if model_type == "linear":
             return base_model(
                 state_dim=state_dim,
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,
+                **trajectory_distribution_kwargs,
             )
         elif model_type == "gru":
             return gru_model(
                 state_dim=state_dim,
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,
-                hidden_dim=getattr(args.model, "hidden_dim", 64),
-                refinement_steps=getattr(args.model, "refinement_steps", 3),
+                hidden_dim=TrajectoryPredictor._require_model_config(
+                    args, "hidden_dim"
+                ),
+                **trajectory_distribution_kwargs,
             )
         elif model_type == "lstm":
             return lstm_model(
                 state_dim=state_dim,
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,
-                hidden_dim=getattr(args.model, "hidden_dim", 64),
-                refinement_steps=getattr(args.model, "refinement_steps", 3),
+                hidden_dim=TrajectoryPredictor._require_model_config(
+                    args, "hidden_dim"
+                ),
+                **trajectory_distribution_kwargs,
             )
         else:
             raise ValueError(f"Unsupported model type: {args.model.type}")

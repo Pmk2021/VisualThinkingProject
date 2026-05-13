@@ -216,9 +216,11 @@ waymo/dataset/rgb_trajectory_dataset/visualizations/*.jpg
 
 # wandb runs
 wandb/
+AnytimeTrajectoryPredictor/wandb
 
-# checkpoints
+# checkpoints and model weights
 checkpoint/
+*.pth
 
 # .DS_Store
 .DS_Store

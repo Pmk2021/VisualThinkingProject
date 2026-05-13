@@ -7,25 +7,31 @@ from AnytimeTrajectoryPredictor.models.architectures.base_model import base_mode
 class lstm_model(base_model):
     """Small LSTM-MDN trajectory predictor with iterative refinement."""
 
-    params_per_mode = 12
-
     def __init__(
         self,
         state_dim,
         num_trajectory_possibilities,
-        hidden_dim=64,
-        refinement_steps=3,
+        hidden_dim=None,
+        polynomial_degree=None,
+        trajectory_dims=None,
+        spatial_dims=None,
     ):
-        super(lstm_model, self).__init__(state_dim, num_trajectory_possibilities)
-        self.hidden_dim = hidden_dim
-        self.refinement_steps = refinement_steps
-        self.output_dim = self.num_trajectory_possibilities * self.params_per_mode
+        super(lstm_model, self).__init__(
+            state_dim,
+            num_trajectory_possibilities,
+            polynomial_degree=polynomial_degree,
+            trajectory_dims=trajectory_dims,
+            spatial_dims=spatial_dims,
+        )
+        self.hidden_dim = self._require_config_value(hidden_dim, "model.hidden_dim")
 
-        self.lstm_cell = nn.LSTMCell(input_size=self.state_dim, hidden_size=hidden_dim)
+        self.lstm_cell = nn.LSTMCell(
+            input_size=self.state_dim, hidden_size=self.hidden_dim
+        )
         self.output_head = nn.Sequential(
-            nn.Linear(hidden_dim, hidden_dim),
+            nn.Linear(self.hidden_dim, self.hidden_dim),
             nn.ReLU(),
-            nn.Linear(hidden_dim, self.output_dim),
+            nn.Linear(self.hidden_dim, self.output_dim),
         )
 
     def _initial_state(self, hidden_state, batch_size, num_objects, device, dtype):
@@ -66,9 +72,7 @@ class lstm_model(base_model):
 
     def forward(self, frames, f_, object_mask=None, hidden_state=None):
         num_frames, batch_size, num_objects, _ = frames.shape
-        refinement_steps = self.normalize_refinement_steps(
-            f_, num_frames, self.refinement_steps
-        )
+        refinement_steps = self.normalize_refinement_steps(f_, num_frames)
         hidden, cell = self._initial_state(
             hidden_state,
             batch_size,
@@ -92,7 +96,7 @@ class lstm_model(base_model):
 
         return predictions
 
-    def normalize_refinement_steps(self, f_, num_frames, default_steps):
+    def normalize_refinement_steps(self, f_, num_frames):
         if isinstance(f_, int):
             return [f_] * num_frames
         if isinstance(f_, list) and len(f_) >= num_frames:

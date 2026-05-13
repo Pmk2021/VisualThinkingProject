@@ -18,6 +18,49 @@ TRAJ_ID = "trajectory_row_id"
 TIME = "frame_timestamp_micros"
 
 
+def fit_polynomial(signal, K, polynomial_degree):
+    """
+    Fits a polynomial over sliding windows.
+
+    Args:
+        signal: (T, B) tensor
+        K: window size
+        polynomial_degree: degree of the polynomial basis
+
+    Returns:
+        coeffs: (T-K+1, B, polynomial_degree + 1)
+    """
+    if K <= polynomial_degree:
+        raise ValueError(
+            "feature_extractor.future_frames must be larger than "
+            "feature_extractor.polynomial_degree"
+        )
+
+    T, B = signal.shape
+    device = signal.device
+
+    # normalized time basis [-1, 1]
+    t = torch.linspace(-1, 1, K, device=device, dtype=signal.dtype)
+
+    X = torch.stack(
+        [t**degree for degree in range(polynomial_degree + 1)],
+        dim=1,
+    )
+
+    # sliding windows
+    sig_win = signal.unfold(0, K, 1)  # (T-K+1, B, K)
+
+    Tn = sig_win.shape[0]
+
+    # flatten batch + time windows
+    sig_flat = sig_win.reshape(Tn * B, K)
+
+    # solve least squares
+    coeffs = torch.linalg.lstsq(X, sig_flat).solution
+
+    return coeffs.view(Tn, B, polynomial_degree + 1)
+
+
 class FeatureExtractor:
     def __init__(self, args):
         self.args = args
@@ -40,7 +83,14 @@ class FeatureExtractor:
 
 
 class FeatureDataset(dataset.Dataset):
-    def __init__(self, args, window=4, future_frames=5, num_objects=1):
+    def __init__(
+        self,
+        args,
+        window=None,
+        future_frames=None,
+        num_objects=None,
+        polynomial_degree=None,
+    ):
         """Dataset class for loading pre-extracted features from CSV files.
         If regenerate_features is True, it will extract features from raw video data.
 
@@ -50,14 +100,37 @@ class FeatureDataset(dataset.Dataset):
             data_path: Path to folder containing raw video data (required if regenerate_features is True)
         """
         # How many frames can we look at a time
-        self.window = window
+        self.window = int(args.window if window is None else window)
 
         # How many frames to look into future to plan trajectory
-        self.future_frames = future_frames
-        self.num_objects = num_objects
+        self.future_frames = int(
+            args.future_frames if future_frames is None else future_frames
+        )
+        self.num_objects = int(args.num_objects if num_objects is None else num_objects)
+        self.polynomial_degree = int(
+            args.polynomial_degree
+            if polynomial_degree is None
+            else polynomial_degree
+        )
+        self.trajectory_dims = int(args.trajectory_dims)
+        self.target_features = args.target_features
 
+        table = pq.read_table(args.image_trajectories_path)
+        """
+        if path.is_dir():
+            parquet_files = sorted(path.glob("*.parquet"))
+            tables = [pq.read_table(f) for f in parquet_files]
+            table = pa.concat_tables(tables)
+        else:
+            table = pq.read_table(path)
+        """
         # Define datasets
         self.image_trajectory_features = args.features.image_trajectories
+        self.x_feature_idx = self._feature_index(self.target_features.x)
+        self.y_feature_idx = self._feature_index(self.target_features.y)
+        self.width_feature_idx = self._feature_index(self.target_features.width)
+        self.height_feature_idx = self._feature_index(self.target_features.height)
+        self.num_coeffs = self.polynomial_degree + 1
         self.img_traj_table = pq.read_table(
             args.image_trajectories_path,
             columns=self.image_trajectory_features + [TRAJ_ID, TIME],
@@ -89,6 +162,14 @@ class FeatureDataset(dataset.Dataset):
         self._traj_ids = self.valid_traj_ids
         self.table = self.img_traj_table
 
+    def _feature_index(self, feature_name):
+        if feature_name not in self.image_trajectory_features:
+            raise ValueError(
+                f"Target feature '{feature_name}' is not listed in "
+                "feature_extractor.features.image_trajectories"
+            )
+        return self.image_trajectory_features.index(feature_name)
+
     def __len__(self):
         return len(self._traj_ids)
 
@@ -96,7 +177,7 @@ class FeatureDataset(dataset.Dataset):
         """
         Returns a dict with the keys:
         'x': shape (num_frames, num_objects, num_features)
-        'y': shape (num_frames, num_objects, 3(x_velocity, y_velocity, log size velocity))
+        'y': shape (num_frames, num_objects, trajectory_dims, num_coeffs)
         'mask': shape (num_frames, num_objects, 1)
         """
 
@@ -111,10 +192,8 @@ class FeatureDataset(dataset.Dataset):
 
         features = np.stack(
             [
-                table.column("bbox_center_x").to_numpy(),
-                table.column("bbox_center_y").to_numpy(),
-                table.column("bbox_width").to_numpy(),
-                table.column("bbox_height").to_numpy(),
+                table.column(feature_name).to_numpy()
+                for feature_name in self.image_trajectory_features
             ],
             axis=1,
         )
@@ -129,7 +208,7 @@ class FeatureDataset(dataset.Dataset):
 
         T = min(len(unique_times), self.window + self.future_frames)
 
-        F = 4
+        F = len(self.image_trajectory_features)
         O = self.num_objects
 
         x = torch.zeros((T, O, F))
@@ -149,39 +228,68 @@ class FeatureDataset(dataset.Dataset):
 
         # --- target ---
         K = self.future_frames
+        target_length = x.shape[0] - K
+        if target_length <= 0:
+            raise ValueError("Not enough frames to construct polynomial targets")
 
-        area = x[:, :, 2] * x[:, :, 3]
+        area = x[:, :, self.width_feature_idx] * x[:, :, self.height_feature_idx]
         log_area = torch.log(area + 1e-6)
 
-        vx = (x[K:, :, 0] - x[:-K, :, 0]) / K
-        vy = (x[K:, :, 1] - x[:-K, :, 1]) / K
-        v_area = (log_area[K:] - log_area[:-K]) / K
+        x_coeffs = fit_polynomial(
+            x[:, :, self.x_feature_idx], K, self.polynomial_degree
+        )[:target_length]
+        y_coeffs = fit_polynomial(
+            x[:, :, self.y_feature_idx], K, self.polynomial_degree
+        )[:target_length]
+        log_area_coeffs = fit_polynomial(
+            log_area, K, self.polynomial_degree
+        )[:target_length]
 
-        y_valid = torch.stack([vx, vy, v_area], dim=-1)
-        pad_len = K
+        trajectory_coeffs = [x_coeffs, y_coeffs, log_area_coeffs]
+        if len(trajectory_coeffs) != self.trajectory_dims:
+            raise ValueError(
+                "feature_extractor.trajectory_dims must match the generated "
+                "polynomial target components"
+            )
+        y_valid = torch.stack(trajectory_coeffs, dim=2)
 
-        y_pad = torch.zeros((pad_len, x.shape[1], 3))  # (K, O, 3)
+        # Pad all tensors to self.window so we can keep everything the same size
 
-        y = torch.cat([y_valid, y_pad], dim=0)
+        # First make x,y, and mask the same size
+        y = y_valid
         x = x[: len(y)]
+        mask = mask[: len(y)]
+
         # --- window sampling ---
-        if len(y) - K > self.window:
-            start_index = random.randint(0, len(y) - K - self.window)
+        if len(y) > self.window:
+            # If the length of y is greater than the window, cut it down
+            start_index = random.randint(0, len(y) - self.window)
 
             x = x[start_index : start_index + self.window]
             y = y[start_index : start_index + self.window]
             mask = mask[start_index : start_index + self.window]
 
         else:
-            x = x[:-K]
-            y = y[:-K]
-            mask = mask[:-K]
+            # Otherwise, we add padding to everything
             pad_len = self.window - len(y)
 
             # pad tensors along time dimension
             x = torch.cat([x, torch.zeros((pad_len, O, F))], dim=0)
 
-            y = torch.cat([y, torch.zeros((pad_len, O, 3))], dim=0)
+            y = torch.cat(
+                [
+                    y,
+                    torch.zeros(
+                        (
+                            pad_len,
+                            O,
+                            self.trajectory_dims,
+                            self.num_coeffs,
+                        )
+                    ),
+                ],
+                dim=0,
+            )
 
             mask = torch.cat([mask, torch.zeros((pad_len, O, 1))], dim=0)
 

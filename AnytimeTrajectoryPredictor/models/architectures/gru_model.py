@@ -12,14 +12,14 @@ class gru_model(base_model):
     model queryable after a configurable computation budget.
     """
 
-    params_per_mode = 12  # mean_x, mean_y, mean_log_area, and flattened 3x3 covariance factor
-
     def __init__(
         self,
         state_dim,
         num_trajectory_possibilities,
-        hidden_dim=64,
-        refinement_steps=3,
+        hidden_dim=None,
+        polynomial_degree=None,
+        trajectory_dims=None,
+        spatial_dims=None,
     ):
         """
         Initialize the GRU-MDN model.
@@ -28,21 +28,26 @@ class gru_model(base_model):
             state_dim: Dimension of the input state.
             num_trajectory_possibilities: Number of possible trajectories.
             hidden_dim: size of the GRU memory vector for each object.
-            refinement_steps: Number of refinement steps per frame.
         """
-        super(gru_model, self).__init__(state_dim, num_trajectory_possibilities)
-        self.hidden_dim = hidden_dim
-        self.refinement_steps = refinement_steps
-        self.output_dim = self.num_trajectory_possibilities * self.params_per_mode
+        super(gru_model, self).__init__(
+            state_dim,
+            num_trajectory_possibilities,
+            polynomial_degree=polynomial_degree,
+            trajectory_dims=trajectory_dims,
+            spatial_dims=spatial_dims,
+        )
+        self.hidden_dim = self._require_config_value(hidden_dim, "model.hidden_dim")
 
         # Single GRUCell that is applied iteratively for each frame.
-        self.gru_cell = nn.GRUCell(input_size=self.state_dim, hidden_size=hidden_dim)
+        self.gru_cell = nn.GRUCell(
+            input_size=self.state_dim, hidden_size=self.hidden_dim
+        )
 
         # Small MLP to project from GRU hidden state to MDN parameters.
         self.output_head = nn.Sequential(
-            nn.Linear(hidden_dim, hidden_dim),
+            nn.Linear(self.hidden_dim, self.hidden_dim),
             nn.ReLU(),
-            nn.Linear(hidden_dim, self.output_dim),
+            nn.Linear(self.hidden_dim, self.output_dim),
         )
 
     def _initial_hidden(self, hidden_state, batch_size, num_objects, device, dtype):
@@ -93,9 +98,7 @@ class gru_model(base_model):
             hidden_state: Final hidden state shaped ``(batch, objects, hidden_dim)``.
         """
         num_frames, batch_size, num_objects, _ = frames.shape
-        refinement_steps = self.normalize_refinement_steps(
-            f_, num_frames, self.refinement_steps
-        )
+        refinement_steps = self.normalize_refinement_steps(f_, num_frames)
         hidden = self._initial_hidden(
             hidden_state,
             batch_size,
@@ -120,7 +123,7 @@ class gru_model(base_model):
         hidden = hidden.view(batch_size, num_objects, self.hidden_dim) # convert back to (batch, objects, hidden_dim) for output
         return predictions
     
-    def normalize_refinement_steps(self, f_, num_frames, default_steps):
+    def normalize_refinement_steps(self, f_, num_frames):
         """
         Normalize the refinement steps input to a list of length num_frames.
 
