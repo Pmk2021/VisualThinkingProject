@@ -179,7 +179,7 @@ class ObjectTracker:
         image: Union[np.ndarray, torch.Tensor, Image.Image, str],
         num_objects: Optional[int] = None,
         jpeg: bool = False,
-    ) -> Dict[str, torch.Tensor]:
+    ) -> Dict[str, Union[torch.Tensor, list[tuple[str, int]]]]:
         """
         Track one RGB frame and return only features and mask.
 
@@ -194,6 +194,7 @@ class ObjectTracker:
         boxes_xyxy = np.zeros((0, 4), dtype=np.float32)
         confidences = np.zeros((0,), dtype=np.float32)
         class_ids = np.zeros((0,), dtype=np.int64)
+        object_ids = np.zeros((0,), dtype=np.int64)
 
         if results:
             result = results[0]
@@ -217,10 +218,11 @@ class ObjectTracker:
                 )
 
         components: list[np.ndarray] = []
+        lengths: list[tuple[str, int]] = []
         valid_objects = int(len(boxes_xyxy))
 
         for feature in self.feature_components:
-            component = getattr(self, self.FEATURES[feature])(
+            component, component_length = getattr(self, self.FEATURES[feature])(
                 image=image,
                 boxes_xyxy=boxes_xyxy,
                 confidences=confidences,
@@ -229,6 +231,7 @@ class ObjectTracker:
                 latent_features=self._last_latent_features,
             )
             components.append(component)
+            lengths.append((feature, component_length))
 
         if components:
             features_arr = np.concatenate(components, axis=1).astype(np.float32)
@@ -255,6 +258,7 @@ class ObjectTracker:
 
         return {
             "features": features,
+            "lengths": lengths,
             "mask": mask_tensor,
         }
 
@@ -266,7 +270,7 @@ class ObjectTracker:
         object_ids: np.ndarray,
         class_ids: np.ndarray,
         latent_features: Optional[torch.Tensor],
-    ) -> np.ndarray:
+    ) -> tuple[np.ndarray, int]:
         if len(boxes_xyxy) > 0:
             x1, y1, x2, y2 = (
                 boxes_xyxy[:, 0],
@@ -280,9 +284,9 @@ class ObjectTracker:
             height = y2 - y1
             return np.stack([center_x, center_y, width, height], axis=1).astype(
                 np.float32
-            )
+            ), 4
         else:
-            return np.zeros((0, 4), dtype=np.float32)
+            return np.zeros((0, 4), dtype=np.float32), 4
 
     def _get_confidences_component(
         self,
@@ -292,8 +296,8 @@ class ObjectTracker:
         object_ids: np.ndarray,
         class_ids: np.ndarray,
         latent_features: Optional[torch.Tensor],
-    ) -> np.ndarray:
-        return confidences.reshape(-1, 1).astype(np.float32)
+    ) -> tuple[np.ndarray, int]:
+        return confidences.reshape(-1, 1).astype(np.float32), 1
 
     def _get_object_ids_component(
         self,
@@ -303,8 +307,8 @@ class ObjectTracker:
         object_ids: np.ndarray,
         class_ids: np.ndarray,
         latent_features: Optional[torch.Tensor],
-    ) -> np.ndarray:
-        return object_ids.reshape(-1, 1).astype(np.float32)
+    ) -> tuple[np.ndarray, int]:
+        return object_ids.reshape(-1, 1).astype(np.float32), 1
 
     def _get_class_ids_component(
         self,
@@ -314,8 +318,8 @@ class ObjectTracker:
         object_ids: np.ndarray,
         class_ids: np.ndarray,
         latent_features: Optional[torch.Tensor],
-    ) -> np.ndarray:
-        return class_ids.reshape(-1, 1).astype(np.float32)
+    ) -> tuple[np.ndarray, int]:
+        return class_ids.reshape(-1, 1).astype(np.float32), 1
 
     def _get_latent_features_component(
         self,
@@ -325,7 +329,7 @@ class ObjectTracker:
         object_ids: np.ndarray,
         class_ids: np.ndarray,
         latent_features: Optional[torch.Tensor],
-    ) -> np.ndarray:
+    ) -> tuple[np.ndarray, int]:
         if latent_features is None or len(latent_features) == 0:
             raise RuntimeError(
                 "Embeddings were requested but no latent feature hooks have produced outputs yet. "
@@ -356,7 +360,7 @@ class ObjectTracker:
         latent_features_row = np.repeat(
             concatenated_latent_features.reshape(1, -1), len(boxes_xyxy), axis=0
         )
-        return latent_features_row.astype(np.float32)
+        return latent_features_row.astype(np.float32), latent_features_row.shape[1]
 
     def _get_local_latent_features_component(
         self,
@@ -366,7 +370,7 @@ class ObjectTracker:
         object_ids: np.ndarray,
         class_ids: np.ndarray,
         latent_features: Optional[torch.Tensor],
-    ) -> np.ndarray:
+    ) -> tuple[np.ndarray, int]:
         """
         Returns local latent features for each detected object by cropping the feature maps to the bounding
         box regions and applying adaptive average pooling to get a fixed-size feature vector per object.
@@ -533,7 +537,7 @@ class ObjectTracker:
         # concatenate channel dims across layers -> (O, D_local)
         concatenated_local_latent_features = torch.cat(per_layer_feats, dim=1).cpu().numpy()
 
-        return concatenated_local_latent_features.astype(np.float32)
+        return concatenated_local_latent_features.astype(np.float32), concatenated_local_latent_features.shape[1]
 
     def _get_local_latent_target_size(
         self,
