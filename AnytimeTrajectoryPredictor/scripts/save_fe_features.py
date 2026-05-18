@@ -252,6 +252,11 @@ def process_dir(dir_path):
             features_table = pyarrow.Table.from_pandas(latent_df, preserve_index=False)
 
         output_path = dir_path / f"fe_{feat}.parquet"
+
+        
+        if IZAR: # Replace '/santanto/' with '/gromb/' in the path for IZAR
+            output_path = Path(str(output_path).replace("/santanto/", "/gromb/"))
+
         pq.write_table(features_table, output_path)
         written_tables[f"fe_{feat}"] = {
             "path": str(output_path.resolve()),
@@ -260,17 +265,22 @@ def process_dir(dir_path):
         }
 
     manifest_path = dir_path / "manifest.json"
+    
+    manifest_path_out = manifest_path
+    if IZAR:  # Replace '/santanto/' with '/gromb/' in the manifest path for IZAR
+        manifest_path_out = Path(str(manifest_path).replace("/santanto/", "/gromb/"))
+
     if manifest_path.exists():
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         manifest_tables = manifest.setdefault("tables", {})
         manifest_tables.update(written_tables)
-        manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+        manifest_path_out.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     else:
         manifest = {
             "splits": [],
             "tables": written_tables,
         }
-        manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+        manifest_path_out.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
 
 def test(dirs):
