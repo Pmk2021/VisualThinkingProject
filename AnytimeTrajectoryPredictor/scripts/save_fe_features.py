@@ -256,6 +256,7 @@ def process_dir(dir_path):
         
         if IZAR: # Replace '/santanto/' with '/gromb/' in the path for IZAR
             output_path = Path(str(output_path).replace("/santanto/", "/gromb/"))
+            output_path.parent.mkdir(parents=True, exist_ok=True)
 
         pq.write_table(features_table, output_path)
         written_tables[f"fe_{feat}"] = {
@@ -276,6 +277,7 @@ def process_dir(dir_path):
         manifest_tables.update(written_tables)
         manifest_path_out.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     else:
+        manifest_path_out.parent.mkdir(parents=True, exist_ok=True)
         manifest = {
             "splits": [],
             "tables": written_tables,
