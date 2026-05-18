@@ -379,7 +379,10 @@ if __name__ == "__main__":
     else:
         dirs_to_process = []
         for split_dir in sorted(selected_dirs):
-            if all((split_dir / table_name).exists() for table_name in OUTPUT_TABLES):
+            split_output_dir = split_dir
+            if IZAR: # Check if correct output tables exist
+                split_output_dir = Path(str(split_dir).replace("/santanto/", "/gromb/"))
+            if all((split_output_dir / table_name).exists() for table_name in OUTPUT_TABLES):
                 print(f"Skipping {split_dir.name} (already processed)")
                 continue
             dirs_to_process.append(split_dir)
