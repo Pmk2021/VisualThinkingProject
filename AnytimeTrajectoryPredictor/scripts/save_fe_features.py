@@ -54,7 +54,7 @@ OUTPUT_MANIFEST_TABLES = {
 
 train_dirs = list(Path(DATA_PATH).glob("training__*" if IZAR else "waymo"))
 val_dirs = list(Path(DATA_PATH).glob("validation__*")) if IZAR else []
-NUM_WORKERS = max(1, (os.cpu_count() or 1) - 1)
+NUM_WORKERS = min(max(1, (os.cpu_count() or 1) - 1), 4)
 
 
 def _build_feature_values(
