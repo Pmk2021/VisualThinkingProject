@@ -183,6 +183,7 @@ def process_dir(dir_path):
         # Run image through tracker
         image = Image.open(BytesIO(row["image_jpeg"]))
         output = tracker(image)
+        image.close()
 
         n_objects = output["features"].shape[1]
         obj_id_col = _get_feature_column_index("object_ids", output)
@@ -253,7 +254,7 @@ def process_dir(dir_path):
         output_path = dir_path / f"fe_{feat}.parquet"
         pq.write_table(features_table, output_path)
         written_tables[f"fe_{feat}"] = {
-            "path": output_path.name,
+            "path": str(output_path.resolve()),
             "rows": features_table.num_rows,
             "description": OUTPUT_MANIFEST_TABLES[f"fe_{feat}"],
         }
