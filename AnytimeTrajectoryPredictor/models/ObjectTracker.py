@@ -146,6 +146,8 @@ class ObjectTracker:
 
         self._last_latent_features: Optional[Dict[str, torch.Tensor]] = None
 
+        self._seen = []
+
         if self.latent_features_layers is not None:
             self._register_latent_features_hooks()
 
@@ -177,7 +179,6 @@ class ObjectTracker:
     def __call__(
         self,
         image: Union[np.ndarray, torch.Tensor, Image.Image, str],
-        num_objects: Optional[int] = None,
         jpeg: bool = False,
     ) -> Dict[str, Union[torch.Tensor, list[tuple[str, int]]]]:
         """
@@ -217,9 +218,13 @@ class ObjectTracker:
                     else np.zeros((len(boxes_xyxy),), dtype=np.int64)
                 )
 
+        for object_id in object_ids:
+            if object_id not in self._seen:
+                self._seen.append(object_id)
+
         components: list[np.ndarray] = []
         lengths: list[tuple[str, int]] = []
-        valid_objects = int(len(boxes_xyxy))
+        valid_objects = len(boxes_xyxy)
 
         for feature in self.feature_components:
             component, component_length = getattr(self, self.FEATURES[feature])(
@@ -238,23 +243,14 @@ class ObjectTracker:
         else:
             features_arr = np.zeros((valid_objects, 0), dtype=np.float32)
 
-        if num_objects is not None:
-            feature_dim = features_arr.shape[1]
-            padded = np.zeros((num_objects, feature_dim), dtype=np.float32)
-            copy_count = min(valid_objects, num_objects)
-            if copy_count > 0:
-                padded[:copy_count] = features_arr[:copy_count]
-            features_arr = padded
-            mask = np.zeros((1, num_objects, 1), dtype=np.float32)
-            mask[:, :copy_count, :] = 1.0
-        else:
-            features_arr = features_arr[:valid_objects]
-            mask = np.zeros((1, valid_objects, 1), dtype=np.float32)
-            if valid_objects > 0:
-                mask[:] = 1.0
+        mask = np.zeros((len(self._seen), 1), dtype=bool)
+        for i, object_id in enumerate(self._seen):
+            if object_id in object_ids:
+                mask[i] = True
 
         features = torch.from_numpy(features_arr).unsqueeze(0).float()
-        mask_tensor = torch.from_numpy(mask).float()
+        mask_tensor = torch.from_numpy(mask).unsqueeze(0)
+        print(mask)
 
         return {
             "features": features,
@@ -282,9 +278,12 @@ class ObjectTracker:
             center_y = (y1 + y2) / 2.0
             width = x2 - x1
             height = y2 - y1
-            return np.stack([center_x, center_y, width, height], axis=1).astype(
-                np.float32
-            ), 4
+            return (
+                np.stack([center_x, center_y, width, height], axis=1).astype(
+                    np.float32
+                ),
+                4,
+            )
         else:
             return np.zeros((0, 4), dtype=np.float32), 4
 
@@ -460,7 +459,9 @@ class ObjectTracker:
         # Plot local/global features and image+bbox for each detected object (debug only).
         if self.verbose:
             n_layers = len(self.latent_features_layers)
-            for obj_idx, track_idx, box in zip(range(len(boxes_xyxy)), object_ids, boxes_xyxy):
+            for obj_idx, track_idx, box in zip(
+                range(len(boxes_xyxy)), object_ids, boxes_xyxy
+            ):
                 fig, axes = plt.subplots(n_layers, 3, figsize=(18, 5 * n_layers))
                 axes = np.atleast_2d(axes)
 
@@ -531,13 +532,22 @@ class ObjectTracker:
 
         # For return: for each layer tensor (O, C, Th, Tw) compute spatial mean -> (O, C)
         per_layer_feats = [
-            layer_tensor.mean(dim=[2, 3]) if isinstance(layer_tensor, torch.Tensor) else torch.tensor(layer_tensor).mean(dim=[2, 3])
+            (
+                layer_tensor.mean(dim=[2, 3])
+                if isinstance(layer_tensor, torch.Tensor)
+                else torch.tensor(layer_tensor).mean(dim=[2, 3])
+            )
             for layer_tensor in local_latent_features_list
         ]
         # concatenate channel dims across layers -> (O, D_local)
-        concatenated_local_latent_features = torch.cat(per_layer_feats, dim=1).cpu().numpy()
+        concatenated_local_latent_features = (
+            torch.cat(per_layer_feats, dim=1).cpu().numpy()
+        )
 
-        return concatenated_local_latent_features.astype(np.float32), concatenated_local_latent_features.shape[1]
+        return (
+            concatenated_local_latent_features.astype(np.float32),
+            concatenated_local_latent_features.shape[1],
+        )
 
     def _get_local_latent_target_size(
         self,
