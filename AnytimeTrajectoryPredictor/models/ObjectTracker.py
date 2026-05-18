@@ -250,7 +250,6 @@ class ObjectTracker:
 
         features = torch.from_numpy(features_arr).unsqueeze(0).float()
         mask_tensor = torch.from_numpy(mask).unsqueeze(0)
-        print(mask)
 
         return {
             "features": features,
