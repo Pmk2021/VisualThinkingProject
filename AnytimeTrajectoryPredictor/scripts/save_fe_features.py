@@ -366,7 +366,7 @@ if __name__ == "__main__":
         print(f"No {selected_split} directories found.")
     else:
         dirs_to_process = []
-        for split_dir in selected_dirs:
+        for split_dir in sorted(selected_dirs):
             if all((split_dir / table_name).exists() for table_name in OUTPUT_TABLES):
                 print(f"Skipping {split_dir.name} (already processed)")
                 continue
