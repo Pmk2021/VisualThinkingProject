@@ -340,10 +340,21 @@ def test(dirs):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Save feature extractor outputs to parquet.")
+    parser = argparse.ArgumentParser(
+        description="Save feature extractor outputs to parquet."
+    )
     split_group = parser.add_mutually_exclusive_group(required=True)
-    split_group.add_argument("--train", action="store_true", help="Process training directories.")
-    split_group.add_argument("--val", action="store_true", help="Process validation directories.")
+    split_group.add_argument(
+        "--train", action="store_true", help="Process training directories."
+    )
+    split_group.add_argument(
+        "--val", action="store_true", help="Process validation directories."
+    )
+    parser.add_argument(
+        "--parallel",
+        action="store_true",
+        help="Process directories in parallel using multiprocessing (process_map).",
+    )
     args = parser.parse_args()
 
     print("Using data path:", DATA_PATH)
@@ -362,13 +373,19 @@ if __name__ == "__main__":
             dirs_to_process.append(split_dir)
 
         if dirs_to_process:
-            process_map(
-                process_dir,
-                dirs_to_process,
-                max_workers=NUM_WORKERS,
-                chunksize=1,
-                desc=f"Processing {selected_split} directories",
-            )
+            if args.parallel:
+                process_map(
+                    process_dir,
+                    dirs_to_process,
+                    max_workers=NUM_WORKERS,
+                    chunksize=1,
+                    desc=f"Processing {selected_split} directories",
+                )
+            else:
+                for d in tqdm(
+                    dirs_to_process, desc=f"Processing {selected_split} directories"
+                ):
+                    process_dir(d)
 
     test(selected_dirs)
 
