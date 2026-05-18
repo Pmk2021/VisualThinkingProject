@@ -1,3 +1,5 @@
+import json
+import argparse
 import pyarrow
 import pyarrow.parquet as pq
 from tqdm import tqdm
@@ -7,9 +9,12 @@ from io import BytesIO
 import os
 import platform
 import re
+import torch
 import numpy as np
 
 import warnings
+
+from tqdm.contrib.concurrent import process_map
 
 warnings.filterwarnings("ignore", message="Could not initialize NNPACK!")
 
@@ -39,9 +44,17 @@ OUTPUT_TABLES = [
     "fe_latent_features.parquet",
     "fe_local_latent_features.parquet",
 ]
+OUTPUT_MANIFEST_TABLES = {
+    "fe_bboxes": "One row per detected object with center/size boxes and object id.",
+    "fe_confidences": "One row per detected object with tracker confidence and object id.",
+    "fe_class_ids": "One row per detected object with class id and object id.",
+    "fe_latent_features": "One row per image with global latent features.",
+    "fe_local_latent_features": "One row per detected object with local latent features and object id.",
+}
 
 train_dirs = list(Path(DATA_PATH).glob("training__*" if IZAR else "waymo"))
 val_dirs = list(Path(DATA_PATH).glob("validation__*")) if IZAR else []
+NUM_WORKERS = max(1, (os.cpu_count() or 1) - 1)
 
 
 def _build_feature_values(
@@ -164,6 +177,7 @@ def process_dir(dir_path):
                 feature_components=FEATURES,
                 imgsz=640,
                 verbose=False,
+                device="cuda" if torch.cuda.is_available() else "cpu",
             )
 
         # Run image through tracker
@@ -222,6 +236,7 @@ def process_dir(dir_path):
             feature_col_offset += feat_len
 
     # Save each feature type as a separate parquet file
+    written_tables = {}
     for feat in FEATURES:
         if feat == "object_ids":
             continue
@@ -237,9 +252,27 @@ def process_dir(dir_path):
 
         output_path = dir_path / f"fe_{feat}.parquet"
         pq.write_table(features_table, output_path)
+        written_tables[f"fe_{feat}"] = {
+            "path": output_path.name,
+            "rows": features_table.num_rows,
+            "description": OUTPUT_MANIFEST_TABLES[f"fe_{feat}"],
+        }
+
+    manifest_path = dir_path / "manifest.json"
+    if manifest_path.exists():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest_tables = manifest.setdefault("tables", {})
+        manifest_tables.update(written_tables)
+        manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    else:
+        manifest = {
+            "splits": [],
+            "tables": written_tables,
+        }
+        manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
 
-def test():
+def test(dirs):
     """
     Loads saved parquet files and prints summary stats to make sure results are coherent
     """
@@ -250,7 +283,7 @@ def test():
     summary_data = []
     checked = 0
 
-    for dir in train_dirs:
+    for dir in dirs:
         if checked >= 3:
             break
 
@@ -306,21 +339,36 @@ def test():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Save feature extractor outputs to parquet.")
+    split_group = parser.add_mutually_exclusive_group(required=True)
+    split_group.add_argument("--train", action="store_true", help="Process training directories.")
+    split_group.add_argument("--val", action="store_true", help="Process validation directories.")
+    args = parser.parse_args()
+
     print("Using data path:", DATA_PATH)
 
-    for train_dir in tqdm(train_dirs, desc="Processing training directories"):
-        if all((train_dir / table_name).exists() for table_name in OUTPUT_TABLES):
-            print(f"Skipping {train_dir.name} (already processed)")
-            continue
-        features = process_dir(train_dir)
+    selected_split = "train" if args.train else "val"
+    selected_dirs = train_dirs if args.train else val_dirs
 
-    val_dirs = []
-    for val_dir in tqdm(val_dirs, desc="Processing validation directories"):
-        if all((val_dir / table_name).exists() for table_name in OUTPUT_TABLES):
-            print(f"Skipping {val_dir.name} (already processed)")
-            continue
-        features = process_dir(val_dir)
+    if not selected_dirs:
+        print(f"No {selected_split} directories found.")
+    else:
+        dirs_to_process = []
+        for split_dir in selected_dirs:
+            if all((split_dir / table_name).exists() for table_name in OUTPUT_TABLES):
+                print(f"Skipping {split_dir.name} (already processed)")
+                continue
+            dirs_to_process.append(split_dir)
 
-    test()
+        if dirs_to_process:
+            process_map(
+                process_dir,
+                dirs_to_process,
+                max_workers=NUM_WORKERS,
+                chunksize=1,
+                desc=f"Processing {selected_split} directories",
+            )
+
+    test(selected_dirs)
 
     print("Feature extraction completed for all directories.")
