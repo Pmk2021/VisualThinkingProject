@@ -49,10 +49,12 @@ class Pipeline(nn.Module):
             A list of length T (number of frames) where each element is a tensor of shape (B, N, num_trajectory_possibilities, 11) containing the predicted trajectories for that frame.
         """
         fe_output = self.feature_extractor(image)
-        features = fe_output["features"].unsqueeze(0)
+        features = fe_output["features"]
+        mask = fe_output["mask"]
         if self.verbose:
             print(f"Extracted features shape: {features.shape} - (T, B, N, F)")
-        predictions = self.trajectory_predictor(features, f_)
+            print(f"Extracted mask shape: {mask.shape} - (T, B, N, 1)")
+        predictions = self.trajectory_predictor(features, f_, object_mask=mask)
         return predictions
 
 

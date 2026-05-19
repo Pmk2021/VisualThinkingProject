@@ -248,13 +248,19 @@ class ObjectTracker:
             if object_id in object_ids:
                 mask[i] = True
 
-        features = torch.from_numpy(features_arr).unsqueeze(0).float()
-        mask_tensor = torch.from_numpy(mask).unsqueeze(0)
+        features = torch.from_numpy(features_arr)
+        mask_tensor = torch.from_numpy(mask)
 
+        features_cst = torch.zeros((1, self.max_det, features.shape[1]), dtype=torch.float32)
+        mask_cst = torch.zeros((1, self.max_det, 1), dtype=torch.float32)
+        
+        features_cst[:, :features.shape[0], :] = features
+        mask_cst[:, :mask_tensor.shape[0], :] = mask_tensor
+        
         return {
-            "features": features,
+            "features": features_cst.unsqueeze(0).float(),
             "lengths": lengths,
-            "mask": mask_tensor,
+            "mask": mask_cst.unsqueeze(0).float(),
         }
 
     def _get_bboxes_component(
