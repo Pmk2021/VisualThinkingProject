@@ -221,3 +221,5 @@ dataset/
 waymo/dataset/rgb_trajectory_dataset/viewer/images/*.jpg
 waymo/dataset/rgb_trajectory_dataset/visualizations/*.jpg
 
+# Wandb runs
+wandb/
