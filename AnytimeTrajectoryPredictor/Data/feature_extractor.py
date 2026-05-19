@@ -1,6 +1,5 @@
 from torch.utils import data
 from torch.utils.data import dataset
-from torchvision.io import read_video
 import pandas as pd
 import os
 import tqdm
@@ -49,12 +48,12 @@ def fit_cubic(signal, K):
     Tn = sig_win.shape[0]
 
     # flatten batch + time windows
-    sig_flat = sig_win.reshape(Tn * B, K)
+    sig_flat = sig_win.reshape(Tn * B, K).T  # (K, Tn*B)
 
     # solve least squares
-    coeffs = torch.linalg.lstsq(X, sig_flat).solution  # (Tn*B, 4)
+    coeffs = torch.linalg.lstsq(X, sig_flat).solution.T  # (Tn*B, 4)
 
-    return coeffs.view(Tn, B, 4)
+    return coeffs.reshape(Tn, B, 4)
 
 
 class FeatureExtractor:
@@ -93,7 +92,7 @@ class FeatureDataset(dataset.Dataset):
 
         # How many frames to look into future to plan trajectory
         self.future_frames = future_frames
-        self.num_objects = num_objects
+        self.num_objects = args.num_objects
 
         table = pq.read_table(args.image_trajectories_path)
         """
@@ -217,9 +216,9 @@ class FeatureDataset(dataset.Dataset):
         mask = mask[: len(y)]
 
         # --- window sampling ---
-        if len(y) - K > self.window:
+        if len(y) > self.window:
             # If the length of y is greater than the window, cut it down
-            start_index = random.randint(0, len(y) - K - self.window)
+            start_index = random.randint(0, len(y) - self.window)
 
             x = x[start_index : start_index + self.window]
             y = y[start_index : start_index + self.window]
@@ -232,7 +231,7 @@ class FeatureDataset(dataset.Dataset):
             # pad tensors along time dimension
             x = torch.cat([x, torch.zeros((pad_len, O, F))], dim=0)
 
-            y = torch.cat([y, torch.zeros((pad_len, O, 3))], dim=0)
+            y = torch.cat([y, torch.zeros((pad_len, O, 3, 4))], dim=0)
 
             mask = torch.cat([mask, torch.zeros((pad_len, O, 1))], dim=0)
 
