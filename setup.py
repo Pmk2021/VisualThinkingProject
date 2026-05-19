@@ -20,6 +20,8 @@ setup(
         "PyYAML",
         "python-box",
         "wandb",
+        "Pillow",
+        "ultralytics",
     ],
     extras_require={
         "waymo": [

@@ -4,11 +4,11 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python>=3.8
+  - python=3.11
   - numpy
   - matplotlib
   - scipy
-  - pytorch
+  - pytorch>=2.3
   - torchvision
   - tqdm
   # waymo converter
@@ -17,4 +17,6 @@ dependencies:
   - pillow
   - pip
   - pip:
+      - ultralytics
+      - black
       - -e .
