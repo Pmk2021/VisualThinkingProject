@@ -41,14 +41,8 @@ def hash_to_int64(s: str) -> np.int64:
     val = int.from_bytes(h[:8], byteorder="big", signed=False)
     # map unsigned 64-bit into signed int64 range to avoid OverflowError when casting
     if val >= (1 << 63):
-        val -= (1 << 64)
+        val -= 1 << 64
     return np.int64(val)
-
-
-def _resolve_data_path(path: Path) -> Path:
-    if IZAR:
-        return Path(str(path).replace("/santanto/", "/gromb/"))
-    return path
 
 
 def _resolve_output_path(path: Path) -> Path:
@@ -57,8 +51,11 @@ def _resolve_output_path(path: Path) -> Path:
     return path
 
 
-def _build_feature_values(feat, feat_len, feature_offset, batch_idx, output, n_objects, obj_id_col):
+def _build_feature_values(
+    feat, feat_len, feature_offset, batch_idx, output, n_objects, obj_id_col
+):
     features = output["features"]
+
     def slice_vals(b_idx, obj_idx, off, length):
         seg = features[b_idx, obj_idx, off : off + length]
         try:
@@ -83,9 +80,13 @@ def _build_feature_values(feat, feat_len, feature_offset, batch_idx, output, n_o
         key = feat[:-1]
         return [
             {
-                key: float(slice_vals(batch_idx, j, feature_offset, feat_len)[0])
-                if feat_len == 1
-                else list(map(float, slice_vals(batch_idx, j, feature_offset, feat_len))),
+                key: (
+                    float(slice_vals(batch_idx, j, feature_offset, feat_len)[0])
+                    if feat_len == 1
+                    else list(
+                        map(float, slice_vals(batch_idx, j, feature_offset, feat_len))
+                    )
+                ),
                 "object_id": int(slice_vals(batch_idx, j, obj_id_col, 1)[0]),
             }
             for j in range(n_objects)
@@ -95,7 +96,9 @@ def _build_feature_values(feat, feat_len, feature_offset, batch_idx, output, n_o
         return [
             {
                 **{
-                    f"{feat}_{k}": float(slice_vals(batch_idx, j, feature_offset + k, 1)[0])
+                    f"{feat}_{k}": float(
+                        slice_vals(batch_idx, j, feature_offset + k, 1)[0]
+                    )
                     for k in range(feat_len)
                 },
                 "object_id": int(slice_vals(batch_idx, j, obj_id_col, 1)[0]),
@@ -107,9 +110,7 @@ def _build_feature_values(feat, feat_len, feature_offset, batch_idx, output, n_o
         if n_objects == 0:
             return []
         vals = slice_vals(batch_idx, 0, feature_offset, feat_len)
-        return [
-            {f"{feat}_{k}": float(vals[k]) for k in range(feat_len)}
-        ]
+        return [{f"{feat}_{k}": float(vals[k]) for k in range(feat_len)}]
 
     elif feat == "object_ids":
         return []
@@ -128,7 +129,9 @@ def _get_feature_column_index(feat, output):
 
 
 def _is_all_zero_feature_row(row: dict) -> bool:
-    feature_keys = [key for key in row.keys() if key.startswith("local_latent_features_")]
+    feature_keys = [
+        key for key in row.keys() if key.startswith("local_latent_features_")
+    ]
     return bool(feature_keys) and all(float(row[key]) == 0.0 for key in feature_keys)
 
 
@@ -142,7 +145,9 @@ def process_dir(dir_path: Path):
 
     images_path = Path(tables["images"]["path"]) if "images" in tables else None
     image_traj_path = (
-        Path(tables["image_trajectories"]["path"]) if "image_trajectories" in tables else None
+        Path(tables["image_trajectories"]["path"])
+        if "image_trajectories" in tables
+        else None
     )
 
     if not IZAR:
@@ -154,27 +159,38 @@ def process_dir(dir_path: Path):
 
     # Paths in manifest are relative to manifest directory
     base = manifest_path.parent
-    images_table = pd.read_parquet(_resolve_data_path(base / images_path))
+    images_table = pd.read_parquet(base / images_path)
     # Ensure deterministic processing order: sort by scene, camera, timestamp (same as save_fe_features.py)
     images_table = images_table.sort_values(
         ["scene_id", "camera_name", "frame_timestamp_micros"],
         ascending=[True, True, True],
     ).reset_index(drop=True)
-    image_traj = pd.read_parquet(_resolve_data_path(base / image_traj_path))
+    image_traj = pd.read_parquet(base / image_traj_path)
 
     local_rows = []
 
-    print(f"found rows: {len(images_table)} in images table, {len(image_traj)} in image_trajectories table")
+    print(
+        f"found rows: {len(images_table)} in images table, {len(image_traj)} in image_trajectories table"
+    )
 
     curr_scene, curr_camera = None, None
     tracker = None
-    for _, row in tqdm(images_table.iterrows(), total=len(images_table), desc=f"Processing {dir_path.name}"):
+    for _, row in tqdm(
+        images_table.iterrows(),
+        total=len(images_table),
+        desc=f"Processing {dir_path.name}",
+    ):
         # Recreate tracker when scene or camera changes (keeps behavior consistent with save_fe_features.py)
         if (row["scene_id"], row["camera_name"]) != (curr_scene, curr_camera):
             curr_scene, curr_camera = row["scene_id"], row["camera_name"]
             tracker = ObjectTracker(
                 model_name="yolo26n.pt",
-                feature_components=("object_ids", "class_ids", "latent_features", "local_latent_features"),
+                feature_components=(
+                    "object_ids",
+                    "class_ids",
+                    "latent_features",
+                    "local_latent_features",
+                ),
                 imgsz=640,
                 verbose=False,
                 device="cuda" if torch.cuda.is_available() else "cpu",
@@ -185,9 +201,14 @@ def process_dir(dir_path: Path):
             continue
 
         # build tracking_override
-        boxes = img_rows[["bbox_x1", "bbox_y1", "bbox_x2", "bbox_y2"]].to_numpy(dtype=np.float32)
+        boxes = img_rows[["bbox_x1", "bbox_y1", "bbox_x2", "bbox_y2"]].to_numpy(
+            dtype=np.float32
+        )
         confidences = np.ones((boxes.shape[0],), dtype=np.float32)
-        object_ids_hashed = np.array([hash_to_int64(tid) for tid in img_rows["trajectory_id"].astype(str)], dtype=np.int64)
+        object_ids_hashed = np.array(
+            [hash_to_int64(tid) for tid in img_rows["trajectory_id"].astype(str)],
+            dtype=np.int64,
+        )
         class_ids = img_rows["object_type"].to_numpy(dtype=np.int64)
 
         tracking_override = SimpleNamespace(
@@ -217,7 +238,9 @@ def process_dir(dir_path: Path):
 
         feature_col_offset = 0
         for feat, feat_len in output["lengths"]:
-            values = _build_feature_values(feat, feat_len, feature_col_offset, 0, output, n_objects, obj_id_col)
+            values = _build_feature_values(
+                feat, feat_len, feature_col_offset, 0, output, n_objects, obj_id_col
+            )
             feature_col_offset += feat_len
 
             if feat == "local_latent_features":
@@ -261,11 +284,22 @@ def process_dir(dir_path: Path):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Save GT-based feature extractor outputs to parquet.")
+    parser = argparse.ArgumentParser(
+        description="Save GT-based feature extractor outputs to parquet."
+    )
     split_group = parser.add_mutually_exclusive_group(required=True)
-    split_group.add_argument("--train", action="store_true", help="Process training split.")
-    split_group.add_argument("--val", action="store_true", help="Process validation split.")
-    parser.add_argument("--data-path", type=str, default=DATA_PATH, help="Base directory containing split folders and manifests")
+    split_group.add_argument(
+        "--train", action="store_true", help="Process training split."
+    )
+    split_group.add_argument(
+        "--val", action="store_true", help="Process validation split."
+    )
+    parser.add_argument(
+        "--data-path",
+        type=str,
+        default=DATA_PATH,
+        help="Base directory containing split folders and manifests",
+    )
     parser.add_argument(
         "--parallel",
         action="store_true",
@@ -276,7 +310,9 @@ def main():
     split = "training" if args.train else "validation"
     base_path = Path(args.data_path)
     if IZAR:
-        selected_dirs = list(base_path.glob("training__*" if args.train else "validation__*"))
+        selected_dirs = list(
+            base_path.glob("training__*" if args.train else "validation__*")
+        )
     else:
         selected_dirs = list(base_path.glob("waymo"))
 
@@ -286,7 +322,10 @@ def main():
 
     dirs_to_process = []
     for split_dir in sorted(selected_dirs):
-        if all((split_dir / table_name).exists() for table_name in ["fe_gt_local_latent_features.parquet"]):
+        if all(
+            (split_dir / table_name).exists()
+            for table_name in ["fe_gt_local_latent_features.parquet"]
+        ):
             print(f"Skipping {split_dir.name} (already processed)")
             continue
         dirs_to_process.append(split_dir)
