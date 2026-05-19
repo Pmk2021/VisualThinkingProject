@@ -1,18 +1,17 @@
 feature_extractor:
-  images_path_path: C:\Users\prana\OneDrive\Desktop\VisualThinkingProject\data\waymo\images.parquet
-  ego_poses_path: C:\Users\prana\OneDrive\Desktop\VisualThinkingProject\data\waymo\ego_poses.parquet
-  trajectories_path: C:\Users\prana\OneDrive\Desktop\VisualThinkingProject\data\waymo\trajectories.parquet
-  image_trajectories_path: C:\Users\prana\OneDrive\Desktop\VisualThinkingProject\data\waymo\image_trajectories.parquet
-  prediction_targets_path: C:\Users\prana\OneDrive\Desktop\VisualThinkingProject\data\waymo\prediction_targets.parquet
-  manifest_path: C:\Users\prana\OneDrive\Desktop\VisualThinkingProject\data\waymo\manifest.json
+  images_path_path: data/waymo/images.parquet
+  ego_poses_path: data/waymo/ego_poses.parquet
+  trajectories_path: data/waymo/trajectories.parquet
+  image_trajectories_path: data/waymo/image_trajectories.parquet
+  prediction_targets_path: data/waymo/prediction_targets.parquet
+  manifest_path: data/waymo/manifest.json
 
-  features: 
+  features:
     image_trajectories:
       - bbox_center_x
       - bbox_center_y
       - bbox_width
       - bbox_height
-    
 
   #Not using this for now
   train_feature_path: data/features/train.csv #path to store extracted features
@@ -20,15 +19,17 @@ feature_extractor:
   test_feature_path: data/features/test.csv #path to store extracted features
   regenerate_features: false # whether to regenerate features or use existing ones
 
-
 training:
   batch_size: 64
-  num_epochs: 2
+  num_epochs: 100
   learning_rate: 0.001
   from_checkpoint: false
   save_to: checkpoint/model_paths.pth
-  wandb_project: "Hello"
+  wandb_project: "AnytimeTrajectoryPredictor"
+  measure_diversity: true
+  measure_latency: true
+  logging_steps: 1
 
 model:
   type: linear
-  num_trajectory_possibilities: 3
+  num_trajectory_possibilities: 8
