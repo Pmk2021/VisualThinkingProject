@@ -201,8 +201,8 @@ class ObjectTracker:
         if results:
             result = results[0]
             boxes = result.boxes
-            if boxes is not None and len(boxes) > 0:
-                if tracking_override is None:
+            if tracking_override is None:
+                if boxes is not None and len(boxes) > 0:
                     boxes_xyxy = boxes.xyxy.detach().cpu().numpy().astype(np.float32)
                     confidences = (
                         boxes.conf.detach().cpu().numpy().astype(np.float32)
@@ -219,11 +219,11 @@ class ObjectTracker:
                         if boxes.cls is not None
                         else np.zeros((len(boxes_xyxy),), dtype=np.int64)
                     )
-                else:
-                    boxes_xyxy = tracking_override.xyxy.astype(np.float32)
-                    confidences = tracking_override.conf.astype(np.float32)
-                    object_ids = tracking_override.id.astype(np.int64)
-                    class_ids = tracking_override.cls.astype(np.int64)
+            else:
+                boxes_xyxy = tracking_override.xyxy.astype(np.float32)
+                confidences = tracking_override.conf.astype(np.float32)
+                object_ids = tracking_override.id.astype(np.int64)
+                class_ids = tracking_override.cls.astype(np.int64)
 
         for object_id in object_ids:
             if object_id not in self._seen:

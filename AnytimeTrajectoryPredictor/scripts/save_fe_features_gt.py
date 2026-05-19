@@ -127,6 +127,11 @@ def _get_feature_column_index(feat, output):
     raise ValueError("object_ids not found in feature lengths")
 
 
+def _is_all_zero_feature_row(row: dict) -> bool:
+    feature_keys = [key for key in row.keys() if key.startswith("local_latent_features_")]
+    return bool(feature_keys) and all(float(row[key]) == 0.0 for key in feature_keys)
+
+
 def process_dir(dir_path: Path):
     manifest_path = dir_path / "manifest.json"
     if not manifest_path.exists():
@@ -157,7 +162,6 @@ def process_dir(dir_path: Path):
     ).reset_index(drop=True)
     image_traj = pd.read_parquet(_resolve_data_path(base / image_traj_path))
 
-    latent_rows = []
     local_rows = []
 
     print(f"found rows: {len(images_table)} in images table, {len(image_traj)} in image_trajectories table")
@@ -216,25 +220,20 @@ def process_dir(dir_path: Path):
             values = _build_feature_values(feat, feat_len, feature_col_offset, 0, output, n_objects, obj_id_col)
             feature_col_offset += feat_len
 
-            if feat == "latent_features":
-                # values: list with single dict (global) per image
-                for v in values:
-                    out = {
-                        "split": row["split"],
-                        "image_id": row["image_id"],
-                        "scene_id": row["scene_id"],
-                        "frame_timestamp_micros": row["frame_timestamp_micros"],
-                        "camera_name": row["camera_name"],
-                        "camera_name_text": row["camera_name_text"],
-                    }
-                    out.update(v)
-                    latent_rows.append(out)
-
             if feat == "local_latent_features":
-                # values: list of dicts per object
+                # The tracker does not preserve a reliable join key for object_ids
+                # because they are stored as float32 in the feature tensor.
+                # Use the GT row order itself as the working key.
                 traj_ids = list(img_rows["trajectory_id"].astype(str))
                 traj_row_ids = list(img_rows["trajectory_row_id"].astype(str))
-                for i, v in enumerate(values):
+                if len(values) != len(traj_ids):
+                    raise ValueError(
+                        f"Object count mismatch in image_id {image_id}: tracker returned {len(values)} local rows, GT has {len(traj_ids)} rows"
+                    )
+
+                for idx, (feat_dict, traj_id_str, traj_row_id_str) in enumerate(
+                    zip(values, traj_ids, traj_row_ids)
+                ):
                     out = {
                         "split": row["split"],
                         "image_id": row["image_id"],
@@ -242,17 +241,20 @@ def process_dir(dir_path: Path):
                         "frame_timestamp_micros": row["frame_timestamp_micros"],
                         "camera_name": row["camera_name"],
                         "camera_name_text": row["camera_name_text"],
-                        "trajectory_id": traj_ids[i],
-                        "trajectory_row_id": traj_row_ids[i],
+                        "trajectory_id": traj_id_str,
+                        "trajectory_row_id": traj_row_id_str,
                     }
-                    out.update(v)
+                    # remove object_id key (we keep trajectory_id instead)
+                    fd = {k: v for k, v in feat_dict.items() if k != "object_id"}
+                    out.update(fd)
+                    if _is_all_zero_feature_row(out):
+                        raise ValueError(
+                            f"All-zero local feature row for image_id {image_id}, trajectory_id {traj_id_str}, trajectory_row_id {traj_row_id_str}"
+                        )
                     local_rows.append(out)
 
     out_dir = _resolve_output_path(dir_path)
     out_dir.mkdir(parents=True, exist_ok=True)
-    if latent_rows:
-        table = pa.Table.from_pandas(pd.DataFrame(latent_rows))
-        pq.write_table(table, out_dir / "fe_gt_latent_features.parquet")
     if local_rows:
         table = pa.Table.from_pandas(pd.DataFrame(local_rows))
         pq.write_table(table, out_dir / "fe_gt_local_latent_features.parquet")
@@ -284,7 +286,7 @@ def main():
 
     dirs_to_process = []
     for split_dir in sorted(selected_dirs):
-        if all((split_dir / table_name).exists() for table_name in ["fe_gt_latent_features.parquet", "fe_gt_local_latent_features.parquet"]):
+        if all((split_dir / table_name).exists() for table_name in ["fe_gt_local_latent_features.parquet"]):
             print(f"Skipping {split_dir.name} (already processed)")
             continue
         dirs_to_process.append(split_dir)
