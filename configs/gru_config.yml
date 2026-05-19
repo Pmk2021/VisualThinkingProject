@@ -1,0 +1,36 @@
+feature_extractor:
+  images_path_path: data/waymo/images.parquet
+  ego_poses_path: data/waymo/ego_poses.parquet
+  trajectories_path: data/waymo/trajectories.parquet
+  image_trajectories_path: data/waymo/image_trajectories.parquet
+  prediction_targets_path: data/waymo/prediction_targets.parquet
+  manifest_path: data/waymo/manifest.json
+
+  features:
+    image_trajectories:
+      - bbox_center_x
+      - bbox_center_y
+      - bbox_width
+      - bbox_height
+
+  #Not using this for now
+  train_feature_path: data/features/train.csv #path to store extracted features
+  val_feature_path: data/features/val.csv #path to store extracted features
+  test_feature_path: data/features/test.csv #path to store extracted features
+  regenerate_features: false # whether to regenerate features or use existing ones
+
+training:
+  batch_size: 64
+  num_epochs: 100
+  learning_rate: 0.01
+  from_checkpoint: false
+  save_to: checkpoint/gru_model_paths.pth
+  wandb_project: "AnytimeTrajectoryPredictor"
+  measure_diversity: true
+  measure_latency: true
+  logging_steps: 1
+
+model:
+  type: gru
+  num_trajectory_possibilities: 8
+  hidden_dim: 128 # Hidden dimension for the GRU model
