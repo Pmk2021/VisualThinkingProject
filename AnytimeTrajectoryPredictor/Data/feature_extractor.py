@@ -55,10 +55,10 @@ def fit_polynomial(signal, K, polynomial_degree):
     # flatten batch + time windows
     sig_flat = sig_win.reshape(Tn * B, K)
 
-    # solve least squares
-    coeffs = torch.linalg.lstsq(X, sig_flat).solution
+    # solve least squares, with each sliding window as one target column
+    coeffs = torch.linalg.lstsq(X, sig_flat.T).solution.T
 
-    return coeffs.view(Tn, B, polynomial_degree + 1)
+    return coeffs.reshape(Tn, B, polynomial_degree + 1)
 
 
 class FeatureExtractor:

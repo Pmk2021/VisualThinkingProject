@@ -5,7 +5,6 @@ import torch.nn as nn
 class base_model(nn.Module):
     """Linear baseline that predicts a GMM over polynomial coefficients."""
 
-    POLYNOMIAL_CONSTANT_TERMS = 1
     COVARIANCE_EPS = 1e-2
     COVARIANCE_CLAMP = 20.0
 
@@ -29,7 +28,7 @@ class base_model(nn.Module):
         )
         self.spatial_dims = self._normalize_spatial_dims(spatial_dims)
 
-        self.num_coeffs = self.polynomial_degree + self.POLYNOMIAL_CONSTANT_TERMS
+        self.num_coeffs = self.polynomial_degree + 1
         self.mean_dim = self.trajectory_dims * self.num_coeffs
         self.cov_params = self.mean_dim * self.mean_dim
         self.params_per_mode = self.mean_dim + self.cov_params
@@ -123,7 +122,7 @@ class base_model(nn.Module):
         for frame_idx in range(num_frames):
             for iteration in range(f_[frame_idx]):
                 predicted_trajectory = self.A(frames[frame_idx])
-                if iteration == f_[frame_idx] - self.POLYNOMIAL_CONSTANT_TERMS:
+                if iteration == f_[frame_idx] - 1:
                     predicted_trajectory_list.append(predicted_trajectory)
 
         return predicted_trajectory_list
@@ -134,7 +133,7 @@ class base_model(nn.Module):
 
         total_loss = frames_features.new_zeros(())
         for frame_idx in range(num_frames):
-            prefix_end = frame_idx + self.POLYNOMIAL_CONSTANT_TERMS
+            prefix_end = frame_idx + 1
             loss = self.get_single_loss(
                 frames_features[:prefix_end],
                 trajectories[:prefix_end],

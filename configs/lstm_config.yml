@@ -1,13 +1,13 @@
 feature_extractor:
-  images_path_path: /Users/leonardamsler/Desktop/EPFL/Master/MA4/Visual Intelligence/VisualThinkingProject/data/waymo/images.parquet
-  ego_poses_path: /Users/leonardamsler/Desktop/EPFL/Master/MA4/Visual Intelligence/VisualThinkingProject/data/waymo/ego_poses.parquet
-  trajectories_path: /Users/leonardamsler/Desktop/EPFL/Master/MA4/Visual Intelligence/VisualThinkingProject/data/waymo/trajectories.parquet
-  image_trajectories_path: /Users/leonardamsler/Desktop/EPFL/Master/MA4/Visual Intelligence/VisualThinkingProject/data/waymo/image_trajectories.parquet
-  prediction_targets_path: /Users/leonardamsler/Desktop/EPFL/Master/MA4/Visual Intelligence/VisualThinkingProject/data/waymo/prediction_targets.parquet
-  manifest_path: /Users/leonardamsler/Desktop/EPFL/Master/MA4/Visual Intelligence/VisualThinkingProject/data/waymo/manifest.json
+  images_path_path: /work/cs-503/santanto/waymo/training__10017090168044687777_6380_000_6400_000/images.parquet
+  ego_poses_path: /work/cs-503/santanto/waymo/training__10017090168044687777_6380_000_6400_000/ego_poses.parquet
+  trajectories_path: /work/cs-503/santanto/waymo/training__10017090168044687777_6380_000_6400_000/trajectories.parquet
+  image_trajectories_path: /work/cs-503/santanto/waymo/training__10017090168044687777_6380_000_6400_000/image_trajectories.parquet
+  prediction_targets_path: /work/cs-503/santanto/waymo/training__10017090168044687777_6380_000_6400_000/prediction_targets.parquet
+  manifest_path: /work/cs-503/santanto/waymo/training__10017090168044687777_6380_000_6400_000/manifest.json
   window: 4
   future_frames: 5
-  num_objects: 1
+  num_objects: 4
   polynomial_degree: 3
   trajectory_dims: 3
   target_features:
@@ -31,11 +31,11 @@ feature_extractor:
 
 training:
   batch_size: 64
-  num_epochs: 1000
+  num_epochs: 100
   learning_rate: 0.01
   lr_scheduler:
     enabled: true
-    warmup_epochs: 50
+    warmup_epochs: 10
   from_checkpoint: false
   save_to: checkpoint/lstm_model_paths.pth
   wandb_project: "LSTMModel"
