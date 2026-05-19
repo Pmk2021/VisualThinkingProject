@@ -21,7 +21,7 @@ class TrajectoryPredictor(nn.Module):
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,
             )
         if model_type == "GNN":
-            return base_model(
+            return GNN(
                 state_dim=len(args.feature_extractor.features),
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,
             )

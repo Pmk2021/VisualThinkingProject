@@ -43,10 +43,10 @@ class GNN(nn.Module):
     def __init__(self, state_dim, num_trajectory_possibilities):
         super(GNN, self).__init__()
         self.hidden_dim = 64
-        self.state_dim = 4
+        self.state_dim = state_dim
         self.num_trajectory_possibilities = num_trajectory_possibilities
 
-        self.node_encoder = nn.Linear(self.hidden_dim, self.hidden_dim)
+        self.node_encoder = nn.Linear(self.state_dim, self.hidden_dim)
         self.gnn = InteractionGNN(
             self.hidden_dim
         )  # from earlier PyG-style layer
