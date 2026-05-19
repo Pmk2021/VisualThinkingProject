@@ -17,16 +17,19 @@ def find_fe_files(base: Path):
         local_fp = child / "fe_gt_local_latent_features.parquet"
         if not local_fp.exists():
             continue
-        global_fp = child / "fe_gt_latent_features.parquet"
-        pairs.append((child, local_fp, global_fp if global_fp.exists() else None))
+        pairs.append((child, local_fp))
     return pairs
 
 
-def check_dir(dirpath: Path, local_fp: Path, global_fp: Path):
+def fix_image_source_path(image_source: Path) -> Path:
+    return Path(str(image_source).replace("/gromb/", "/santanto/"))
+
+
+def check_dir(dirpath: Path, local_fp: Path):
     print(f"Checking {dirpath}")
     issues = []
-    images_fp = dirpath / "images.parquet"
-    traj_fp = dirpath / "image_trajectories.parquet"
+    images_fp = fix_image_source_path(dirpath) / "images.parquet"
+    traj_fp = fix_image_source_path(dirpath) / "image_trajectories.parquet"
     if not images_fp.exists():
         msg = f"MISSING images.parquet at {images_fp}"
         print(f"  {msg}")
@@ -39,11 +42,8 @@ def check_dir(dirpath: Path, local_fp: Path, global_fp: Path):
     images = pd.read_parquet(images_fp)
     traj = pd.read_parquet(traj_fp)
     fe_local = pd.read_parquet(local_fp)
-    fe_global = pd.read_parquet(global_fp) if global_fp is not None and global_fp.exists() else None
 
     print(fe_local.loc[:, list(fe_local.columns)[:12]].head())
-    if fe_global is not None:
-        print(fe_global.loc[:, list(fe_global.columns)[:7]].head())
 
     ok = True
 
@@ -90,28 +90,10 @@ def check_dir(dirpath: Path, local_fp: Path, global_fp: Path):
             print(f"    image_id={img_id}: gt={gt_c} fe_local={fe_c}")
         ok = False
 
-    # Global features are optional in GT mode; skip checks if absent.
-    if fe_global is not None:
-        if "image_id" not in fe_global.columns:
-            msg = "ERROR: fe_gt_latent_features.parquet missing 'image_id' column"
-            print(f"  {msg}")
-            issues.append(msg)
-            ok = False
-        else:
-            missing_global = set(fe_global["image_id"].astype(str)) - imgs_set
-            if missing_global:
-                msg = f"ERROR: {len(missing_global)} global feature rows reference missing images"
-                print(f"  {msg}")
-                issues.append(msg)
-                ok = False
-
     # Feature column presence (sanity)
     local_feat_cols = [c for c in fe_local.columns if c.startswith("local_latent_features_")]
-    global_feat_cols = [c for c in fe_global.columns if c.startswith("latent_features_")] if fe_global is not None else []
     if not local_feat_cols:
         print("  WARN: no columns starting with 'local_latent_features_' found in local features")
-    if not global_feat_cols:
-        print("  WARN: no columns starting with 'latent_features_' found in global features")
 
     # Check that there are no all 0 feature rows (sanity)
     local_zero_rows = fe_local[local_feat_cols].apply(lambda row: (row == 0).all(), axis=1)
@@ -119,12 +101,6 @@ def check_dir(dirpath: Path, local_fp: Path, global_fp: Path):
         msg = f"WARN: {local_zero_rows.sum()} local feature rows are all zeros"
         print(f"  {msg}")
         issues.append(msg)
-    if fe_global is not None and global_feat_cols:
-        global_zero_rows = fe_global[global_feat_cols].apply(lambda row: (row == 0).all(), axis=1)
-        if global_zero_rows.any():
-            msg = f"WARN: {global_zero_rows.sum()} global feature rows are all zeros"
-            print(f"  {msg}")
-            issues.append(msg)
 
     if ok:
         print("  OK: checks passed for this directory")
@@ -148,20 +124,21 @@ def main():
     pairs = find_fe_files(base)
     if not pairs:
         print(f"No fe_gt local files found under {base}")
-        local_only = [child / "fe_gt_local_latent_features.parquet" for child in sorted(base.iterdir()) if child.is_dir() and (child / "fe_gt_local_latent_features.parquet").exists()]
-        global_only = [child / "fe_gt_latent_features.parquet" for child in sorted(base.iterdir()) if child.is_dir() and (child / "fe_gt_latent_features.parquet").exists()]
+        local_only = [
+            child / "fe_gt_local_latent_features.parquet"
+            for child in sorted(base.iterdir())
+            if child.is_dir()
+            and (child / "fe_gt_local_latent_features.parquet").exists()
+        ]
         print(f"Found local files: {len(local_only)}")
-        print(f"Found global files: {len(global_only)}")
         if local_only:
             print("Example local file:", local_only[0])
-        if global_only:
-            print("Example global file:", global_only[0])
         sys.exit(1)
 
     all_ok = True
     failed = []
-    for dirpath, local_fp, global_fp in pairs:
-        ok, issues = check_dir(dirpath, local_fp, global_fp)
+    for dirpath, local_fp in pairs:
+        ok, issues = check_dir(dirpath, local_fp)
         all_ok = all_ok and ok
         if not ok:
             failed.append((dirpath, issues))
