@@ -1,6 +1,6 @@
 from torch.utils import data
 from torch.utils.data import dataset
-from torchvision.io import read_video
+# from torchvision.io import read_video
 import pandas as pd
 import os
 import tqdm
@@ -52,9 +52,9 @@ def fit_cubic(signal, K):
     sig_flat = sig_win.reshape(Tn * B, K)
 
     # solve least squares
-    coeffs = torch.linalg.lstsq(X, sig_flat).solution  # (Tn*B, 4)
+    coeffs = torch.linalg.lstsq(X, sig_flat.T).solution.T  # (Tn*B, 4), FIX: transform to (Tn*B, 4) for lstsq, then back to (Tn, B, 4)
 
-    return coeffs.view(Tn, B, 4)
+    return coeffs.reshape(Tn, B, 4) # view was crashing
 
 
 class FeatureExtractor:
@@ -124,7 +124,7 @@ class FeatureDataset(dataset.Dataset):
         for tid, idxs in self._traj_to_indices.items():
             idxs = np.array(idxs)
             idxs = idxs[np.argsort(times[idxs])]
-            self._traj_to_indices[tid] = idxs
+            self._traj_to_indices[tid] = idxs.tolist()
 
         self.valid_traj_ids = []
 
@@ -217,24 +217,19 @@ class FeatureDataset(dataset.Dataset):
         mask = mask[: len(y)]
 
         # --- window sampling ---
-        if len(y) - K > self.window:
-            # If the length of y is greater than the window, cut it down
-            start_index = random.randint(0, len(y) - K - self.window)
+        if len(y) > self.window:
+            start_index = random.randint(0, len(y) - self.window)
 
             x = x[start_index : start_index + self.window]
             y = y[start_index : start_index + self.window]
             mask = mask[start_index : start_index + self.window]
 
-        else:
-            # Otherwise, we add padding to everything
+        elif len(y) < self.window:
             pad_len = self.window - len(y)
 
-            # pad tensors along time dimension
-            x = torch.cat([x, torch.zeros((pad_len, O, F))], dim=0)
-
-            y = torch.cat([y, torch.zeros((pad_len, O, 3))], dim=0)
-
-            mask = torch.cat([mask, torch.zeros((pad_len, O, 1))], dim=0)
+            x = torch.cat([x, x.new_zeros((pad_len, O, F))], dim=0)
+            y = torch.cat([y, y.new_zeros((pad_len, O, 3, 4))], dim=0)
+            mask = torch.cat([mask, mask.new_zeros((pad_len, O, 1))], dim=0)
 
         return {
             "features": x.float(),
