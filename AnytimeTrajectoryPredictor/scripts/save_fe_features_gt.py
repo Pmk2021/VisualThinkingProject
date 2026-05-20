@@ -322,12 +322,11 @@ def main():
 
     dirs_to_process = []
     for split_dir in sorted(selected_dirs):
-        if all(
-            (split_dir / table_name).exists()
-            for table_name in ["fe_gt_local_latent_features.parquet"]
-        ):
+        if (split_dir / "fe_gt_local_latent_features.parquet").exists():
             print(f"Skipping {split_dir.name} (already processed)")
             continue
+        else:
+            print(f"Scheduling {split_dir.name} for processing because {split_dir / 'fe_gt_local_latent_features.parquet'} does not exist")
         dirs_to_process.append(split_dir)
 
     if not dirs_to_process:
