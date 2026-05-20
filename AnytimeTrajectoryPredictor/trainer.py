@@ -40,6 +40,10 @@ def _should_log(count, log_config):
     return steps > 0 and count % steps == 0
 
 
+def _epoch_progress(epoch, batch_idx, num_batches):
+    return epoch + batch_idx / max(num_batches, 1)
+
+
 class Trainer:
     def __init__(
         self, model, optimizer, train_loader, val_loader, device, args
@@ -97,10 +101,12 @@ class Trainer:
             self.optimizer.step()
 
             self.global_step += 1
+            epoch_progress = _epoch_progress(epoch, batch_idx, num_batches)
             batch_pbar.set_postfix(
                 {
                     "loss": f"{batch_loss:.4f}",
                     "avg_loss": f"{loss_total / batch_idx:.4f}",
+                    "epoch": f"{epoch_progress:.3f}",
                     "step": self.global_step,
                 }
             )
@@ -111,7 +117,7 @@ class Trainer:
                 wandb.log(
                     {
                         "global_step": self.global_step,
-                        "epoch": epoch,
+                        "epoch": epoch_progress,
                         "train/batch": batch_idx,
                         "train/batch_loss": batch_loss,
                         "train/epoch_loss_so_far": loss_total / batch_idx,
@@ -126,7 +132,7 @@ class Trainer:
                 validation_loss, diversity = self.validate_single_batch()
                 log_payload: dict[str, object] = {
                     "global_step": self.global_step,
-                    "epoch": epoch,
+                    "epoch": epoch_progress,
                     "validation/batch": batch_idx,
                     "validation/batch_loss": validation_loss,
                 }
@@ -221,7 +227,7 @@ class Trainer:
             }
             log_payload: dict[str, object] = {
                 "global_step": self.global_step,
-                "epoch": epoch,
+                "epoch": float(epoch + 1),
             }
 
             if self.training_log["metric"] == "epoch" and _should_log(
