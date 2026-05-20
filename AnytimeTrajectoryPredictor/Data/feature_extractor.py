@@ -172,7 +172,7 @@ class FeatureDataset(dataset.Dataset):
 
         # How many frames to look into future to plan trajectory
         self.future_frames = future_frames
-        self.num_objects = args.num_objects
+        self.num_objects = args.num_objects if hasattr(args, "num_objects") else num_objects
 
         # Define datasets
         self.image_trajectory_features = args.features.image_trajectories

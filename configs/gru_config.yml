@@ -1,5 +1,5 @@
 feature_extractor:
-  dataset_root: data/waymo
+  dataset_root: /work/cs-503/santanto/waymo
   tables:
     images: images.parquet
     ego_poses: ego_poses.parquet
@@ -23,7 +23,7 @@ feature_extractor:
 
 training:
   batch_size: 64
-  num_epochs: 100
+  num_epochs: 1
   learning_rate: 0.01
   from_checkpoint: false
   save_to: checkpoint/gru_model_paths.pth

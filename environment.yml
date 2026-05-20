@@ -16,6 +16,7 @@ dependencies:
   - pyarrow
   - pillow
   - pip
+  - torch_geometric
   - pip:
       - ultralytics
       - black
