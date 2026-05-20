@@ -16,10 +16,12 @@ def make_dataloaders(args):
     """
     train_dataset = FeatureDataset(
         args.feature_extractor,
+        split="training",
     )
 
     val_dataset = FeatureDataset(
         args.feature_extractor,
+        split="validation",
     )
 
     train_loader = DataLoader(

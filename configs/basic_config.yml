@@ -1,10 +1,12 @@
 feature_extractor:
-  images_path_path: data/waymo/images.parquet
-  ego_poses_path: data/waymo/ego_poses.parquet
-  trajectories_path: data/waymo/trajectories.parquet
-  image_trajectories_path: data/waymo/image_trajectories.parquet
-  prediction_targets_path: data/waymo/prediction_targets.parquet
-  manifest_path: data/waymo/manifest.json
+  dataset_root: data/waymo
+  tables:
+    images: images.parquet
+    ego_poses: ego_poses.parquet
+    trajectories: trajectories.parquet
+    image_trajectories: image_trajectories.parquet
+    prediction_targets: prediction_targets.parquet
+    manifest: manifest.json
 
   features:
     image_trajectories:
@@ -28,7 +30,12 @@ training:
   wandb_project: "AnytimeTrajectoryPredictor"
   measure_diversity: true
   measure_latency: true
-  logging_steps: 1
+  training_log:
+    metric: batch
+    steps: 1
+  validation_log:
+    metric: batch
+    steps: 50
 
 model:
   type: linear

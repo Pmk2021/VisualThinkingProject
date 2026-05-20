@@ -4,9 +4,11 @@ import pandas as pd
 import os
 import tqdm
 import pyarrow.parquet as pq
+import pyarrow as pa
 import numpy as np
 from collections import defaultdict
 import random
+from pathlib import Path
 
 
 # from features.dummy_feature_1 import DummyFeatureExtractor
@@ -17,6 +19,84 @@ import torch
 # Define important columns
 TRAJ_ID = "trajectory_row_id"
 TIME = "frame_timestamp_micros"
+
+
+def _get_config_value(args, key, default=None):
+    return getattr(args, key, default)
+
+
+def _get_table_filename(args, table_name):
+    tables = _get_config_value(args, "tables")
+    if tables is not None:
+        table_filename = _get_config_value(
+            tables, table_name, f"{table_name}.parquet"
+        )
+    else:
+        table_filename = f"{table_name}.parquet"
+
+    return str(table_filename)
+
+
+def _resolve_table_files(args, table_name, legacy_path_key, split=None):
+    table_filename = _get_table_filename(args, table_name)
+    dataset_root = _get_config_value(args, "dataset_root")
+
+    if dataset_root is not None:
+        root = Path(str(dataset_root))
+
+        if split is not None and root.exists():
+            split_files = sorted(
+                path / table_filename
+                for path in root.iterdir()
+                if path.is_dir() and path.name.startswith(f"{split}__")
+            )
+            split_files = [path for path in split_files if path.exists()]
+            if split_files:
+                return split_files
+
+        flat_file = root / table_filename
+        if flat_file.exists():
+            return [flat_file]
+
+        recursive_files = sorted(root.rglob(table_filename))
+        if recursive_files:
+            return recursive_files
+
+        raise FileNotFoundError(
+            f"No {table_filename} files found under dataset_root={root}"
+        )
+
+    legacy_path = _get_config_value(args, legacy_path_key)
+    if legacy_path is None:
+        raise ValueError(
+            f"Expected either dataset_root or {legacy_path_key} in feature_extractor config"
+        )
+
+    path = Path(str(legacy_path))
+    if path.is_dir():
+        if split is not None:
+            split_files = sorted(
+                file
+                for file in path.rglob(table_filename)
+                if any(parent.name.startswith(f"{split}__") for parent in file.parents)
+            )
+            if split_files:
+                return split_files
+
+        parquet_files = sorted(path.rglob(table_filename))
+        if parquet_files:
+            return parquet_files
+
+        raise FileNotFoundError(f"No {table_filename} files found under {path}")
+
+    return [path]
+
+
+def _read_table_files(files, columns=None):
+    tables = [pq.read_table(file, columns=columns) for file in files]
+    if len(tables) == 1:
+        return tables[0]
+    return pa.concat_tables(tables)
 
 
 def fit_cubic(signal, K):
@@ -78,7 +158,7 @@ class FeatureExtractor:
 
 
 class FeatureDataset(dataset.Dataset):
-    def __init__(self, args, window=4, future_frames=5, num_objects=1):
+    def __init__(self, args, split=None, window=4, future_frames=5, num_objects=1):
         """Dataset class for loading pre-extracted features from CSV files.
         If regenerate_features is True, it will extract features from raw video data.
 
@@ -92,21 +172,18 @@ class FeatureDataset(dataset.Dataset):
 
         # How many frames to look into future to plan trajectory
         self.future_frames = future_frames
-        self.num_objects = args.num_objects
+        self.num_objects = args.num_objects if hasattr(args, "num_objects") else num_objects
 
-        table = pq.read_table(args.image_trajectories_path)
-        """
-        if path.is_dir():
-            parquet_files = sorted(path.glob("*.parquet"))
-            tables = [pq.read_table(f) for f in parquet_files]
-            table = pa.concat_tables(tables)
-        else:
-            table = pq.read_table(path)
-        """
         # Define datasets
         self.image_trajectory_features = args.features.image_trajectories
-        self.img_traj_table = pq.read_table(
-            args.image_trajectories_path,
+        image_trajectory_files = _resolve_table_files(
+            args,
+            table_name="image_trajectories",
+            legacy_path_key="image_trajectories_path",
+            split=split,
+        )
+        self.img_traj_table = _read_table_files(
+            image_trajectory_files,
             columns=self.image_trajectory_features + [TRAJ_ID, TIME],
         )
 

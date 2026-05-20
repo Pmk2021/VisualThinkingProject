@@ -1,10 +1,58 @@
 import torch
 import wandb
 import random
+from itertools import islice
 from tqdm import tqdm
 
 from AnytimeTrajectoryPredictor.evaluation.diversity import compute_diversity_metrics
 from AnytimeTrajectoryPredictor.evaluation.latency import LatencyProfiler
+
+
+def _get_training_arg(args, key, default):
+    return getattr(args.training, key, default) if key in args.training else default
+
+
+def _get_log_config(args, key, fallback_metric, fallback_steps):
+    max_number_of_batches = None
+    if key in args:
+        log_config = getattr(args, key)
+    elif key in args.training:
+        log_config = getattr(args.training, key)
+    else:
+        log_config = None
+
+    if log_config is None:
+        metric = fallback_metric
+        steps = fallback_steps
+    else:
+        metric = getattr(log_config, "metric", fallback_metric)
+        steps = getattr(log_config, "steps", fallback_steps)
+        max_number_of_batches = getattr(
+            log_config, "max_number_of_batches", None
+        )
+
+    if metric not in {"batch", "epoch"}:
+        raise ValueError(f"{key}.metric must be either 'batch' or 'epoch'")
+
+    if max_number_of_batches is not None:
+        max_number_of_batches = int(max_number_of_batches)
+        if max_number_of_batches <= 0:
+            raise ValueError(f"{key}.max_number_of_batches must be positive")
+
+    return {
+        "metric": metric,
+        "steps": int(steps),
+        "max_number_of_batches": max_number_of_batches,
+    }
+
+
+def _should_log(count, log_config):
+    steps = log_config["steps"]
+    return steps > 0 and count % steps == 0
+
+
+def _epoch_progress(epoch, batch_idx, num_batches):
+    return epoch + batch_idx / max(num_batches, 1)
 
 
 class Trainer:
@@ -17,53 +65,167 @@ class Trainer:
         self.val_loader = val_loader
         self.device = device
         self.args = args
-        self.measure_diversity = args.training.measure_diversity if "measure_diversity" in args.training else False
-        self.measure_latency = args.training.measure_latency if "measure_latency" in args.training else False
-        self.logging_steps = args.training.logging_steps if self.measure_diversity else 1 # If measuring diversity, log every epoch. Otherwise, log every logging_steps epochs.
+        self.measure_diversity = _get_training_arg(args, "measure_diversity", False)
+        self.measure_latency = _get_training_arg(args, "measure_latency", False)
+        self.training_log = _get_log_config(
+            args,
+            key="training_log",
+            fallback_metric="batch",
+            fallback_steps=_get_training_arg(args, "batch_logging_steps", 1),
+        )
+        self.validation_log = _get_log_config(
+            args,
+            key="validation_log",
+            fallback_metric="epoch",
+            fallback_steps=_get_training_arg(args, "logging_steps", 1),
+        )
+        self.global_step = 0
         wandb.init(project=args.training.wandb_project, config=args)
+        wandb.define_metric("global_step")
+        wandb.define_metric("train/*", step_metric="global_step")
+        wandb.define_metric("validation/*", step_metric="global_step")
+        wandb.define_metric("diversity/*", step_metric="global_step")
 
-    def train_single_epoch(self):
+    def train_single_epoch(self, epoch):
+        self.model.train()
         loss_total = 0
-        for batch in self.train_loader:
+        num_batches = len(self.train_loader)
+        batch_pbar = tqdm(
+            self.train_loader,
+            desc=f"Epoch {epoch + 1} batches",
+            leave=False,
+            position=1,
+        )
+        for batch_idx, batch in enumerate(batch_pbar, start=1):
             feature, trajectory = batch["features"], batch["trajectory"]
             feature = feature.transpose(0, 1).to(self.device)
             trajectory = trajectory.transpose(0, 1).to(self.device)
-            f_ = [random.randint(1, 10) for i in range(len(feature))]
+            refinement_steps = [random.randint(1, 10) for _ in range(len(feature))]
             # Compute Loss
-            loss = self.model.compute_loss(feature, trajectory, f_)
-            loss_total += loss.item()
+            loss = self.model.compute_loss(feature, trajectory, refinement_steps)
+            batch_loss = loss.item()
+            loss_total += batch_loss
             # Apply Gradient Step
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
-        return loss_total
 
-    def validate(self):
+            self.global_step += 1
+            epoch_progress = _epoch_progress(epoch, batch_idx, num_batches)
+            batch_pbar.set_postfix(
+                {
+                    "loss": f"{batch_loss:.4f}",
+                    "avg_loss": f"{loss_total / batch_idx:.4f}",
+                    "epoch": f"{epoch_progress:.3f}",
+                    "step": self.global_step,
+                }
+            )
+            if (
+                self.training_log["metric"] == "batch"
+                and _should_log(self.global_step, self.training_log)
+            ):
+                wandb.log(
+                    {
+                        "global_step": self.global_step,
+                        "epoch": epoch_progress,
+                        "train/batch": batch_idx,
+                        "train/batch_loss": batch_loss,
+                        "train/epoch_loss_so_far": loss_total / batch_idx,
+                        "train/learning_rate": self.optimizer.param_groups[0]["lr"],
+                    }
+                )
+
+            if (
+                self.validation_log["metric"] == "batch"
+                and _should_log(self.global_step, self.validation_log)
+            ):
+                validation_loss, diversity = self.validate(
+                    max_number_of_batches=self.validation_log[
+                        "max_number_of_batches"
+                    ]
+                )
+                log_payload: dict[str, object] = {
+                    "global_step": self.global_step,
+                    "epoch": epoch_progress,
+                    "validation/batch": batch_idx,
+                    "validation/batch_loss": validation_loss,
+                }
+                if diversity is not None:
+                    log_payload["diversity/batch_apd"] = diversity["apd"]
+                    log_payload["diversity/batch_mean_pairwise_w2"] = diversity[
+                        "mean_pairwise_w2"
+                    ]
+                wandb.log(log_payload)
+
+        return loss_total / max(num_batches, 1)
+
+    def _compute_validation_batch_metrics(self, batch):
+        feature, trajectory = (
+            batch["features"].transpose(0, 1).to(self.device),
+            batch["trajectory"].transpose(0, 1).to(self.device),
+        )
+        refinement_steps = [random.randint(1, 10) for _ in range(len(feature))]
+        loss = self.model.compute_loss(feature, trajectory, refinement_steps)
+
+        diversity = None
+        if self.measure_diversity:
+            predictions = self.model(feature, refinement_steps)
+            diversity = compute_diversity_metrics(predictions, self.model)
+
+        return loss.item(), diversity
+
+    def validate(self, max_number_of_batches=None):
+        if max_number_of_batches is not None:
+            max_number_of_batches = int(max_number_of_batches)
+            if max_number_of_batches <= 0:
+                raise ValueError("max_number_of_batches must be positive")
+
         total_loss = 0
         apd_sum = 0.0
         w2_sum = 0.0
-        for batch in self.val_loader:
-            feature, trajectory = (
-                batch["features"].to(self.device),
-                batch["trajectory"].to(self.device),
-            )
-            f_ = [random.randint(1, 10) for i in range(len(feature))]
-            # Compute Loss
-            loss = self.model.compute_loss(feature, trajectory, f_)
-            total_loss += loss.item()
-            if self.measure_diversity:
-                predictions = self.model(feature, f_) # List of length num_frames, each element is (B, num_objects, output_dim)
-                metrics = compute_diversity_metrics(predictions, self.model)
-                apd_sum += metrics["apd"]
-                w2_sum += metrics["mean_pairwise_w2"]
+        num_batches = 0
+        was_training = self.model.training
+        self.model.eval()
+        try:
+            with torch.no_grad():
+                validation_batches = self.val_loader
+                validation_total = len(self.val_loader)
+                if max_number_of_batches is not None:
+                    validation_batches = islice(
+                        self.val_loader, max_number_of_batches
+                    )
+                    validation_total = min(
+                        validation_total, max_number_of_batches
+                    )
 
-        loss = total_loss / len(self.val_loader)
+                val_pbar = tqdm(
+                    validation_batches,
+                    total=validation_total,
+                    desc="Validation",
+                    leave=False,
+                    position=1,
+                )
+                for batch in val_pbar:
+                    batch_loss, diversity = self._compute_validation_batch_metrics(
+                        batch
+                    )
+                    total_loss += batch_loss
+                    num_batches += 1
+                    if diversity is not None:
+                        apd_sum += diversity["apd"]
+                        w2_sum += diversity["mean_pairwise_w2"]
+
+        finally:
+            if was_training:
+                self.model.train()
+
+        loss = total_loss / max(num_batches, 1)
         print(f"Validation Loss: {loss:.4f}")
 
         diversity = (
             {
-                "apd": apd_sum,
-                "mean_pairwise_w2": w2_sum,
+                "apd": apd_sum / max(num_batches, 1),
+                "mean_pairwise_w2": w2_sum / max(num_batches, 1),
             }
             if self.measure_diversity
             else None
@@ -72,34 +234,49 @@ class Trainer:
         return loss, diversity
 
     def train(self, num_epochs):
-        pbar = tqdm(range(num_epochs), desc="Training")
+        pbar = tqdm(range(num_epochs), desc="Training", position=0)
 
         for epoch in pbar:
-            loss = self.train_single_epoch()
+            loss = self.train_single_epoch(epoch)
             learning_rate = self.optimizer.param_groups[0]["lr"]
 
             postfix = {
                 "loss": loss,
                 "lr": learning_rate,
             }
-            log_payload = {
-                "epoch": epoch,
-                "loss": loss,
-                "learning_rate": learning_rate,
+            log_payload: dict[str, object] = {
+                "global_step": self.global_step,
+                "epoch": float(epoch + 1),
             }
 
-            if epoch % self.logging_steps == 0:
-                validation_loss, diversity = self.validate()
+            if self.training_log["metric"] == "epoch" and _should_log(
+                epoch + 1, self.training_log
+            ):
+                log_payload["loss"] = loss
+                log_payload["train/epoch_loss"] = loss
+                log_payload["learning_rate"] = learning_rate
+                log_payload["train/learning_rate"] = learning_rate
+
+            if self.validation_log["metric"] == "epoch" and _should_log(
+                epoch + 1, self.validation_log
+            ):
+                validation_loss, diversity = self.validate(
+                    max_number_of_batches=self.validation_log[
+                        "max_number_of_batches"
+                    ]
+                )
 
                 postfix["validation_loss"] = validation_loss
                 log_payload["validation_loss"] = validation_loss
+                log_payload["validation/loss"] = validation_loss
                 if diversity is not None:
                     postfix["apd"] = diversity["apd"]
                     postfix["w2"] = diversity["mean_pairwise_w2"]
                     log_payload["diversity/apd"] = diversity["apd"]
                     log_payload["diversity/mean_pairwise_w2"] = diversity["mean_pairwise_w2"]
 
-                pbar.set_postfix(postfix)
+            pbar.set_postfix(postfix)
+            if len(log_payload) > 2:
                 wandb.log(log_payload)
 
         if self.measure_latency:
