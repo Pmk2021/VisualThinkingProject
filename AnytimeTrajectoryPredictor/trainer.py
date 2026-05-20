@@ -76,7 +76,13 @@ class Trainer:
         self.model.train()
         loss_total = 0
         num_batches = len(self.train_loader)
-        for batch_idx, batch in enumerate(self.train_loader, start=1):
+        batch_pbar = tqdm(
+            self.train_loader,
+            desc=f"Epoch {epoch + 1} batches",
+            leave=False,
+            position=1,
+        )
+        for batch_idx, batch in enumerate(batch_pbar, start=1):
             feature, trajectory = batch["features"], batch["trajectory"]
             feature = feature.transpose(0, 1).to(self.device)
             trajectory = trajectory.transpose(0, 1).to(self.device)
@@ -91,6 +97,13 @@ class Trainer:
             self.optimizer.step()
 
             self.global_step += 1
+            batch_pbar.set_postfix(
+                {
+                    "loss": f"{batch_loss:.4f}",
+                    "avg_loss": f"{loss_total / batch_idx:.4f}",
+                    "step": self.global_step,
+                }
+            )
             if (
                 self.training_log["metric"] == "batch"
                 and _should_log(self.global_step, self.training_log)
@@ -196,7 +209,7 @@ class Trainer:
         return loss, diversity
 
     def train(self, num_epochs):
-        pbar = tqdm(range(num_epochs), desc="Training")
+        pbar = tqdm(range(num_epochs), desc="Training", position=0)
 
         for epoch in pbar:
             loss = self.train_single_epoch(epoch)
