@@ -30,7 +30,12 @@ training:
   wandb_project: "AnytimeTrajectoryPredictor"
   measure_diversity: true
   measure_latency: true
-  logging_steps: 1
+  training_log:
+    metric: batch
+    steps: 1
+  validation_log:
+    metric: batch
+    steps: 50
 
 model:
   type: linear
