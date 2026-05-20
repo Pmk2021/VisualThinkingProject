@@ -36,6 +36,7 @@ training:
   validation_log:
     metric: batch
     steps: 50
+    max_number_of_batches: 20 # Limit the number of validation batches for quicker feedback during training
 
 model:
   type: gru

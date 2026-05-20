@@ -1,6 +1,7 @@
 import torch
 import wandb
 import random
+from itertools import islice
 from tqdm import tqdm
 
 from AnytimeTrajectoryPredictor.evaluation.diversity import compute_diversity_metrics
@@ -12,6 +13,7 @@ def _get_training_arg(args, key, default):
 
 
 def _get_log_config(args, key, fallback_metric, fallback_steps):
+    max_number_of_batches = None
     if key in args:
         log_config = getattr(args, key)
     elif key in args.training:
@@ -25,13 +27,22 @@ def _get_log_config(args, key, fallback_metric, fallback_steps):
     else:
         metric = getattr(log_config, "metric", fallback_metric)
         steps = getattr(log_config, "steps", fallback_steps)
+        max_number_of_batches = getattr(
+            log_config, "max_number_of_batches", None
+        )
 
     if metric not in {"batch", "epoch"}:
         raise ValueError(f"{key}.metric must be either 'batch' or 'epoch'")
 
+    if max_number_of_batches is not None:
+        max_number_of_batches = int(max_number_of_batches)
+        if max_number_of_batches <= 0:
+            raise ValueError(f"{key}.max_number_of_batches must be positive")
+
     return {
         "metric": metric,
         "steps": int(steps),
+        "max_number_of_batches": max_number_of_batches,
     }
 
 
@@ -65,7 +76,6 @@ class Trainer:
             fallback_steps=_get_training_arg(args, "logging_steps", 1),
         )
         self.global_step = 0
-        self.validation_iterator = iter(self.val_loader)
         wandb.init(project=args.training.wandb_project, config=args)
         wandb.define_metric("global_step")
         wandb.define_metric("train/*", step_metric="global_step")
@@ -123,12 +133,16 @@ class Trainer:
                 self.validation_log["metric"] == "batch"
                 and _should_log(self.global_step, self.validation_log)
             ):
-                validation_loss, diversity = self.validate_single_batch()
+                validation_loss, diversity = self.validate(
+                    max_number_of_batches=self.validation_log[
+                        "max_number_of_batches"
+                    ]
+                )
                 log_payload: dict[str, object] = {
                     "global_step": self.global_step,
                     "epoch": epoch,
-                    "validation/batch": batch_idx,
-                    "validation/batch_loss": validation_loss,
+                    "validation_loss": validation_loss,
+                    "validation/loss": validation_loss,
                 }
                 if diversity is not None:
                     log_payload["diversity/batch_apd"] = diversity["apd"]
@@ -139,17 +153,10 @@ class Trainer:
 
         return loss_total / max(num_batches, 1)
 
-    def _next_validation_batch(self):
-        try:
-            return next(self.validation_iterator)
-        except StopIteration:
-            self.validation_iterator = iter(self.val_loader)
-            return next(self.validation_iterator)
-
     def _compute_validation_batch_metrics(self, batch):
         feature, trajectory = (
-            batch["features"].to(self.device),
-            batch["trajectory"].to(self.device),
+            batch["features"].transpose(0, 1).to(self.device),
+            batch["trajectory"].transpose(0, 1).to(self.device),
         )
         refinement_steps = [random.randint(1, 10) for _ in range(len(feature))]
         loss = self.model.compute_loss(feature, trajectory, refinement_steps)
@@ -161,18 +168,12 @@ class Trainer:
 
         return loss.item(), diversity
 
-    def validate_single_batch(self):
-        batch = self._next_validation_batch()
-        was_training = self.model.training
-        self.model.eval()
-        try:
-            with torch.no_grad():
-                return self._compute_validation_batch_metrics(batch)
-        finally:
-            if was_training:
-                self.model.train()
+    def validate(self, max_number_of_batches=None):
+        if max_number_of_batches is not None:
+            max_number_of_batches = int(max_number_of_batches)
+            if max_number_of_batches <= 0:
+                raise ValueError("max_number_of_batches must be positive")
 
-    def validate(self):
         total_loss = 0
         apd_sum = 0.0
         w2_sum = 0.0
@@ -181,7 +182,24 @@ class Trainer:
         self.model.eval()
         try:
             with torch.no_grad():
-                for batch in self.val_loader:
+                validation_batches = self.val_loader
+                validation_total = len(self.val_loader)
+                if max_number_of_batches is not None:
+                    validation_batches = islice(
+                        self.val_loader, max_number_of_batches
+                    )
+                    validation_total = min(
+                        validation_total, max_number_of_batches
+                    )
+
+                val_pbar = tqdm(
+                    validation_batches,
+                    total=validation_total,
+                    desc="Validation",
+                    leave=False,
+                    position=1,
+                )
+                for batch in val_pbar:
                     batch_loss, diversity = self._compute_validation_batch_metrics(
                         batch
                     )
@@ -190,6 +208,7 @@ class Trainer:
                     if diversity is not None:
                         apd_sum += diversity["apd"]
                         w2_sum += diversity["mean_pairwise_w2"]
+
         finally:
             if was_training:
                 self.model.train()
@@ -199,8 +218,8 @@ class Trainer:
 
         diversity = (
             {
-                "apd": apd_sum,
-                "mean_pairwise_w2": w2_sum,
+                "apd": apd_sum / max(num_batches, 1),
+                "mean_pairwise_w2": w2_sum / max(num_batches, 1),
             }
             if self.measure_diversity
             else None
@@ -235,7 +254,11 @@ class Trainer:
             if self.validation_log["metric"] == "epoch" and _should_log(
                 epoch + 1, self.validation_log
             ):
-                validation_loss, diversity = self.validate()
+                validation_loss, diversity = self.validate(
+                    max_number_of_batches=self.validation_log[
+                        "max_number_of_batches"
+                    ]
+                )
 
                 postfix["validation_loss"] = validation_loss
                 log_payload["validation_loss"] = validation_loss
