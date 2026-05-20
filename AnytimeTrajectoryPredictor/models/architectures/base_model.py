@@ -3,6 +3,8 @@ import torch.nn as nn
 
 
 class base_model(nn.Module):
+    COVARIANCE_EPS = 1e-3
+
     ### A simple linear model that predicts the mean and covariance of the velocity for each trajectory possibility.
     def __init__(
         self, state_dim, num_trajectory_possibilities, polynomial_degree=3
@@ -17,6 +19,7 @@ class base_model(nn.Module):
 
         # x, y, scale
         self.num_dims = 3
+        self.spatial_indices = [0, 1]  # Indices for x and y coefficients
 
         # total coeffs per trajectory hypothesis
         self.coeff_dim = self.num_dims * self.num_coeffs  # 3 * 4 = 12
@@ -46,23 +49,47 @@ class base_model(nn.Module):
             self.output_dim,
         )
 
+    def stabilize_covariance(self, cov):
+        """
+        Stabilize covariance matrices by ensuring symmetry and adding a small value to the diagonal.
+        This helps prevent numerical issues during Cholesky decomposition.
+        Modularized to be reusable to compute the diversity merics in evaluation/diversity.py.
+        """
+        cov = 0.5 * (cov + cov.transpose(-1, -2)) # Ensure symmetry
+        eye = torch.eye(cov.shape[-1], device=cov.device, dtype=cov.dtype)
+        return cov @ cov.transpose(-1, -2) + self.COVARIANCE_EPS * eye
+
+    def stable_cholesky(self, cov, max_attempts=5):
+        eye = torch.eye(cov.shape[-1], device=cov.device, dtype=cov.dtype)
+        jitter = self.COVARIANCE_EPS
+
+        for _ in range(max_attempts):
+            L, info = torch.linalg.cholesky_ex(cov)
+            if torch.all(info == 0):
+                return L
+            cov = cov + jitter * eye
+            jitter *= 10
+
+        return torch.linalg.cholesky(cov)
+
     def forward(self, frames, f_, object_mask=None, hidden_state=None):
         """
         Given a sequence of frames, return a batch X num_frames X self.output_dim tensor representing the trajectory
         Parameters:
-            frames_features: The input state features for all frames. Shape: (num_frames, batch_size, num_objects, feature_dim)
+            frames_features: The input state features for all frames. Shape: (num_frames, batch_size, num_objects, feature_dim=state_dim)
             f_: number of frames length list containing number of iterations to spend on each frame
             object_mask: 1 if an object in a given batch is on screen at a certain frame, 0 otherwise (num_frames, batch_size, num_objects)
             hidden_state: hidden state(optional, depends on model)
         Returns:
-            predicted_trajectories: batch X num_frames X num_objects X self.output_dim tensor representing trajectory
+            predicted_trajectories: List of length num_frames, each element of size (batch_size, num_objects, self.output_dim) representing trajectory predictions for each frame
             hidden_state: hidden_state(optional, depends on model)
         """
         num_frames, b, _, f = frames.shape
 
         predicted_trajectory_list = []
         for i in range(num_frames):
-            for iteration in range(f_[i]):
+            predicted_trajectory = self.A(frames[i]) # (B, num_objects, output_dim)
+            for iteration in range(1, f_[i]):
                 predicted_trajectory = self.A(frames[i])
             predicted_trajectory_list.append(predicted_trajectory)
 
@@ -184,24 +211,13 @@ class base_model(nn.Module):
 
                     diff = true - mean
 
-                    cov = covs_b[k]
-
-                    # ----------------------------------
-                    # stabilize covariance
-                    # ----------------------------------
-
-                    cov = 0.5 * (cov + cov.transpose(-1, -2))
-
-                    cov = cov @ cov.transpose(-1, -2) + 1e-3 * torch.eye(
-                        D,
-                        device=x.device,
-                    )
+                    cov = self.stabilize_covariance(covs_b[k])
 
                     # ----------------------------------
                     # Cholesky decomposition
                     # ----------------------------------
 
-                    L = torch.linalg.cholesky(cov)
+                    L = self.stable_cholesky(cov)
 
                     # log determinant
                     log_det = 2 * torch.sum(torch.log(torch.diagonal(L)))

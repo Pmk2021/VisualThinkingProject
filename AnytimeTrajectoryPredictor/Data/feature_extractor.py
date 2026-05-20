@@ -123,7 +123,7 @@ class FeatureDataset(dataset.Dataset):
         for tid, idxs in self._traj_to_indices.items():
             idxs = np.array(idxs)
             idxs = idxs[np.argsort(times[idxs])]
-            self._traj_to_indices[tid] = idxs
+            self._traj_to_indices[tid] = idxs.tolist()
 
         self.valid_traj_ids = []
 
@@ -224,8 +224,7 @@ class FeatureDataset(dataset.Dataset):
             y = y[start_index : start_index + self.window]
             mask = mask[start_index : start_index + self.window]
 
-        else:
-            # Otherwise, we add padding to everything
+        elif len(y) < self.window:
             pad_len = self.window - len(y)
 
             # pad tensors along time dimension

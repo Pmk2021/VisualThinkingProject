@@ -22,14 +22,15 @@ feature_extractor:
 training:
   batch_size: 64
   num_epochs: 100
-  learning_rate: 0.001
+  learning_rate: 0.01
   from_checkpoint: false
-  save_to: checkpoint/model_paths.pth
+  save_to: checkpoint/gru_model_paths.pth
   wandb_project: "AnytimeTrajectoryPredictor"
   measure_diversity: true
   measure_latency: true
   logging_steps: 1
 
 model:
-  type: linear
+  type: gru
   num_trajectory_possibilities: 8
+  hidden_dim: 128 # Hidden dimension for the GRU model
