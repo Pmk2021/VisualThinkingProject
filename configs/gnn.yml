@@ -1,12 +1,13 @@
 feature_extractor:
-  dataset_root: /work/cs-503/gromb/waymo
+  dataset_root: /work/cs-503/santanto/waymo
+  feature_root: /work/cs-503/gromb/waymo
   tables:
     images: images.parquet
     ego_poses: ego_poses.parquet
     trajectories: trajectories.parquet
     image_trajectories: image_trajectories.parquet
-    prediction_targets: prediction_targets.parquet
-    manifest: manifest.json
+    latent_features: fe_local_latent_features.parquet
+
 
   features:
     image_trajectories:

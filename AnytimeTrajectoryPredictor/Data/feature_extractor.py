@@ -19,7 +19,8 @@ import torch
 # Define important columns
 TRAJ_ID = "trajectory_row_id"
 TIME = "frame_timestamp_micros"
-
+LATENT_FEATURE_COLS = [f"local_latent_features_{i}" for i in range(192)]
+DATAFOLDERCOL = "DATAFOLDERCOL"
 
 def _get_config_value(args, key, default=None):
     return getattr(args, key, default)
@@ -37,9 +38,9 @@ def _get_table_filename(args, table_name):
     return str(table_filename)
 
 
-def _resolve_table_files(args, table_name, legacy_path_key, split=None):
+def _resolve_table_files(args, dataset_root, table_name, legacy_path_key, split=None):
     table_filename = _get_table_filename(args, table_name)
-    dataset_root = _get_config_value(args, "dataset_root")
+    
 
     if dataset_root is not None:
         root = Path(str(dataset_root))
@@ -92,10 +93,29 @@ def _resolve_table_files(args, table_name, legacy_path_key, split=None):
     return [path]
 
 
-def _read_table_files(files, columns=None):
-    tables = [pq.read_table(file, columns=columns) for file in files]
+
+def _read_table_files(files, columns=None, save=False):
+
+    tables = []
+
+    for file in files:
+        table = pq.read_table(file, columns=columns)
+
+        folder_name = Path(file).parent.name
+
+        # FORCE consistent type (string, not null)
+        folder_col = pa.array(
+            [folder_name] * table.num_rows,
+            type=pa.string()
+        )
+
+        table = table.append_column(DATAFOLDERCOL, folder_col)
+
+        tables.append(table)
+
     if len(tables) == 1:
         return tables[0]
+
     return pa.concat_tables(tables)
 
 
@@ -139,7 +159,7 @@ def fit_cubic(signal, K):
 
 
 class FeatureDataset(dataset.Dataset):
-    def __init__(self, args, split=None, window=4, future_frames=5, num_objects=1):
+    def __init__(self, args, split=None, window=4, future_frames=5, num_objects=5):
         """Dataset class for loading pre-extracted features from CSV files.
         If regenerate_features is True, it will extract features from raw video data.
 
@@ -150,24 +170,36 @@ class FeatureDataset(dataset.Dataset):
         """
         # How many frames can we look at a time
         self.window = window
-
+        self.args = args
         # How many frames to look into future to plan trajectory
         self.future_frames = future_frames
         self.num_objects = args.num_objects if hasattr(args, "num_objects") else num_objects
-
+        print("A")
         # Define datasets
         self.image_trajectory_features = args.features.image_trajectories
         image_trajectory_files = _resolve_table_files(
             args,
+            dataset_root=args.dataset_root,
             table_name="image_trajectories",
             legacy_path_key="image_trajectories_path",
             split=split,
         )
+        print("B")
+        latent_feature_files = _resolve_table_files(
+            args,
+            dataset_root=args.feature_root,
+            table_name="fe_gt_local_latent_features",
+            legacy_path_key="fe_gt_local_latent_features_path",
+            split=split,
+        )
+        print("C")
         self.img_traj_table = _read_table_files(
             image_trajectory_files,
             columns=self.image_trajectory_features + [TRAJ_ID, TIME],
         )
 
+
+        print("E")
         # build index: trajectory_id -> row indices
         self._traj_to_indices = defaultdict(list)
 
@@ -182,7 +214,7 @@ class FeatureDataset(dataset.Dataset):
             idxs = np.array(idxs)
             idxs = idxs[np.argsort(times[idxs])]
             self._traj_to_indices[tid] = idxs.tolist()
-
+        print("F")
         self.valid_traj_ids = []
 
         min_len = self.window + self.future_frames
@@ -214,19 +246,46 @@ class FeatureDataset(dataset.Dataset):
         # --- extract columns as numpy ---
         times = table.column(TIME).to_numpy()
 
-        features = np.stack(
-            [
-                table.column("bbox_center_x").to_numpy(),
-                table.column("bbox_center_y").to_numpy(),
-                table.column("bbox_width").to_numpy(),
-                table.column("bbox_height").to_numpy(),
-            ],
-            axis=1,
+        bbox_cols = [
+            "bbox_center_x",
+            "bbox_center_y",
+            "bbox_width",
+            "bbox_height",
+        ]
+
+        # --- load latent features from folder-specific parquet ---
+        datafolder = table.column(DATAFOLDERCOL)[0].as_py()
+
+        latent_path = Path(self.args.feature_root) / datafolder / "fe_gt_local_latent_features.parquet"
+
+        latent_table = pq.read_table(
+            latent_path,
+            columns=[TRAJ_ID, TIME] + LATENT_FEATURE_COLS
         )
+
+        # --- merge on TRAJ_ID, TIME ---
+        merged = (
+            table.to_pandas()
+            .merge(
+                latent_table.to_pandas(),
+                on=[TRAJ_ID, TIME],
+                how="inner"
+            )
+            .sort_values(TIME)   
+        )
+
+        feature_cols = bbox_cols + LATENT_FEATURE_COLS
+
+        times = merged[TIME].to_numpy()
+        traj = merged[TRAJ_ID].to_numpy()
+        features = merged[feature_cols].to_numpy()
+
+        
 
         # --- sort by time ---
         order = np.argsort(times)
         times = times[order]
+        traj = traj[order]
         features = features[order]
 
         # --- group by time (no pandas) ---
@@ -234,23 +293,36 @@ class FeatureDataset(dataset.Dataset):
 
         T = min(len(unique_times), self.window + self.future_frames)
 
-        F = 4
+        F = 196  # 4 bbox + 192 latent features
         O = self.num_objects
 
         x = torch.zeros((T, O, F))
         mask = torch.zeros((T, O, 1))
 
-        # --- fill tensors ---
+        # --- tracking state ---
+        active_map = {}  # object_id -> slot
+        free_slots = list(range(O))
+
         for t in range(T):
+
             start = indices[t]
             end = indices[t + 1] if t + 1 < len(indices) else len(times)
 
             frame_feats = features[start:end]
+            frame_ids = traj[start:end]  # MUST exist
 
-            n = min(len(frame_feats), O)
+            for feat, obj_id in zip(frame_feats, frame_ids):
 
-            x[t, :n] = torch.from_numpy(frame_feats[:n])
-            mask[t, :n] = 1.0
+                # assign slot if new object
+                if obj_id not in active_map:
+                    if len(free_slots) == 0:
+                        continue  # drop object if no space
+                    active_map[obj_id] = free_slots.pop(0)
+
+                slot = active_map[obj_id]
+
+                x[t, slot] = torch.from_numpy(feat)
+                mask[t, slot] = 1.0
 
         # --- target ---
         K = self.future_frames

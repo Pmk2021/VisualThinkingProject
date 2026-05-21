@@ -32,7 +32,7 @@ def test_dataloader(args):
     for i, batch in enumerate(loader):
         print(f"\n================ Batch {i} ================")
 
-        x = batch["feature"]
+        x = batch["features"]
         y = batch["trajectory"]
 
         print("x shape:", x.shape)  # (B, T, F)

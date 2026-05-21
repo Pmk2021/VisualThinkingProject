@@ -168,83 +168,118 @@ class GNN(nn.Module):
 
         return total_loss / len(frames_features)
 
-    def get_single_loss(self, x, trajectory, f_):
-        """Calculate the negative log-likelihood loss for the predicted trajectory distribution for a single frame.
-        Only calculates loss using the "best" predicted trajectory (the one with the closest mean to the true trajectory).
-        Args:
-            x: The input state features. Shape: (num_frames, batch_size, num_objects, feature_dim)
-            trajectory: The ground truth trajectory. Shape: (num_frames, batch_size, num_objects, 3)
-            #delta_x, delta_y, dleta_area
-        Returns:
-            loss: The computed negative log-likelihood loss.
+    def get_single_loss(
+        self,
+        x,
+        trajectory,
+        f_,
+    ):
         """
+        trajectory shape:
+            (frames, batch, objects, 3, 4)
+
+        where:
+            trajectory[..., 0, :] -> x coeffs
+            trajectory[..., 1, :] -> y coeffs
+            trajectory[..., 2, :] -> scale coeffs
+        """
+
         frames, b, n_objects, _ = x.shape
 
-        loss = 0
-        eps = 1e-6
+        K = self.num_trajectory_possibilities
+        D = self.coeff_dim  # 12
 
-        output_entire = self.forward(
-            x, f_
-        )  # (num_frames, batch_siez, num_objects, 3)
+        output_entire = self.forward(x, f_)
+
+        loss = 0.0
 
         for frame in range(frames):
             output = output_entire[frame]
 
-            K = self.num_trajectory_possibilities
+            # ------------------------------------------
+            # reshape:
+            #
+            # (B, O, K, params_per_mode)
+            # ------------------------------------------
 
-            x_mu = output[:, :, 0:K]
-            y_mu = output[:, :, K : 2 * K]
-            s_mu = output[:, :, 2 * K : 3 * K]
-            covs = output[:, :, 3 * K : 12 * K]
+            output = output.view(
+                b,
+                n_objects,
+                K,
+                self.single_trajectory_param_size,
+            )
+
+            means = output[..., :D]
+
+            covs = output[..., D:]
+
+            # reshape covariance
+            covs = covs.view(
+                b,
+                n_objects,
+                K,
+                D,
+                D,
+            )
 
             for obj_idx in range(n_objects):
                 for batch_idx in range(b):
-                    true = trajectory[frame, batch_idx, obj_idx]  # (3,)
+                    # ----------------------------------
+                    # GT polynomial coefficients
+                    # shape: (3, 4)
+                    # flatten -> (12,)
+                    # ----------------------------------
 
-                    # mixture selection
-                    x_mu_b = x_mu[batch_idx, 0]
-                    y_mu_b = y_mu[batch_idx, 0]
-                    s_mu_b = s_mu[batch_idx, 0]
-                    covs_b = covs[batch_idx, 0]
-                    covs_k = covs_b.view(K, 3, 3)
-                    d = torch.sqrt(
-                        (x_mu_b - true[0]) ** 2
-                        + (y_mu_b - true[1]) ** 2
-                        + (s_mu_b - true[2]) ** 2
+                    true = trajectory[
+                        frame,
+                        batch_idx,
+                        obj_idx,
+                    ].reshape(-1)
+
+                    means_b = means[
+                        batch_idx,
+                        obj_idx,
+                    ]  # (K, 12)
+
+                    covs_b = covs[
+                        batch_idx,
+                        obj_idx,
+                    ]  # (K, 12, 12)
+
+                    # ----------------------------------
+                    # choose best trajectory mode
+                    # ----------------------------------
+
+                    d = torch.norm(
+                        means_b - true.unsqueeze(0),
+                        dim=-1,
                     )
 
                     k = torch.argmin(d)
 
-                    mean = torch.stack(
-                        [
-                            x_mu_b,
-                            y_mu_b,
-                            s_mu_b,
-                        ]
-                    )
+                    mean = means_b[k]
 
                     diff = true - mean
 
-                    cov = covs_k[k]
+                    cov = self.stabilize_covariance(covs_b[k])
 
-                    # 1. make symmetric
-                    cov = 0.5 * (cov + cov.T)
+                    # ----------------------------------
+                    # Cholesky decomposition
+                    # ----------------------------------
 
-                    # 2. build guaranteed positive-definite matrix
-                    cov = cov @ cov.T + 1e-3 * torch.eye(3, device=x.device)
+                    L = self.stable_cholesky(cov)
 
-                    # 3. stable Cholesky
-                    L = torch.linalg.cholesky(cov)
-
-                    # 4. stable log-det
+                    # log determinant
                     log_det = 2 * torch.sum(torch.log(torch.diagonal(L)))
 
-                    # 5. stable quadratic form (DON'T invert explicitly if possible)
+                    # Mahalanobis term
                     solve_term = diff @ torch.cholesky_solve(
-                        diff.unsqueeze(-1), L
+                        diff.unsqueeze(-1),
+                        L,
                     ).squeeze(-1)
+
                     nll = 0.5 * (log_det + solve_term)
 
-                    loss += torch.mean(nll)
+                    loss += nll
 
-        return loss / (b * frames * n_objects)
+        return loss / (frames * b * n_objects)

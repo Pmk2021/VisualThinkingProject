@@ -4,7 +4,7 @@ from AnytimeTrajectoryPredictor.models.architectures.base_model import (
     base_model,
 )
 
-from AnytimeTrajectoryPredictor.models.architectures.gnn import GNN
+
 from AnytimeTrajectoryPredictor.models.architectures.gru import gru_model
 
 
@@ -22,6 +22,7 @@ class TrajectoryPredictor(nn.Module):
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,
             )
         if model_type == "GNN":
+            from AnytimeTrajectoryPredictor.models.architectures.gnn import GNN
             return GNN(
                 state_dim=len(args.feature_extractor.features),
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,

@@ -21,6 +21,7 @@ setup(
         "wandb",
         "Pillow",
         "ultralytics",
+        "torch_geometric"
     ],
     extras_require={
         "waymo": [
