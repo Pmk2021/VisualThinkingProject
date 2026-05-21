@@ -318,6 +318,7 @@ class GNN(nn.Module):
         
     def stabilize_covariance(self, cov):
         # 1. force symmetry
+        
         cov = 0.5 * (cov + cov.transpose(-1, -2))
 
         # 2. remove NaN/Inf (CRITICAL)

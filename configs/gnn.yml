@@ -23,9 +23,9 @@ feature_extractor:
   regenerate_features: false # whether to regenerate features or use existing ones
 
 training:
-  batch_size: 8
+  batch_size: 16
   num_epochs: 10
-  learning_rate: 0.01
+  learning_rate: 0.0001
   from_checkpoint: false
   save_to: checkpoint/gnn.pth
   wandb_project: "Hello"

@@ -25,11 +25,11 @@ def make_dataloaders(args):
     )
 
     train_loader = DataLoader(
-        train_dataset, batch_size=args.training.batch_size, shuffle=True
+        train_dataset, batch_size=args.training.batch_size, shuffle=True, num_workers=4
     )
 
     val_loader = DataLoader(
-        val_dataset, batch_size=args.training.batch_size, shuffle=False
+        val_dataset, batch_size=args.training.batch_size, shuffle=False, num_workers=4
     )
 
     return train_loader, val_loader

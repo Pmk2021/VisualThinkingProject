@@ -242,7 +242,11 @@ class FeatureDataset(dataset.Dataset):
 
         # --- load subset from Arrow ---
         table = self.img_traj_table.take(row_idxs)
-
+        table = table.set_column(
+            table.schema.get_field_index(TRAJ_ID),
+            TRAJ_ID,
+            table[TRAJ_ID].cast(pa.string())
+        )
         # --- extract columns as numpy ---
         times = table.column(TIME).to_numpy()
 
@@ -262,15 +266,22 @@ class FeatureDataset(dataset.Dataset):
             latent_path,
             columns=[TRAJ_ID, TIME] + LATENT_FEATURE_COLS
         )
-
-        # --- merge on TRAJ_ID, TIME ---
-        merged = table.join(
-            latent_table,
-            keys=[TRAJ_ID, TIME],
-            join_type="inner"
+        latent_table = latent_table.set_column(
+            latent_table.schema.get_field_index(TRAJ_ID),
+            TRAJ_ID,
+            latent_table[TRAJ_ID].cast(pa.string())
         )
 
-        df = merged.to_pandas()
+        # --- merge on TRAJ_ID, TIME ---
+        merged = (
+            table.to_pandas()
+            .merge(
+                latent_table.to_pandas(),
+                on=[TRAJ_ID, TIME],
+                how="inner"
+            )
+            .sort_values(TIME)   
+        )
 
         feature_cols = bbox_cols + LATENT_FEATURE_COLS
 
