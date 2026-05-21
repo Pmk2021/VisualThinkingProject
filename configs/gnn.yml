@@ -23,7 +23,7 @@ feature_extractor:
   regenerate_features: false # whether to regenerate features or use existing ones
 
 training:
-  batch_size: 8
+  batch_size: 4
   num_epochs: 10
   learning_rate: 0.00001
   from_checkpoint: false
@@ -40,4 +40,4 @@ model:
   type: GNN
   num_trajectory_possibilities: 3
 
-num_workers: 4
+num_workers: 3

@@ -3,6 +3,7 @@ import wandb
 import random
 from itertools import islice
 from tqdm import tqdm
+import os
 
 from AnytimeTrajectoryPredictor.evaluation.diversity import compute_diversity_metrics
 from AnytimeTrajectoryPredictor.evaluation.latency import LatencyProfiler
@@ -10,6 +11,7 @@ from AnytimeTrajectoryPredictor.evaluation.latency import LatencyProfiler
 
 def _get_training_arg(args, key, default):
     return getattr(args.training, key, default) if key in args.training else default
+
 
 
 def _get_log_config(args, key, fallback_metric, fallback_steps):
@@ -79,6 +81,10 @@ class Trainer:
             fallback_metric="epoch",
             fallback_steps=_get_training_arg(args, "logging_steps", 1),
         )
+        total_grad_norm = torch.nn.utils.clip_grad_norm_(
+            self.model.parameters(),
+            max_norm=1.0
+        )
         self.global_step = 0
         wandb.init(project=args.training.wandb_project, config=args)
         wandb.define_metric("global_step")
@@ -107,13 +113,18 @@ class Trainer:
             loss_total += batch_loss
             # Apply Gradient Step
             self.optimizer.zero_grad()
+
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(
+
+            # ---- gradient monitoring ----
+            total_grad_norm = torch.nn.utils.clip_grad_norm_(
                 self.model.parameters(),
-                max_norm=1.0   # common default (try 0.5–5.0 depending on stability)
+                max_norm=1.0
             )
+
             self.optimizer.step()
 
+          
             self.global_step += 1
             epoch_progress = _epoch_progress(epoch, batch_idx, num_batches)
             batch_pbar.set_postfix(
@@ -122,6 +133,7 @@ class Trainer:
                     "avg_loss": f"{loss_total / batch_idx:.4f}",
                     "epoch": f"{epoch_progress:.3f}",
                     "step": self.global_step,
+                    "grad_norm": f"{total_grad_norm:.4f}"
                 }
             )
             if (
@@ -161,6 +173,26 @@ class Trainer:
                     ]
                 wandb.log(log_payload)
 
+        save_dir = getattr(self.args.training, "checkpoint_dir", "checkpoints")
+        os.makedirs(save_dir, exist_ok=True)
+
+        checkpoint_path = os.path.join(
+            save_dir,
+            f"model_epoch_{epoch}.pt"
+        )
+
+        torch.save(
+            {
+                "epoch": epoch,
+                "global_step": self.global_step,
+                "model_state_dict": self.model.state_dict(),
+                "optimizer_state_dict": self.optimizer.state_dict(),
+            },
+            checkpoint_path,
+        )
+
+        print(f"[Checkpoint] Saved model to {checkpoint_path}")
+
         return loss_total / max(num_batches, 1)
 
     def _compute_validation_batch_metrics(self, batch):
@@ -179,6 +211,7 @@ class Trainer:
         return loss.item(), diversity
 
     def validate(self, max_number_of_batches=None):
+        max_number_of_batches=20
         if max_number_of_batches is not None:
             max_number_of_batches = int(max_number_of_batches)
             if max_number_of_batches <= 0:
