@@ -14,6 +14,13 @@ def make_dataloaders(args):
     """
     Create dataloaders for training and validation datasets.
     """
+    if "num_workers" in args.training:
+        num_workers = args.training.num_workers
+    elif "num_workers" in args:
+        num_workers = args.num_workers
+    else:
+        num_workers = 0
+
     train_dataset = FeatureDataset(
         args.feature_extractor,
         split="training",
@@ -25,11 +32,17 @@ def make_dataloaders(args):
     )
 
     train_loader = DataLoader(
-        train_dataset, batch_size=args.training.batch_size, shuffle=True, num_workers=args.num_workers
+        train_dataset,
+        batch_size=args.training.batch_size,
+        shuffle=True,
+        num_workers=num_workers,
     )
 
     val_loader = DataLoader(
-        val_dataset, batch_size=args.training.batch_size, shuffle=False, num_workers=args.num_workers
+        val_dataset,
+        batch_size=args.training.batch_size,
+        shuffle=False,
+        num_workers=num_workers,
     )
 
     return train_loader, val_loader

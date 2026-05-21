@@ -34,7 +34,7 @@ class gru_model(base_model):
 
         # Single GRUCell that is applied iteratively for each frame.
         self.gru_cell = nn.GRUCell(
-            input_size=196, hidden_size=self.hidden_dim
+            input_size=self.state_dim, hidden_size=self.hidden_dim
         )
 
         # Small MLP to project from GRU hidden state to MDN parameters.
@@ -91,7 +91,11 @@ class gru_model(base_model):
             predicted_trajectories: batch X num_frames X num_objects X self.output_dim tensor representing trajectory
             hidden_state: hidden_state(optional, depends on model)
         """
-        num_frames, batch_size, num_objects, _ = frames.shape
+        num_frames, batch_size, num_objects, feature_dim = frames.shape
+        if feature_dim != self.state_dim:
+            raise ValueError(
+                f"Expected frame feature dimension {self.state_dim}, got {feature_dim}"
+            )
 
         # Initialize hidden state, ensuring it has the right shape and is on the right device.
         hidden = self._initial_hidden(

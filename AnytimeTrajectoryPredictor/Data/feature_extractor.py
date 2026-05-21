@@ -19,7 +19,14 @@ import torch
 # Define important columns
 TRAJ_ID = "trajectory_row_id"
 TIME = "frame_timestamp_micros"
+BBOX_FEATURE_COLS = [
+    "bbox_center_x",
+    "bbox_center_y",
+    "bbox_width",
+    "bbox_height",
+]
 LATENT_FEATURE_COLS = [f"local_latent_features_{i}" for i in range(192)]
+FEATURE_DIM = len(BBOX_FEATURE_COLS) + len(LATENT_FEATURE_COLS)
 DATAFOLDERCOL = "DATAFOLDERCOL"
 
 def _get_config_value(args, key, default=None):
@@ -250,13 +257,6 @@ class FeatureDataset(dataset.Dataset):
         # --- extract columns as numpy ---
         times = table.column(TIME).to_numpy()
 
-        bbox_cols = [
-            "bbox_center_x",
-            "bbox_center_y",
-            "bbox_width",
-            "bbox_height",
-        ]
-
         # --- load latent features from folder-specific parquet ---
         datafolder = table.column(DATAFOLDERCOL)[0].as_py()
 
@@ -283,7 +283,7 @@ class FeatureDataset(dataset.Dataset):
             .sort_values(TIME)   
         )
 
-        feature_cols = bbox_cols + LATENT_FEATURE_COLS
+        feature_cols = BBOX_FEATURE_COLS + LATENT_FEATURE_COLS
 
         times = merged[TIME].to_numpy()
         traj = merged[TRAJ_ID].to_numpy()
@@ -302,7 +302,7 @@ class FeatureDataset(dataset.Dataset):
 
         T = min(len(unique_times), self.window + self.future_frames)
 
-        F = 196  # 4 bbox + 192 latent features
+        F = FEATURE_DIM
         O = self.num_objects
 
         x = torch.zeros((T, O, F))

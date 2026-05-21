@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from AnytimeTrajectoryPredictor.Data.feature_extractor import FEATURE_DIM
 from AnytimeTrajectoryPredictor.models.architectures.base_model import (
     base_model,
 )
@@ -16,20 +17,21 @@ class TrajectoryPredictor(nn.Module):
     def create_model(args):
         """Factory method to create a TrajectoryPredictor model based on the provided configuration."""
         model_type = args.model.type
+        state_dim = args.model.state_dim if "state_dim" in args.model else FEATURE_DIM
         if model_type == "linear":
             return base_model(
-                state_dim=len(args.feature_extractor.features),
+                state_dim=state_dim,
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,
             )
         if model_type == "GNN":
             from AnytimeTrajectoryPredictor.models.architectures.gnn import GNN
             return GNN(
-                state_dim=len(args.feature_extractor.features),
+                state_dim=state_dim,
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,
             )
         if model_type == "gru":
             return gru_model(
-                state_dim=len(args.feature_extractor.features),
+                state_dim=state_dim,
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,
                 hidden_dim=args.model.hidden_dim if "hidden_dim" in args.model else None,
             )
