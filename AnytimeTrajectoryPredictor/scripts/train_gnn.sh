@@ -1,13 +1,13 @@
 #!/bin/bash
 #SBATCH --job-name=traj_gnn
-#SBATCH --time=06:00:00
+#SBATCH --time=08:00:00
 #SBATCH --account=cs-503
 #SBATCH --qos=cs-503
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
 #SBATCH --mem=64G
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=8
 #SBATCH --output=logs/%x_%j.out
 #SBATCH --error=logs/%x_%j.err
 

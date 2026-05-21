@@ -336,12 +336,12 @@ class FeatureDataset(dataset.Dataset):
         # --- target ---
         K = self.future_frames
 
-        area = x[:, :, 2] * x[:, :, 3]
+        area = x[::2, :, 2] * x[::2, :, 3]
         log_area = torch.log(area + 1e-6)
 
-        vx = fit_cubic(x[:, :, 0], K)
-        vy = fit_cubic(x[:, :, 1], K)
-        v_area = fit_cubic(log_area, K)
+        vx = fit_cubic(x[::2, :, 0], min(K, len(x[::2, :, 0]) - 10))
+        vy = fit_cubic(x[::2, :, 1], min(K, len(x[::2, :, 1]) - 10))
+        v_area = fit_cubic(log_area, min(K, len(log_area) - 10))
 
         y_valid = torch.stack(
             [vx, vy, v_area], dim=2
