@@ -181,7 +181,6 @@ class FeatureDataset(dataset.Dataset):
         # How many frames to look into future to plan trajectory
         self.future_frames = future_frames
         self.num_objects = args.num_objects if hasattr(args, "num_objects") else num_objects
-        print("A")
         # Define datasets
         self.image_trajectory_features = args.features.image_trajectories
         image_trajectory_files = _resolve_table_files(
@@ -191,7 +190,6 @@ class FeatureDataset(dataset.Dataset):
             legacy_path_key="image_trajectories_path",
             split=split,
         )
-        print("B")
         latent_feature_files = _resolve_table_files(
             args,
             dataset_root=args.feature_root,
@@ -199,14 +197,12 @@ class FeatureDataset(dataset.Dataset):
             legacy_path_key="fe_gt_local_latent_features_path",
             split=split,
         )
-        print("C")
         self.img_traj_table = _read_table_files(
             image_trajectory_files,
             columns=self.image_trajectory_features + [TRAJ_ID, TIME],
         )
 
 
-        print("E")
         # build index: trajectory_id -> row indices
         self._traj_to_indices = defaultdict(list)
 
@@ -221,7 +217,6 @@ class FeatureDataset(dataset.Dataset):
             idxs = np.array(idxs)
             idxs = idxs[np.argsort(times[idxs])]
             self._traj_to_indices[tid] = idxs.tolist()
-        print("F")
         self.valid_traj_ids = []
 
         min_len = self.window + self.future_frames

@@ -11,7 +11,7 @@ class base_model(nn.Module):
     ):
         super(base_model, self).__init__()
 
-        self.state_dim = 4
+        self.state_dim = state_dim
         self.num_trajectory_possibilities = num_trajectory_possibilities
 
         # cubic polynomial -> 4 coefficients
@@ -199,7 +199,7 @@ class base_model(nn.Module):
                     solve_term = ((diff ** 2) / (diag_var + 1e-6)).sum()
 
                     nll = 0.5 * (log_det + solve_term)
-                    nll = torch.clamp(nll, max=100.0)
+                    # nll = torch.clamp(nll, max=100.0)
                     loss += nll
 
         return loss / (frames * b * n_objects)
