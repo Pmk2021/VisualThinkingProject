@@ -108,6 +108,10 @@ class Trainer:
             # Apply Gradient Step
             self.optimizer.zero_grad()
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(
+                self.model.parameters(),
+                max_norm=1.0   # common default (try 0.5–5.0 depending on stability)
+            )
             self.optimizer.step()
 
             self.global_step += 1
