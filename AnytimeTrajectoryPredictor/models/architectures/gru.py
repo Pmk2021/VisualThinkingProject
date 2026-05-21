@@ -34,7 +34,7 @@ class gru_model(base_model):
 
         # Single GRUCell that is applied iteratively for each frame.
         self.gru_cell = nn.GRUCell(
-            input_size=self.state_dim, hidden_size=self.hidden_dim
+            input_size=196, hidden_size=self.hidden_dim
         )
 
         # Small MLP to project from GRU hidden state to MDN parameters.

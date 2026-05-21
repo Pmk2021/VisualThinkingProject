@@ -264,15 +264,13 @@ class FeatureDataset(dataset.Dataset):
         )
 
         # --- merge on TRAJ_ID, TIME ---
-        merged = (
-            table.to_pandas()
-            .merge(
-                latent_table.to_pandas(),
-                on=[TRAJ_ID, TIME],
-                how="inner"
-            )
-            .sort_values(TIME)   
+        merged = table.join(
+            latent_table,
+            keys=[TRAJ_ID, TIME],
+            join_type="inner"
         )
+
+        df = merged.to_pandas()
 
         feature_cols = bbox_cols + LATENT_FEATURE_COLS
 

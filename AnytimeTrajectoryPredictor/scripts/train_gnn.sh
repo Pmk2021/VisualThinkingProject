@@ -28,5 +28,5 @@ echo "Python: $(which python)"
 # ---------------------------
 # run training
 # ---------------------------
-python AnytimeTrajectoryPredictor/scripts/train_trajectory_model.py \
+python scripts/train_trajectory_model.py \
   --config /home/muralikr/VisualThinkingProject/configs/gnn.yml

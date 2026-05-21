@@ -7,6 +7,8 @@ import torch.nn.functional as F
 import torch.nn as nn
 
 
+
+
 def fully_connected_edge_index(N, device):
     adj = torch.ones(N, N, device=device)
     edge_index, _ = dense_to_sparse(adj)
@@ -37,31 +39,60 @@ class InteractionGNN(MessagePassing):
     def update(self, aggr_out, x):
         return x + self.node_update(aggr_out)
 
-
 class GNN(nn.Module):
+    COVARIANCE_EPS = 1e-3
     ### A simple linear model that predicts the mean and covariance of the velocity for each trajectory possibility.
     def __init__(self, state_dim, num_trajectory_possibilities):
         super(GNN, self).__init__()
         self.hidden_dim = 64
-        self.state_dim = state_dim
+        self.state_dim = 196
         self.num_trajectory_possibilities = num_trajectory_possibilities
+        polynomial_degree = 3
+        self.num_coeffs = polynomial_degree + 1
+
+        # x, y, scale
+        self.num_dims = 3
+        self.spatial_indices = [0, 1]  # Indices for x and y coefficients
+
+        # total coeffs per trajectory hypothesis
+        self.coeff_dim = self.num_dims * self.num_coeffs  # 3 * 4 = 12
+
+        # --------------------------------------------------
+        # For each trajectory hypothesis:
+        #
+        # mean:
+        #   12 params
+        #
+        # covariance:
+        #   12 x 12 = 144 params
+        # --------------------------------------------------
+
+        self.mean_params = self.coeff_dim
+        self.cov_params = self.coeff_dim * self.coeff_dim
+
+        self.single_trajectory_param_size = self.mean_params + self.cov_params
+
+        self.output_dim = (
+            self.num_trajectory_possibilities
+            * self.single_trajectory_param_size
+        )
 
         self.node_encoder = nn.Linear(self.state_dim, self.hidden_dim)
         self.gnn = InteractionGNN(
             self.hidden_dim
         )  # from earlier PyG-style layer
         self.traj_head = nn.Linear(
-            self.hidden_dim, self.num_trajectory_possibilities * 11
+            self.hidden_dim, self.num_trajectory_possibilities * self.single_trajectory_param_size,
         )
         self.refine_mlp = nn.Sequential(
             nn.Linear(
-                self.hidden_dim + self.num_trajectory_possibilities * 11,
+                self.hidden_dim + self.num_trajectory_possibilities * self.single_trajectory_param_size,
                 self.hidden_dim,
             ),
             nn.ReLU(),
         )
         self.delta_head = nn.Linear(
-            self.hidden_dim, self.num_trajectory_possibilities * 11
+            self.hidden_dim, self.num_trajectory_possibilities * self.single_trajectory_param_size
         )
 
     def forward(self, frames, f_, object_mask=None, hidden_state=None):
@@ -86,6 +117,7 @@ class GNN(nn.Module):
             # 1. Temporal / state update
 
             x_t = frames[t]  # (B, N, F)
+           
             x_emb = self.node_encoder(x_t)  # (B, N, H)
             h = h + x_emb
 
@@ -283,3 +315,37 @@ class GNN(nn.Module):
                     loss += nll
 
         return loss / (frames * b * n_objects)
+        
+    def stabilize_covariance(self, cov):
+        # 1. force symmetry
+        cov = 0.5 * (cov + cov.transpose(-1, -2))
+
+        # 2. remove NaN/Inf (CRITICAL)
+        cov = torch.nan_to_num(cov, nan=0.0, posinf=0.0, neginf=0.0)
+
+        # 3. eigen decomposition
+        eigvals, eigvecs = torch.linalg.eigh(cov)
+
+        # 4. clamp spectrum
+        eigvals = torch.clamp(eigvals, min=self.COVARIANCE_EPS)
+
+        cov_psd = eigvecs @ torch.diag_embed(eigvals) @ eigvecs.transpose(-1, -2)
+
+        # 5. final jitter (important in float32)
+        eye = torch.eye(cov.shape[-1], device=cov.device, dtype=cov.dtype)
+        cov_psd = cov_psd + self.COVARIANCE_EPS * eye
+
+        return cov_psd
+
+    def stable_cholesky(self, cov, max_attempts=5):
+        eye = torch.eye(cov.shape[-1], device=cov.device, dtype=cov.dtype)
+        jitter = self.COVARIANCE_EPS
+
+        for _ in range(max_attempts):
+            L, info = torch.linalg.cholesky_ex(cov)
+            if torch.all(info == 0):
+                return L
+            cov = cov + jitter * eye
+            jitter *= 10
+
+        return torch.linalg.cholesky(cov)

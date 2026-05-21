@@ -23,8 +23,8 @@ feature_extractor:
   regenerate_features: false # whether to regenerate features or use existing ones
 
 training:
-  batch_size: 64
-  num_epochs: 1000
+  batch_size: 8
+  num_epochs: 10
   learning_rate: 0.01
   from_checkpoint: false
   save_to: checkpoint/gnn.pth
