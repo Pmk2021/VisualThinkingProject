@@ -39,7 +39,7 @@ def main(args):
     """Main function to set up data, model, optimizer, and trainer."""
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    train_loader, val_loader = make_dataloaders(args)
+    
 
     # Check if model exists and load it, otherwise create a new one
     if args.training.from_checkpoint:
@@ -49,7 +49,7 @@ def main(args):
     else:
         print("No pre-trained model specified. Initializing new model.")
         model = TrajectoryPredictor.create_model(args).to(device)
-
+    train_loader, val_loader = make_dataloaders(args)
     optimizer = torch.optim.Adam(
         model.parameters(), lr=args.training.learning_rate
     )
