@@ -166,7 +166,7 @@ def fit_cubic(signal, K):
 
 
 class FeatureDataset(dataset.Dataset):
-    def __init__(self, args, split=None, window=4, future_frames=5, num_objects=5):
+    def __init__(self, args, split=None, window=10, future_frames=90, num_objects=5):
         """Dataset class for loading pre-extracted features from CSV files.
         If regenerate_features is True, it will extract features from raw video data.
 
