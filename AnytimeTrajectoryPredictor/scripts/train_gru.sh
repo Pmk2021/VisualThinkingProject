@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=traj_gnn
+#SBATCH --job-name=traj_gru
 #SBATCH --time=10:00:00
 #SBATCH --account=cs-503
 #SBATCH --qos=cs-503
@@ -20,7 +20,7 @@ conda activate vtp
 # ---------------------------
 # move to project directory
 # ---------------------------
-cd /home/muralikr/VisualThinkingProject/AnytimeTrajectoryPredictor
+cd /home/lamsler/VisualThinkingProject/AnytimeTrajectoryPredictor
 
 echo "Running on: $(hostname)"
 echo "Python: $(which python)"
