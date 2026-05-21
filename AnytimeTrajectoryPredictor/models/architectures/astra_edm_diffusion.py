@@ -126,6 +126,7 @@ class DiffusionTransformerBlock(nn.Module):
 
     def forward(self, x, context):
         x = x + self.self_attn(self.self_norm(x), self.self_norm(x), self.self_norm(x), need_weights=False)[0]
+        # we care only about the output, not the attention weights
         x = x + self.cross_attn(self.cross_norm(x), context, context, need_weights=False)[0]
         x = x + self.ffn(self.ffn_norm(x))
         return x
@@ -200,9 +201,12 @@ class GMMHead(nn.Module):
     def forward(self, denoised, hidden):
         mode_hidden = hidden.mean(dim=(2, 3))
         mode_logits = self.mode_logits_head(mode_hidden).squeeze(-1)
+        
+        # modes are denoised output trajectory plus a delta predicted from the hidden state
         delta_mu = self.mean_delta_head(hidden)
         mu = denoised + delta_mu
 
+        # clip the covariance matrix so it does not explode, construct cholesky
         cov_raw = self.cov_head(hidden)
         log_l11 = cov_raw[..., 0].clamp(self.log_std_min, self.log_std_max)
         l21 = cov_raw[..., 1].clamp(-self.offdiag_clip, self.offdiag_clip)
@@ -257,6 +261,7 @@ class ASTRAEDMDiffusionModel(nn.Module):
         dropout = _get(config, "dropout", 0.1)
         input_dim = _get(config, "input_dim", 6)
 
+        #TODO: get actual trajectory normalization data
         self.normalizer = TrajectoryNormalizer(
             mean=_get(config, "trajectory_mean", [0.0, 0.0]),
             std=_get(config, "trajectory_std", [1.0, 1.0]),
