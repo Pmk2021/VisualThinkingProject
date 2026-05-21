@@ -23,7 +23,7 @@ feature_extractor:
   regenerate_features: false # whether to regenerate features or use existing ones
 
 training:
-  batch_size: 4
+  batch_size: 2
   num_epochs: 10
   learning_rate: 0.00001
   from_checkpoint: false
