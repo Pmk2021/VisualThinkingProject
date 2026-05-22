@@ -137,8 +137,11 @@ def create_val() -> None:
             image_path.unlink()
             label_path.unlink()
 
-def main() -> None:
-    chunk_dirs = (list(DEFAULT_SOURCE_ROOT.glob("**/training__*")) + list(DEFAULT_SOURCE_ROOT.glob("**/validation__*"))) if IZAR else [DEFAULT_SOURCE_ROOT / "waymo"]
+def main(val=False) -> None:
+	if val:
+		chunk_dirs = list(DEFAULT_SOURCE_ROOT.glob("**/validation__*")) if IZAR else []
+	else:
+    	chunk_dirs = (list(DEFAULT_SOURCE_ROOT.glob("**/training__*")) + list(DEFAULT_SOURCE_ROOT.glob("**/validation__*"))) if IZAR else [DEFAULT_SOURCE_ROOT / "waymo"]
 
     DEFAULT_OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)  
 	
@@ -151,4 +154,14 @@ def main() -> None:
         create_val()
 
 if __name__ == "__main__":
-	main()
+	parser = argparse.ArgumentParser(
+        description="Prepare the Waymo dataset for YOLO finetuning."
+    )
+    parser.add_argument(
+        "--val",
+        action="store_true",
+        help="Process validation directories only.",
+    )
+    args = parser.parse_args()
+	
+	main(args.val)
