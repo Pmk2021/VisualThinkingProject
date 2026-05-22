@@ -296,37 +296,14 @@ class GNN(nn.Module):
                     #cov = self.stabilize_covariance(covs_b[k])
                     #cov = torch.eye(D, device=cov.device)
                                         
-                    # Option 1: Directly use your constructed L
-                    L_raw = covs_b[k].view(D, D)
-                    L = torch.tril(L_raw)
+                    diag_var = torch.nn.functional.softplus(torch.diagonal(covs_b[k])) + 1e-4
+                    diag_var = diag_var.clamp(min=1e-4)  # Ensure positivity
 
-                    # Enforce positive diagonal with larger epsilon
-                    diag = torch.nn.functional.softplus(torch.diagonal(L)) + 1e-2  # Increased from 1e-3
-                    L = L - torch.diag_embed(torch.diagonal(L)) + torch.diag_embed(diag)
-
-                    # Check for numerical issues
-                    if torch.isnan(L).any() or torch.isinf(L).any():
-                        print(f"NaN/Inf in L at frame {frame}, obj {obj_idx}, batch {batch_idx}")
-                        # Fallback to identity
-                        L = torch.eye(D, device=L.device) * 1e-2
-                        cov = L @ L.T
-
-                    cov = L @ L.T
-
-                    # Regularize covariance (important!)
-                    regularization = 1e-4 * torch.eye(D, device=cov.device)
-                    cov = cov + regularization
-
-                    
-                    diag_var = torch.diag(cov).clamp(min=1e-4)
                     log_det = torch.log(diag_var + 1e-6).sum()
                     solve_term = ((diff ** 2) / (diag_var + 1e-6)).sum()
 
                     nll = 0.5 * (log_det + solve_term)
-
-                    # Clamp to prevent explosion
                     nll = torch.clamp(nll, max=100.0)
-
                     loss += nll
 
         return loss / (frames * b * n_objects)

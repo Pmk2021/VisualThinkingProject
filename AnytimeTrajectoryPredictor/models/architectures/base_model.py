@@ -11,7 +11,7 @@ class base_model(nn.Module):
     ):
         super(base_model, self).__init__()
 
-        self.state_dim = 4
+        self.state_dim = state_dim
         self.num_trajectory_possibilities = num_trajectory_possibilities
 
         # cubic polynomial -> 4 coefficients
@@ -49,30 +49,8 @@ class base_model(nn.Module):
             self.output_dim,
         )
 
-    def stabilize_covariance(self, cov):
-        """
-        Stabilize covariance matrices by ensuring symmetry and adding a small value to the diagonal.
-        This helps prevent numerical issues during Cholesky decomposition.
-        Modularized to be reusable to compute the diversity merics in evaluation/diversity.py.
-        """
-        cov = 0.5 * (cov + cov.transpose(-1, -2)) # Ensure symmetry
-        eye = torch.eye(cov.shape[-1], device=cov.device, dtype=cov.dtype)
-        return cov @ cov.transpose(-1, -2) + self.COVARIANCE_EPS * eye
-
-    def stable_cholesky(self, cov, max_attempts=5):
-        eye = torch.eye(cov.shape[-1], device=cov.device, dtype=cov.dtype)
-        jitter = self.COVARIANCE_EPS
-
-        for _ in range(max_attempts):
-            L, info = torch.linalg.cholesky_ex(cov)
-            if torch.all(info == 0):
-                return L
-            cov = cov + jitter * eye
-            jitter *= 10
-
-        return torch.linalg.cholesky(cov)
-
     def forward(self, frames, f_, object_mask=None, hidden_state=None):
+
         """
         Given a sequence of frames, return a batch X num_frames X self.output_dim tensor representing the trajectory
         Parameters:
@@ -211,26 +189,57 @@ class base_model(nn.Module):
 
                     diff = true - mean
 
-                    cov = self.stabilize_covariance(covs_b[k])
+                    #cov = self.stabilize_covariance(covs_b[k])
+                    #cov = torch.eye(D, device=cov.device)
+                                        
+                    diag_var = torch.nn.functional.softplus(torch.diagonal(covs_b[k])) + 1e-4
+                    diag_var = diag_var.clamp(min=1e-4)  # Ensure positivity
 
-                    # ----------------------------------
-                    # Cholesky decomposition
-                    # ----------------------------------
-
-                    L = self.stable_cholesky(cov)
-
-                    # log determinant
-                    log_det = 2 * torch.sum(torch.log(torch.diagonal(L)))
-
-                    # Mahalanobis term
-                    solve_term = diff @ torch.cholesky_solve(
-                        diff.unsqueeze(-1),
-                        L,
-                    ).squeeze(-1)
+                    log_det = torch.log(diag_var + 1e-6).sum()
+                    solve_term = ((diff ** 2) / (diag_var + 1e-6)).sum()
 
                     nll = 0.5 * (log_det + solve_term)
-
+                    # nll = torch.clamp(nll, max=100.0)
                     loss += nll
 
         return loss / (frames * b * n_objects)
+        
+    def stabilize_covariance(self, cov):
+        # 1. force symmetry
+        
+        cov = 0.5 * (cov + cov.transpose(-1, -2))
 
+        # 2. remove NaN/Inf (CRITICAL)
+        cov = torch.nan_to_num(cov, nan=0.0, posinf=0.0, neginf=0.0)
+
+        # 3. eigen decomposition
+        eigvals, eigvecs = torch.linalg.eigh(cov)
+
+        # 4. clamp spectrum
+        eigvals = torch.clamp(eigvals, min=self.COVARIANCE_EPS)
+
+        cov_psd = eigvecs @ torch.diag_embed(eigvals) @ eigvecs.transpose(-1, -2)
+
+        # 5. final jitter (important in float32)
+        eye = torch.eye(cov.shape[-1], device=cov.device, dtype=cov.dtype)
+        cov_psd = cov_psd + self.COVARIANCE_EPS * eye
+
+        return cov_psd
+
+    def stable_cholesky(self, cov, max_attempts=5):
+        eye = torch.eye(cov.shape[-1], device=cov.device, dtype=cov.dtype)
+        jitter = self.COVARIANCE_EPS
+
+        for _ in range(max_attempts):
+            L, info = torch.linalg.cholesky_ex(cov)
+            if torch.all(info == 0):
+                return L
+            cov = cov + jitter * eye
+            jitter *= 10
+        try:
+            return torch.linalg.cholesky(cov)
+        except RuntimeError as e:
+            print(cov)
+            raise RuntimeError(
+                f"Cholesky decomposition failed after {max_attempts} attempts with jitter up to {jitter:.2e}"
+            ) from e
