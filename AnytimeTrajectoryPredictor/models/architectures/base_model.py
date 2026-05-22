@@ -73,7 +73,14 @@ class base_model(nn.Module):
 
         return predicted_trajectory_list
 
-    def compute_loss(self, frames_features, trajectories, f_):
+    def compute_loss(
+        self,
+        frames_features,
+        trajectories,
+        f_,
+        object_mask=None,
+        return_diagnostics=False,
+    ):
         """Calculate the average negative log-likelihood loss for the predicted trajectory distribution across all frames in the batch.
         Args:
             frames_features: The input state features for all frames. Shape: (batch_size, num_frames, num_objects, feature_dim)
@@ -85,22 +92,58 @@ class base_model(nn.Module):
 
         num_frames, b, num_objects, feature_dim = frames_features.shape
 
-        total_loss = 0
+        if object_mask is not None:
+            if object_mask.dim() == 4:
+                object_mask = object_mask.squeeze(-1)
+            object_mask = object_mask.to(device=frames_features.device)
+
+        total_loss = frames_features.new_tensor(0.0)
+        diag_vars = []
         for i in range(0, num_frames):
             trajectory = trajectories[: i + 1]
+            mask = object_mask[: i + 1] if object_mask is not None else None
 
-            loss = self.get_single_loss(
-                frames_features[: i + 1], trajectory, f_
-            )
+            if return_diagnostics:
+                loss, step_diag_vars = self.get_single_loss(
+                    frames_features[: i + 1],
+                    trajectory,
+                    f_,
+                    object_mask=mask,
+                    return_diag_vars=True,
+                )
+                if step_diag_vars is not None:
+                    diag_vars.append(step_diag_vars)
+            else:
+                loss = self.get_single_loss(
+                    frames_features[: i + 1],
+                    trajectory,
+                    f_,
+                    object_mask=mask,
+                )
             total_loss += loss
 
-        return total_loss / len(frames_features)
+        loss = total_loss / len(frames_features)
+        if not return_diagnostics:
+            return loss
+
+        diagnostics = {}
+        if diag_vars:
+            diag_vars = torch.cat(diag_vars)
+            diagnostics = {
+                "diag_var_min": float(diag_vars.min().item()),
+                "diag_var_median": float(diag_vars.median().item()),
+                "diag_var_max": float(diag_vars.max().item()),
+            }
+
+        return loss, diagnostics
 
     def get_single_loss(
         self,
         x,
         trajectory,
         f_,
+        object_mask=None,
+        return_diag_vars=False,
     ):
         """
         trajectory shape:
@@ -119,7 +162,14 @@ class base_model(nn.Module):
 
         output_entire = self.forward(x, f_)
 
-        loss = 0.0
+        if object_mask is not None:
+            if object_mask.dim() == 4:
+                object_mask = object_mask.squeeze(-1)
+            object_mask = object_mask.to(device=x.device)
+
+        loss = x.new_tensor(0.0)
+        valid_count = 0
+        diag_vars = []
 
         for frame in range(frames):
             output = output_entire[frame]
@@ -152,6 +202,12 @@ class base_model(nn.Module):
 
             for obj_idx in range(n_objects):
                 for batch_idx in range(b):
+                    if (
+                        object_mask is not None
+                        and object_mask[frame, batch_idx, obj_idx] <= 0
+                    ):
+                        continue
+
                     # ----------------------------------
                     # GT polynomial coefficients
                     # shape: (3, 4)
@@ -194,6 +250,8 @@ class base_model(nn.Module):
                                         
                     diag_var = torch.nn.functional.softplus(torch.diagonal(covs_b[k])) + 1e-4
                     diag_var = diag_var.clamp(min=1e-4)  # Ensure positivity
+                    if return_diag_vars:
+                        diag_vars.append(diag_var.detach().reshape(-1))
 
                     log_det = torch.log(diag_var + 1e-6).sum()
                     solve_term = ((diff ** 2) / (diag_var + 1e-6)).sum()
@@ -201,8 +259,13 @@ class base_model(nn.Module):
                     nll = 0.5 * (log_det + solve_term)
                     # nll = torch.clamp(nll, max=100.0)
                     loss += nll
+                    valid_count += 1
 
-        return loss / (frames * b * n_objects)
+        loss = loss / max(valid_count, 1)
+        if return_diag_vars:
+            return loss, torch.cat(diag_vars) if diag_vars else None
+
+        return loss
         
     def stabilize_covariance(self, cov):
         # 1. force symmetry

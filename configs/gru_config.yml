@@ -24,7 +24,7 @@ feature_extractor:
 training:
   batch_size: 8
   num_epochs: 10
-  learning_rate: 0.01
+  learning_rate: 0.001
   from_checkpoint: false
   save_to: checkpoint/gru_model_paths.pth
   wandb_project: "AnytimeTrajectoryPredictor"

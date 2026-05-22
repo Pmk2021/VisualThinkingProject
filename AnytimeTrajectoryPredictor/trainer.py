@@ -103,12 +103,23 @@ class Trainer:
             position=1,
         )
         for batch_idx, batch in enumerate(batch_pbar, start=1):
-            feature, trajectory = batch["features"], batch["trajectory"]
+            feature, trajectory, mask = (
+                batch["features"],
+                batch["trajectory"],
+                batch["mask"],
+            )
             feature = feature.transpose(0, 1).to(self.device)
             trajectory = trajectory.transpose(0, 1).to(self.device)
+            mask = mask.transpose(0, 1).to(self.device)
             refinement_steps = [random.randint(1, 10) for _ in range(len(feature))]
             # Compute Loss
-            loss = self.model.compute_loss(feature, trajectory, refinement_steps)
+            loss, loss_diagnostics = self.model.compute_loss(
+                feature,
+                trajectory,
+                refinement_steps,
+                object_mask=mask,
+                return_diagnostics=True,
+            )
             batch_loss = loss.item()
             loss_total += batch_loss
             # Apply Gradient Step
@@ -121,6 +132,7 @@ class Trainer:
                 self.model.parameters(),
                 max_norm=1.0
             )
+            grad_norm = float(total_grad_norm.item())
 
             self.optimizer.step()
 
@@ -133,23 +145,25 @@ class Trainer:
                     "avg_loss": f"{loss_total / batch_idx:.4f}",
                     "epoch": f"{epoch_progress:.3f}",
                     "step": self.global_step,
-                    "grad_norm": f"{total_grad_norm:.4f}"
+                    "grad_norm": f"{grad_norm:.4f}"
                 }
             )
             if (
                 self.training_log["metric"] == "batch"
                 and _should_log(self.global_step, self.training_log)
             ):
-                wandb.log(
-                    {
-                        "global_step": self.global_step,
-                        "epoch": epoch_progress,
-                        "train/batch": batch_idx,
-                        "train/batch_loss": batch_loss,
-                        "train/epoch_loss_so_far": loss_total / batch_idx,
-                        "train/learning_rate": self.optimizer.param_groups[0]["lr"],
-                    }
-                )
+                log_payload = {
+                    "global_step": self.global_step,
+                    "epoch": epoch_progress,
+                    "train/batch": batch_idx,
+                    "train/batch_loss": batch_loss,
+                    "train/epoch_loss_so_far": loss_total / batch_idx,
+                    "train/learning_rate": self.optimizer.param_groups[0]["lr"],
+                    "train/grad_norm": grad_norm,
+                }
+                for key, value in loss_diagnostics.items():
+                    log_payload[f"train/{key}"] = value
+                wandb.log(log_payload)
 
             if (
                 self.validation_log["metric"] == "batch"
@@ -200,8 +214,14 @@ class Trainer:
             batch["features"].transpose(0, 1).to(self.device),
             batch["trajectory"].transpose(0, 1).to(self.device),
         )
+        mask = batch["mask"].transpose(0, 1).to(self.device)
         refinement_steps = [random.randint(1, 10) for _ in range(len(feature))]
-        loss = self.model.compute_loss(feature, trajectory, refinement_steps)
+        loss = self.model.compute_loss(
+            feature,
+            trajectory,
+            refinement_steps,
+            object_mask=mask,
+        )
 
         diversity = None
         if self.measure_diversity:
