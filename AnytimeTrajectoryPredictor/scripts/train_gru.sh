@@ -3,11 +3,8 @@
 #SBATCH --time=10:00:00
 #SBATCH --account=cs-503
 #SBATCH --qos=cs-503
-#SBATCH --partition=gpu
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:2
 #SBATCH --mem=64G
-#SBATCH --ntasks=1
-#SBATCH --cpus-per-task=8
 #SBATCH --output=logs/%x_%j.out
 #SBATCH --error=logs/%x_%j.err
 
@@ -28,5 +25,6 @@ echo "Python: $(which python)"
 # ---------------------------
 # run training
 # ---------------------------
+echo "Starting training with GRU model..."
 python scripts/train_trajectory_model.py \
   --config /home/lamsler/VisualThinkingProject/configs/gru_config.yml

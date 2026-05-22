@@ -316,6 +316,17 @@ class Trainer:
             if len(log_payload) > 2:
                 wandb.log(log_payload)
 
+        # Validate once more at the end of training with the full validation set
+        # Log also to wandb.summary for easy cross-run comparison of final metrics
+        validation_loss, diversity = self.validate()
+        final_metrics = {
+            "final_validation_loss": validation_loss,
+        }
+        if diversity is not None:
+            final_metrics["final_apd"] = diversity["apd"]
+            final_metrics["final_mean_pairwise_w2"] = diversity["mean_pairwise_w2"]
+        wandb.summary.update(final_metrics)
+
         if self.measure_latency:
             self.profile_latency()
 
