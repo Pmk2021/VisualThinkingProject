@@ -248,8 +248,9 @@ class base_model(nn.Module):
                     #cov = self.stabilize_covariance(covs_b[k])
                     #cov = torch.eye(D, device=cov.device)
                                         
-                    diag_var = torch.nn.functional.softplus(torch.diagonal(covs_b[k])) + 1e-4
-                    diag_var = diag_var.clamp(min=1e-4)  # Ensure positivity
+                    min_var = 1e-2
+                    diag_var = torch.nn.functional.softplus(torch.diagonal(covs_b[k])) + min_var
+                    diag_var = diag_var.clamp(min=min_var)
                     if return_diag_vars:
                         diag_vars.append(diag_var.detach().reshape(-1))
 
