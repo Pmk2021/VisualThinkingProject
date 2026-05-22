@@ -139,9 +139,9 @@ def create_val() -> None:
 
 def main(val=False) -> None:
 	if val:
-		chunk_dirs = list(DEFAULT_SOURCE_ROOT.glob("**/validation__*")) if IZAR else []
+	    chunk_dirs = list(DEFAULT_SOURCE_ROOT.glob("**/validation__*")) if IZAR else []
 	else:
-    	chunk_dirs = (list(DEFAULT_SOURCE_ROOT.glob("**/training__*")) + list(DEFAULT_SOURCE_ROOT.glob("**/validation__*"))) if IZAR else [DEFAULT_SOURCE_ROOT / "waymo"]
+        chunk_dirs = (list(DEFAULT_SOURCE_ROOT.glob("**/training__*")) + list(DEFAULT_SOURCE_ROOT.glob("**/validation__*"))) if IZAR else [DEFAULT_SOURCE_ROOT / "waymo"]
 
     DEFAULT_OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)  
 	
