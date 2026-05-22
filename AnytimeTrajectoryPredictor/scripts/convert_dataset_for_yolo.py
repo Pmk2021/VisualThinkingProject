@@ -38,12 +38,6 @@ def resolve_table_path(chunk_dir: Path, manifest: dict[str, Any], table_name: st
 
     raise FileNotFoundError(f"Missing {table_name} table in {chunk_dir}")
 
-
-def load_chunk_tables(chunk_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
-	images = pd.read_parquet(chunk_dir / "images.parquet")
-	image_trajectories = pd.read_parquet(chunk_dir / "image_trajectories.parquet")
-	return images, image_trajectories
-
 def image_stem(image_id: str) -> str:
 	return str(image_id).replace("/", "_").replace(";", "_")
 
@@ -66,7 +60,21 @@ def row_to_waymo_label(row: pd.Series, width: int, height: int) -> str | None:
     return f"{int(object_type)-1} {cx:.6f} {cy:.6f} {w:.6f} {h:.6f}"
 
 def convert_chunk(chunk_dir: Path, output_root: Path) -> None:
-    images, image_trajectories = load_chunk_tables(chunk_dir)
+    split = chunk_dir.name.split("__")[0]
+    split_dir = SPLIT_TO_FOLDER.get(split, split)
+    image_dir = output_root / "images" / split_dir
+    label_dir = output_root / "labels" / split_dir
+    image_dir.mkdir(parents=True, exist_ok=True)
+    label_dir.mkdir(parents=True, exist_ok=True)
+
+    images = pd.read_parquet(chunk_dir / "images.parquet")
+    print(f"{image_stem(images['image_id'][0])}.jpg")
+    print(image_dir)
+    if f"{image_stem(images['image_id'][0])}.jpg" in [p.name for p in image_dir.glob("*.jpg")]:
+        print(f"Chunk {chunk_dir} already converted, skipping.")
+        return
+
+    image_trajectories = pd.read_parquet(chunk_dir / "image_trajectories.parquet")
 
     images = images.sort_values(
         ["scene_id", "camera_name", "frame_timestamp_micros"],
@@ -82,14 +90,8 @@ def convert_chunk(chunk_dir: Path, output_root: Path) -> None:
         for image_id, group in image_trajectories.groupby("image_id", sort=False)
     }
 
-    split = chunk_dir.name.split("__")[0]
-    split_dir = SPLIT_TO_FOLDER.get(split, split)
     for _, row in images.iterrows():
-        image_dir = output_root / "images" / split_dir
-        label_dir = output_root / "labels" / split_dir
-        image_dir.mkdir(parents=True, exist_ok=True)
-        label_dir.mkdir(parents=True, exist_ok=True)
-
+        
         stem = image_stem(str(row["image_id"]))
         image_path = image_dir / f"{stem}.jpg"
         label_path = label_dir / f"{stem}.txt"
