@@ -29,4 +29,4 @@ echo "Python: $(which python)"
 # run training
 # ---------------------------
 python scripts/train_trajectory_model.py \
-  --config /home/lamsler/VisualThinkingProject/configs/gru_config.yaml
+  --config /home/lamsler/VisualThinkingProject/configs/gru_config.yml
