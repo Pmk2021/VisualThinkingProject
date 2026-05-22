@@ -5,6 +5,7 @@ from typing import Any
 
 import pandas as pd
 import platform 
+import argparse
 import re
 from tqdm import tqdm
 
@@ -138,9 +139,9 @@ def create_val() -> None:
             label_path.unlink()
 
 def main(val=False) -> None:
-	if val:
-	    chunk_dirs = list(DEFAULT_SOURCE_ROOT.glob("**/validation__*")) if IZAR else []
-	else:
+    if val:
+        chunk_dirs = list(DEFAULT_SOURCE_ROOT.glob("**/validation__*")) if IZAR else []
+    else:
         chunk_dirs = (list(DEFAULT_SOURCE_ROOT.glob("**/training__*")) + list(DEFAULT_SOURCE_ROOT.glob("**/validation__*"))) if IZAR else [DEFAULT_SOURCE_ROOT / "waymo"]
 
     DEFAULT_OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)  
@@ -154,7 +155,7 @@ def main(val=False) -> None:
         create_val()
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser(
+    parser = argparse.ArgumentParser(
         description="Prepare the Waymo dataset for YOLO finetuning."
     )
     parser.add_argument(
@@ -163,5 +164,5 @@ if __name__ == "__main__":
         help="Process validation directories only.",
     )
     args = parser.parse_args()
-	
-	main(args.val)
+
+    main(args.val)
