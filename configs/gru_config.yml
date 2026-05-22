@@ -30,6 +30,10 @@ training:
   wandb_project: "AnytimeTrajectoryPredictor"
   measure_diversity: true
   measure_latency: true
+  checkpoint:
+    metric: epoch # either batch or epoch
+    steps: 1 # save every X batches/epochs, depending on metric
+    dir: checkpoints
   training_log:
     metric: batch
     steps: 1

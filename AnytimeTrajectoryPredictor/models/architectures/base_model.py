@@ -99,12 +99,13 @@ class base_model(nn.Module):
 
         total_loss = frames_features.new_tensor(0.0)
         diag_vars = []
+        selected_mean_l2_errors = []
         for i in range(0, num_frames):
             trajectory = trajectories[: i + 1]
             mask = object_mask[: i + 1] if object_mask is not None else None
 
             if return_diagnostics:
-                loss, step_diag_vars = self.get_single_loss(
+                loss, step_diag_vars, step_selected_mean_l2_errors = self.get_single_loss(
                     frames_features[: i + 1],
                     trajectory,
                     f_,
@@ -113,6 +114,8 @@ class base_model(nn.Module):
                 )
                 if step_diag_vars is not None:
                     diag_vars.append(step_diag_vars)
+                if step_selected_mean_l2_errors is not None:
+                    selected_mean_l2_errors.append(step_selected_mean_l2_errors)
             else:
                 loss = self.get_single_loss(
                     frames_features[: i + 1],
@@ -134,6 +137,11 @@ class base_model(nn.Module):
                 "diag_var_median": float(diag_vars.median().item()),
                 "diag_var_max": float(diag_vars.max().item()),
             }
+        if selected_mean_l2_errors:
+            selected_mean_l2_errors = torch.cat(selected_mean_l2_errors)
+            diagnostics["selected_mean_l2_error"] = float(
+                selected_mean_l2_errors.mean().item()
+            )
 
         return loss, diagnostics
 
@@ -170,6 +178,7 @@ class base_model(nn.Module):
         loss = x.new_tensor(0.0)
         valid_count = 0
         diag_vars = []
+        selected_mean_l2_errors = []
 
         for frame in range(frames):
             output = output_entire[frame]
@@ -244,6 +253,10 @@ class base_model(nn.Module):
                     mean = means_b[k]
 
                     diff = true - mean
+                    if return_diag_vars:
+                        selected_mean_l2_errors.append(
+                            torch.norm(diff.detach()).reshape(1)
+                        )
 
                     #cov = self.stabilize_covariance(covs_b[k])
                     #cov = torch.eye(D, device=cov.device)
@@ -264,7 +277,13 @@ class base_model(nn.Module):
 
         loss = loss / max(valid_count, 1)
         if return_diag_vars:
-            return loss, torch.cat(diag_vars) if diag_vars else None
+            return (
+                loss,
+                torch.cat(diag_vars) if diag_vars else None,
+                torch.cat(selected_mean_l2_errors)
+                if selected_mean_l2_errors
+                else None,
+            )
 
         return loss
         

@@ -57,6 +57,38 @@ def _epoch_progress(epoch, batch_idx, num_batches):
     return epoch + batch_idx / max(num_batches, 1)
 
 
+def _get_checkpoint_config(args):
+    if "checkpoint" in args.training:
+        checkpoint_config = args.training.checkpoint
+    else:
+        checkpoint_config = None
+
+    enabled = True
+    metric = "epoch"
+    steps = 1
+    save_dir = getattr(args.training, "checkpoint_dir", "checkpoints")
+
+    if checkpoint_config is not None:
+        enabled = getattr(checkpoint_config, "enabled", enabled)
+        metric = getattr(checkpoint_config, "metric", metric)
+        steps = getattr(checkpoint_config, "steps", steps)
+        save_dir = getattr(checkpoint_config, "dir", save_dir)
+
+    if metric not in {"batch", "epoch"}:
+        raise ValueError("training.checkpoint.metric must be either 'batch' or 'epoch'")
+
+    steps = int(steps)
+    if enabled and steps <= 0:
+        raise ValueError("training.checkpoint.steps must be positive")
+
+    return {
+        "enabled": bool(enabled),
+        "metric": metric,
+        "steps": steps,
+        "dir": str(save_dir),
+    }
+
+
 class Trainer:
     def __init__(
         self, model, optimizer, train_loader, val_loader, device, args
@@ -81,6 +113,7 @@ class Trainer:
             fallback_metric="epoch",
             fallback_steps=_get_training_arg(args, "logging_steps", 1),
         )
+        self.checkpoint_config = _get_checkpoint_config(args)
         total_grad_norm = torch.nn.utils.clip_grad_norm_(
             self.model.parameters(),
             max_norm=1.0
@@ -91,6 +124,41 @@ class Trainer:
         wandb.define_metric("train/*", step_metric="global_step")
         wandb.define_metric("validation/*", step_metric="global_step")
         wandb.define_metric("diversity/*", step_metric="global_step")
+
+    def _save_checkpoint(self, epoch, batch_idx=None):
+        save_dir = self.checkpoint_config["dir"]
+        os.makedirs(save_dir, exist_ok=True)
+
+        if batch_idx is None:
+            checkpoint_name = f"model_epoch_{epoch}.pt"
+        else:
+            checkpoint_name = (
+                f"model_epoch_{epoch}_batch_{batch_idx}_step_{self.global_step}.pt"
+            )
+
+        checkpoint_path = os.path.join(save_dir, checkpoint_name)
+        torch.save(
+            {
+                "epoch": epoch,
+                "batch_idx": batch_idx,
+                "global_step": self.global_step,
+                "model_state_dict": self.model.state_dict(),
+                "optimizer_state_dict": self.optimizer.state_dict(),
+            },
+            checkpoint_path,
+        )
+
+        print(f"[Checkpoint] Saved model to {checkpoint_path}")
+
+    def _maybe_save_checkpoint(self, metric, count, epoch, batch_idx=None):
+        if not self.checkpoint_config["enabled"]:
+            return
+        if self.checkpoint_config["metric"] != metric:
+            return
+        if count % self.checkpoint_config["steps"] != 0:
+            return
+
+        self._save_checkpoint(epoch=epoch, batch_idx=batch_idx)
 
     def train_single_epoch(self, epoch):
         self.model.train()
@@ -187,25 +255,18 @@ class Trainer:
                     ]
                 wandb.log(log_payload)
 
-        save_dir = getattr(self.args.training, "checkpoint_dir", "checkpoints")
-        os.makedirs(save_dir, exist_ok=True)
+            self._maybe_save_checkpoint(
+                metric="batch",
+                count=self.global_step,
+                epoch=epoch,
+                batch_idx=batch_idx,
+            )
 
-        checkpoint_path = os.path.join(
-            save_dir,
-            f"model_epoch_{epoch}.pt"
+        self._maybe_save_checkpoint(
+            metric="epoch",
+            count=epoch + 1,
+            epoch=epoch,
         )
-
-        torch.save(
-            {
-                "epoch": epoch,
-                "global_step": self.global_step,
-                "model_state_dict": self.model.state_dict(),
-                "optimizer_state_dict": self.optimizer.state_dict(),
-            },
-            checkpoint_path,
-        )
-
-        print(f"[Checkpoint] Saved model to {checkpoint_path}")
 
         return loss_total / max(num_batches, 1)
 
