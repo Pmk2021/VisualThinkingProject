@@ -21,6 +21,7 @@ import torch
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from PIL import Image
+from box import Box
 
 from ultralytics import YOLO
 
@@ -179,7 +180,7 @@ class ObjectTracker:
     def __call__(
         self,
         image: Union[np.ndarray, torch.Tensor, Image.Image, str],
-        jpeg: bool = False,
+        tracking_override: Optional[Box] = None,
     ) -> Dict[str, Union[torch.Tensor, list[tuple[str, int]]]]:
         """
         Track one RGB frame and return only features and mask.
@@ -200,23 +201,29 @@ class ObjectTracker:
         if results:
             result = results[0]
             boxes = result.boxes
-            if boxes is not None and len(boxes) > 0:
-                boxes_xyxy = boxes.xyxy.detach().cpu().numpy().astype(np.float32)
-                confidences = (
-                    boxes.conf.detach().cpu().numpy().astype(np.float32)
-                    if boxes.conf is not None
-                    else np.zeros((len(boxes_xyxy),), dtype=np.float32)
-                )
-                object_ids = (
-                    boxes.id.detach().cpu().numpy().astype(np.int64)
-                    if boxes.id is not None
-                    else np.zeros((len(boxes_xyxy),), dtype=np.int64)
-                )
-                class_ids = (
-                    boxes.cls.detach().cpu().numpy().astype(np.int64)
-                    if boxes.cls is not None
-                    else np.zeros((len(boxes_xyxy),), dtype=np.int64)
-                )
+            if tracking_override is None:
+                if boxes is not None and len(boxes) > 0:
+                    boxes_xyxy = boxes.xyxy.detach().cpu().numpy().astype(np.float32)
+                    confidences = (
+                        boxes.conf.detach().cpu().numpy().astype(np.float32)
+                        if boxes.conf is not None
+                        else np.zeros((len(boxes_xyxy),), dtype=np.float32)
+                    )
+                    object_ids = (
+                        boxes.id.detach().cpu().numpy().astype(np.int64)
+                        if boxes.id is not None
+                        else np.zeros((len(boxes_xyxy),), dtype=np.int64)
+                    )
+                    class_ids = (
+                        boxes.cls.detach().cpu().numpy().astype(np.int64)
+                        if boxes.cls is not None
+                        else np.zeros((len(boxes_xyxy),), dtype=np.int64)
+                    )
+            else:
+                boxes_xyxy = tracking_override.xyxy.astype(np.float32)
+                confidences = tracking_override.conf.astype(np.float32)
+                object_ids = tracking_override.id.astype(np.int64)
+                class_ids = tracking_override.cls.astype(np.int64)
 
         for object_id in object_ids:
             if object_id not in self._seen:
@@ -248,13 +255,19 @@ class ObjectTracker:
             if object_id in object_ids:
                 mask[i] = True
 
-        features = torch.from_numpy(features_arr).unsqueeze(0).float()
-        mask_tensor = torch.from_numpy(mask).unsqueeze(0)
+        features = torch.from_numpy(features_arr)
+        mask_tensor = torch.from_numpy(mask)
 
+        features_cst = torch.zeros((1, self.max_det, features.shape[1]), dtype=torch.float32)
+        mask_cst = torch.zeros((1, self.max_det, 1), dtype=torch.float32)
+        
+        features_cst[:, :features.shape[0], :] = features
+        mask_cst[:, :mask_tensor.shape[0], :] = mask_tensor
+        
         return {
-            "features": features,
+            "features": features_cst.unsqueeze(0).float(),
             "lengths": lengths,
-            "mask": mask_tensor,
+            "mask": mask_cst.unsqueeze(0).float(),
         }
 
     def _get_bboxes_component(
