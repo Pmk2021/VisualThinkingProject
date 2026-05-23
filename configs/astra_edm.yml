@@ -1,0 +1,61 @@
+feature_extractor:
+  dataset_root: /work/cs-503/santanto/waymo
+  feature_root: /work/cs-503/gromb/waymo
+  tables:
+    images: images.parquet
+    ego_poses: ego_poses.parquet
+    trajectories: trajectories.parquet
+    image_trajectories: image_trajectories.parquet
+    latent_features: fe_local_latent_features.parquet
+
+  features:
+    image_trajectories:
+      - bbox_center_x
+      - bbox_center_y
+      - bbox_width
+      - bbox_height
+
+  num_objects: 5
+  train_feature_path: data/features/train.csv
+  val_feature_path: data/features/val.csv
+  test_feature_path: data/features/test.csv
+  regenerate_features: false
+
+training:
+  batch_size: 8
+  num_epochs: 1
+  learning_rate: 0.0001
+  precision: amp
+  loss_in_fp32: true
+  from_checkpoint: false
+  save_to: checkpoint/astra_edm_paths.pth
+  checkpoint_dir: checkpoints/astra_edm
+  wandb_project: "AnytimeTrajectoryPredictor"
+  measure_diversity: false
+  measure_latency: false
+  training_log:
+    metric: batch
+    steps: 10
+  validation_log:
+    metric: epoch
+    steps: 1
+    max_number_of_batches: 20
+
+model:
+  type: astra_edm
+  num_trajectory_possibilities: 3
+  input_dim: 196
+  history_steps_H: 10
+  max_agents: 5
+  d_model: 128
+  context_layers: 2
+  num_layers: 4
+  num_heads: 8
+  dropout: 0.1
+  sigma_data: 1.0
+  sigma_min: 0.01
+  sigma_max: 5.0
+  rho: 7.0
+
+num_workers: 4
+prefetch_factor: 2
