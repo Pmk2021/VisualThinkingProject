@@ -106,7 +106,10 @@ class Trainer:
             feature, trajectory = batch["features"], batch["trajectory"]
             feature = feature.transpose(0, 1).to(self.device)
             trajectory = trajectory.transpose(0, 1).to(self.device)
-            refinement_steps = [random.randint(1, 10) for _ in range(len(feature))]
+            if epoch > 1:
+                refinement_steps = [5] * len(feature) #[random.randint(1, 10) for _ in range(len(feature))]
+            else:
+                refinement_steps = [random.randint(1, 10) for _ in range(len(feature))]
             # Compute Loss
             loss = self.model.compute_loss(feature, trajectory, refinement_steps)
             batch_loss = loss.item()
@@ -119,7 +122,7 @@ class Trainer:
             # ---- gradient monitoring ----
             total_grad_norm = torch.nn.utils.clip_grad_norm_(
                 self.model.parameters(),
-                max_norm=1.0
+                max_norm=0.8
             )
 
             self.optimizer.step()
@@ -148,6 +151,7 @@ class Trainer:
                         "train/batch_loss": batch_loss,
                         "train/epoch_loss_so_far": loss_total / batch_idx,
                         "train/learning_rate": self.optimizer.param_groups[0]["lr"],
+                        "grad_norm": f"{total_grad_norm:.4f}"
                     }
                 )
 

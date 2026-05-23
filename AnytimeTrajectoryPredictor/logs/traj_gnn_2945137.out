@@ -1,0 +1,21 @@
+Running on: ixl02
+Python: /usr/bin/python
+No pre-trained model specified. Initializing new model.
+D
+A
+B
+C
+E
+F
+A
+B
+C
+E
+F
+Starting training...
+Validation Loss: 7573.6043
+Validation Loss: 6563.7571
+Validation Loss: 8270.3670
+Validation Loss: 5918.9020
+Validation Loss: 7877.7567
+Validation Loss: 7062.8094

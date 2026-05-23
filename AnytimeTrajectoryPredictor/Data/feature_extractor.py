@@ -144,7 +144,7 @@ def fit_cubic(signal, K):
 
     # sliding windows
     sig_win = signal.unfold(0, K, 1)  # (T-K+1, B, K)
-
+    sig_win = sig_win - sig_win[:, :, :1]  
     Tn = sig_win.shape[0]
 
     # flatten batch + time windows
@@ -273,6 +273,7 @@ class FeatureDataset(dataset.Dataset):
         )
 
         # --- merge on TRAJ_ID, TIME ---
+        
         merged = (
             table.to_pandas()
             .merge(
@@ -288,7 +289,7 @@ class FeatureDataset(dataset.Dataset):
         times = merged[TIME].to_numpy()
         traj = merged[TRAJ_ID].to_numpy()
         features = merged[feature_cols].to_numpy()
-
+        
         
 
         # --- sort by time ---
@@ -336,11 +337,12 @@ class FeatureDataset(dataset.Dataset):
         # --- target ---
         K = self.future_frames
 
-        area = x[::2, :, 2] * x[::2, :, 3]
+        area = x[::5, :, 2] * x[::5, :, 3]
         log_area = torch.log(area + 1e-6)
 
-        vx = fit_cubic(x[::2, :, 0], min(K, len(x[::2, :, 0]) - 10))
-        vy = fit_cubic(x[::2, :, 1], min(K, len(x[::2, :, 1]) - 10))
+        
+        vx = fit_cubic(x[::5, :, 0], min(K, len(x[::5, :, 0]) - 10))
+        vy = fit_cubic(x[::5, :, 1], min(K, len(x[::5, :, 1]) - 10))
         v_area = fit_cubic(log_area, min(K, len(log_area) - 10))
 
         y_valid = torch.stack(

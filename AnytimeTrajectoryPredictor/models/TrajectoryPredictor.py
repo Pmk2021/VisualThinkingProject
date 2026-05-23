@@ -23,10 +23,12 @@ class TrajectoryPredictor(nn.Module):
             )
         if model_type == "GNN":
             from AnytimeTrajectoryPredictor.models.architectures.gnn import GNN
+            print("D")
             return GNN(
                 state_dim=len(args.feature_extractor.features),
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,
             )
+            print("F")
         if model_type == "gru":
             return gru_model(
                 state_dim=len(args.feature_extractor.features),
