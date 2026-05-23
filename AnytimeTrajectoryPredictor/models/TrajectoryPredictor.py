@@ -35,6 +35,15 @@ class TrajectoryPredictor(nn.Module):
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,
                 hidden_dim=args.model.hidden_dim if "hidden_dim" in args.model else None,
             )
+        if model_type == "astra_edm":
+            from AnytimeTrajectoryPredictor.models.architectures.astra_edm_diffusion import (
+                ASTRAEDMDiffusionModel,
+            )
+
+            return ASTRAEDMDiffusionModel(
+                config=args.model,
+                num_trajectory_possibilities=args.model.num_trajectory_possibilities,
+            )
         else:
             raise ValueError(f"Unsupported model type: {model_type}")
 
