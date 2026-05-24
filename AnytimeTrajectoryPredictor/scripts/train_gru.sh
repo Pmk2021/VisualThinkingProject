@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=traj_gru
-#SBATCH --time=12:00:00
+#SBATCH --time=05:00:00
 #SBATCH --account=cs-503
 #SBATCH --qos=cs-503
 #SBATCH --gres=gpu:1
