@@ -8,6 +8,7 @@ import yaml
 from box import Box
 import torch
 from torch.utils.data import DataLoader
+from pathlib import Path
 
 
 def make_dataloaders(args):
@@ -80,7 +81,9 @@ def main(args):
     trainer.train(num_epochs=args.training.num_epochs)
 
     print("Training complete! Model saved to:", args.training.save_to)
-    torch.save(trainer.model.state_dict(), "model.pth")
+    save_to = Path(args.training.save_to)
+    save_to.parent.mkdir(parents=True, exist_ok=True)
+    torch.save(trainer.model.state_dict(), save_to)
 
     print("Validating:")
     trainer.validate()
@@ -89,9 +92,18 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=str, required=True)
+    parser.add_argument(
+        "--num-epochs",
+        type=int,
+        default=None,
+        help="Override training.num_epochs from the config.",
+    )
     cli_args = parser.parse_args()
 
     with open(cli_args.config) as f:
         args = Box(yaml.safe_load(f))
+
+    if cli_args.num_epochs is not None:
+        args.training.num_epochs = cli_args.num_epochs
 
     main(args)

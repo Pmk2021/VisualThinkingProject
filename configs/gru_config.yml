@@ -23,7 +23,7 @@ feature_extractor:
 
 training:
   batch_size: 8
-  num_epochs: 10
+  num_epochs: 1
   learning_rate: 0.0003
   from_checkpoint: false
   save_to: checkpoint/gru_model_paths.pth

@@ -23,9 +23,16 @@ cd /home/lamsler/VisualThinkingProject/AnytimeTrajectoryPredictor
 echo "Running on: $(hostname)"
 echo "Python: $(which python)"
 
+CONFIG_PATH=${CONFIG_PATH:-/home/lamsler/VisualThinkingProject/configs/gru_config.yml}
+NUM_EPOCHS=${NUM_EPOCHS:-1}
+
+echo "Config: ${CONFIG_PATH}"
+echo "Epochs: ${NUM_EPOCHS}"
+
 # ---------------------------
 # run training
 # ---------------------------
 echo "Starting training with GRU model..."
 python scripts/train_trajectory_model.py \
-  --config /home/lamsler/VisualThinkingProject/configs/gru_config.yml
+  --config "${CONFIG_PATH}" \
+  --num-epochs "${NUM_EPOCHS}"

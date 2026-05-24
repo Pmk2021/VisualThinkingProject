@@ -99,22 +99,19 @@ class base_model(nn.Module):
             object_mask = object_mask.to(device=frames_features.device)
 
         total_loss = frames_features.new_tensor(0.0)
-        diag_vars = []
         selected_mean_l2_errors = []
         for i in range(0, num_frames):
             trajectory = trajectories[: i + 1]
             mask = object_mask[: i + 1] if object_mask is not None else None
 
             if return_diagnostics:
-                loss, step_diag_vars, step_selected_mean_l2_errors = self.get_single_loss(
+                loss, step_selected_mean_l2_errors = self.get_single_loss(
                     frames_features[: i + 1],
                     trajectory,
                     f_,
                     object_mask=mask,
-                    return_diag_vars=True,
+                    return_diagnostics=True,
                 )
-                if step_diag_vars is not None:
-                    diag_vars.append(step_diag_vars)
                 if step_selected_mean_l2_errors is not None:
                     selected_mean_l2_errors.append(step_selected_mean_l2_errors)
             else:
@@ -131,13 +128,6 @@ class base_model(nn.Module):
             return loss
 
         diagnostics = {}
-        if diag_vars:
-            diag_vars = torch.cat(diag_vars)
-            diagnostics = {
-                "diag_var_min": float(diag_vars.min().item()),
-                "diag_var_median": float(diag_vars.median().item()),
-                "diag_var_max": float(diag_vars.max().item()),
-            }
         if selected_mean_l2_errors:
             selected_mean_l2_errors = torch.cat(selected_mean_l2_errors)
             diagnostics["selected_mean_l2_error"] = float(
@@ -152,6 +142,7 @@ class base_model(nn.Module):
         trajectory,
         f_,
         object_mask=None,
+        return_diagnostics=False,
     ):
         """
         trajectory shape:
@@ -177,6 +168,7 @@ class base_model(nn.Module):
 
         loss = x.new_tensor(0.0)
         valid_count = 0
+        selected_mean_l2_errors = []
 
         for frame in range(frames):
             output = output_entire[frame]
@@ -249,9 +241,23 @@ class base_model(nn.Module):
                     k = torch.argmin(d)
 
                     mean = means_b[k]
+                    diff = mean - true
 
                     mse = F.mse_loss(mean, true, reduction="sum")
                     loss += mse
+                    if return_diagnostics:
+                        selected_mean_l2_errors.append(
+                            torch.norm(diff.detach()).reshape(1)
+                        )
                     valid_count += 1
 
-        return loss / max(valid_count, 1)
+        loss = loss / max(valid_count, 1)
+        if return_diagnostics:
+            return (
+                loss,
+                torch.cat(selected_mean_l2_errors)
+                if selected_mean_l2_errors
+                else None,
+            )
+
+        return loss
