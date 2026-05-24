@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
 class base_model(nn.Module):
@@ -151,7 +152,6 @@ class base_model(nn.Module):
         trajectory,
         f_,
         object_mask=None,
-        return_diag_vars=False,
     ):
         """
         trajectory shape:
@@ -177,8 +177,6 @@ class base_model(nn.Module):
 
         loss = x.new_tensor(0.0)
         valid_count = 0
-        diag_vars = []
-        selected_mean_l2_errors = []
 
         for frame in range(frames):
             output = output_entire[frame]
@@ -196,9 +194,9 @@ class base_model(nn.Module):
                 self.single_trajectory_param_size,
             )
 
-            means = output[..., :D]
 
-            covs = output[..., D:]
+            means = output[..., :D].clamp(-100000, 100000)
+            covs = output[..., D:].clamp(-100000, 100000)
 
             # reshape covariance
             covs = covs.view(
@@ -252,76 +250,8 @@ class base_model(nn.Module):
 
                     mean = means_b[k]
 
-                    diff = true - mean
-                    if return_diag_vars:
-                        selected_mean_l2_errors.append(
-                            torch.norm(diff.detach()).reshape(1)
-                        )
-
-                    #cov = self.stabilize_covariance(covs_b[k])
-                    #cov = torch.eye(D, device=cov.device)
-                                        
-                    diag_var = torch.nn.functional.softplus(torch.diagonal(covs_b[k])) + 1e-4
-                    diag_var = diag_var.clamp(min=1e-4)  # Ensure positivity
-                    if return_diag_vars:
-                        diag_vars.append(diag_var.detach().reshape(-1))
-
-                    log_det = torch.log(diag_var + 1e-6).sum() # Forces the model to keep the variances from collapsing to zero, which would lead to infinite loss.
-                    solve_term = ((diff ** 2) / (diag_var + 1e-6)).sum() # Forces the model to keep the mean predictions close to the true values, especially when the variances are small.
-
-                    nll = 0.5 * (log_det + solve_term)
-                    nll = torch.clamp(nll, max=100.0)
-                    loss += nll
+                    mse = F.mse_loss(mean, true, reduction="sum")
+                    loss += mse
                     valid_count += 1
 
-        loss = loss / max(valid_count, 1)
-        if return_diag_vars:
-            return (
-                loss,
-                torch.cat(diag_vars) if diag_vars else None,
-                torch.cat(selected_mean_l2_errors)
-                if selected_mean_l2_errors
-                else None,
-            )
-
-        return loss
-        
-    def stabilize_covariance(self, cov):
-        # 1. force symmetry
-        
-        cov = 0.5 * (cov + cov.transpose(-1, -2))
-
-        # 2. remove NaN/Inf (CRITICAL)
-        cov = torch.nan_to_num(cov, nan=0.0, posinf=0.0, neginf=0.0)
-
-        # 3. eigen decomposition
-        eigvals, eigvecs = torch.linalg.eigh(cov)
-
-        # 4. clamp spectrum
-        eigvals = torch.clamp(eigvals, min=self.COVARIANCE_EPS)
-
-        cov_psd = eigvecs @ torch.diag_embed(eigvals) @ eigvecs.transpose(-1, -2)
-
-        # 5. final jitter (important in float32)
-        eye = torch.eye(cov.shape[-1], device=cov.device, dtype=cov.dtype)
-        cov_psd = cov_psd + self.COVARIANCE_EPS * eye
-
-        return cov_psd
-
-    def stable_cholesky(self, cov, max_attempts=5):
-        eye = torch.eye(cov.shape[-1], device=cov.device, dtype=cov.dtype)
-        jitter = self.COVARIANCE_EPS
-
-        for _ in range(max_attempts):
-            L, info = torch.linalg.cholesky_ex(cov)
-            if torch.all(info == 0):
-                return L
-            cov = cov + jitter * eye
-            jitter *= 10
-        try:
-            return torch.linalg.cholesky(cov)
-        except RuntimeError as e:
-            print(cov)
-            raise RuntimeError(
-                f"Cholesky decomposition failed after {max_attempts} attempts with jitter up to {jitter:.2e}"
-            ) from e
+        return loss / max(valid_count, 1)
