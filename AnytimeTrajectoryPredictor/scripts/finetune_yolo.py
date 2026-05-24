@@ -37,6 +37,7 @@ model.train(
     save_period=1,
     device=0 if IZAR else "cpu",
     seed=42,
+    workers=0,
 )
 
 model_path = "/work/cs-503/gromb/waymoyolo/yolo_finetuned.pt" if IZAR else Path(__file__).parent / "yolo_finetuned.pt"
