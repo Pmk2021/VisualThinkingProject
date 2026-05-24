@@ -87,10 +87,10 @@ def main(args):
 
     # Check if model exists and load it, otherwise create a new one
 
-    print("Loading model from:", "/home/muralikr/VisualThinkingProject/AnytimeTrajectoryPredictor/checkpoints/model_epoch_2.pt")
+    print("Loading model from:", "/home/muralikr/VisualThinkingProject/AnytimeTrajectoryPredictor/checkpoints/model_epoch_3.pt")
     model = TrajectoryPredictor.create_model(args).to(device)
     print("Q")
-    ckpt = torch.load("/home/muralikr/VisualThinkingProject/AnytimeTrajectoryPredictor/checkpoints/model_epoch_2.pt", map_location="cpu")
+    ckpt = torch.load("/home/muralikr/VisualThinkingProject/AnytimeTrajectoryPredictor/checkpoints/model_epoch_3.pt", map_location="cpu")
 
     model.load_state_dict(ckpt["model_state_dict"])
 
