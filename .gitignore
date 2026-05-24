@@ -226,3 +226,6 @@ wandb/
 
 # visualization outs
 visualization/outs
+
+# Run logs 
+logs/
