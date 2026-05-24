@@ -261,17 +261,16 @@ class base_model(nn.Module):
                     #cov = self.stabilize_covariance(covs_b[k])
                     #cov = torch.eye(D, device=cov.device)
                                         
-                    min_var = 1e-2
-                    diag_var = torch.nn.functional.softplus(torch.diagonal(covs_b[k])) + min_var
-                    diag_var = diag_var.clamp(min=min_var)
+                    diag_var = torch.nn.functional.softplus(torch.diagonal(covs_b[k])) + 1e-4
+                    diag_var = diag_var.clamp(min=1e-4)  # Ensure positivity
                     if return_diag_vars:
                         diag_vars.append(diag_var.detach().reshape(-1))
 
-                    log_det = torch.log(diag_var + 1e-6).sum()
-                    solve_term = ((diff ** 2) / (diag_var + 1e-6)).sum()
+                    log_det = torch.log(diag_var + 1e-6).sum() # Forces the model to keep the variances from collapsing to zero, which would lead to infinite loss.
+                    solve_term = ((diff ** 2) / (diag_var + 1e-6)).sum() # Forces the model to keep the mean predictions close to the true values, especially when the variances are small.
 
                     nll = 0.5 * (log_det + solve_term)
-                    # nll = torch.clamp(nll, max=100.0)
+                    nll = torch.clamp(nll, max=100.0)
                     loss += nll
                     valid_count += 1
 
