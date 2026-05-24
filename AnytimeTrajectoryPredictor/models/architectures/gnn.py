@@ -9,6 +9,7 @@ import torch.nn as nn
 
 
 
+
 def fully_connected_edge_index(N, device):
     adj = torch.ones(N, N, device=device)
     edge_index, _ = dense_to_sparse(adj)
@@ -44,7 +45,7 @@ class GNN(nn.Module):
     ### A simple linear model that predicts the mean and covariance of the velocity for each trajectory possibility.
     def __init__(self, state_dim, num_trajectory_possibilities):
         super(GNN, self).__init__()
-        self.hidden_dim = 64
+        self.hidden_dim = 128
         self.state_dim = 196
         self.num_trajectory_possibilities = num_trajectory_possibilities
         polynomial_degree = 3
@@ -90,9 +91,16 @@ class GNN(nn.Module):
                 self.hidden_dim,
             ),
             nn.ReLU(),
+            nn.Linear(
+                self.hidden_dim, self.hidden_dim
+            ),
+            nn.ReLU(),
         )
         self.delta_head = nn.Linear(
             self.hidden_dim, self.num_trajectory_possibilities * self.single_trajectory_param_size
+        )
+        self.A = nn.Linear(
+            self.state_dim, self.num_trajectory_possibilities * self.single_trajectory_param_size
         )
 
     def forward(self, frames, f_, object_mask=None, hidden_state=None):
@@ -117,7 +125,7 @@ class GNN(nn.Module):
             # 1. Temporal / state update
 
             x_t = frames[t]  # (B, N, F)
-           
+            
             x_emb = self.node_encoder(x_t)  # (B, N, H)
             h = h + x_emb
 
@@ -140,7 +148,7 @@ class GNN(nn.Module):
 
             y = self.traj_head(h)  # (B, N, P * params)
 
-            y = y.view(B, N, self.num_trajectory_possibilities, -1)
+            y = y.view(B, N, self.num_trajectory_possibilities, -1) * 0
 
             # 4. Iterative refinement with graph convolution and residuals
 
@@ -241,9 +249,10 @@ class GNN(nn.Module):
                 self.single_trajectory_param_size,
             )
 
-            means = output[..., :D]
+            means = output[..., :D].clamp(-100000, 100000)
 
-            covs = output[..., D:]
+
+            covs = output[..., D:].clamp(-100000, 100000)
 
             # reshape covariance
             covs = covs.view(
@@ -290,20 +299,23 @@ class GNN(nn.Module):
                     k = torch.argmin(d)
 
                     mean = means_b[k]
-
+                    
                     diff = true - mean
-
+                    return F.huber_loss(mean, true, delta=50.0)
+                    mse = (true - mean).pow(2).mean()
+                    return mse
                     #cov = self.stabilize_covariance(covs_b[k])
                     #cov = torch.eye(D, device=cov.device)
                                         
-                    diag_var = torch.nn.functional.softplus(torch.diagonal(covs_b[k])) + 1e-4
-                    diag_var = diag_var.clamp(min=1e-4)  # Ensure positivity
+                    diag_var = torch.nn.functional.softplus(torch.diagonal(covs_b[k])) + 0.1
+                   
+                    diag_var = diag_var.clamp(min=0.1)  # Ensure positivity
 
                     log_det = torch.log(diag_var + 1e-6).sum()
                     solve_term = ((diff ** 2) / (diag_var + 1e-6)).sum()
-
+                    
                     nll = 0.5 * (log_det + solve_term)
-                    nll = torch.clamp(nll, max=100.0)
+                    nll = torch.clamp(nll, max=1000.0)
                     loss += nll
 
         return loss / (frames * b * n_objects)
@@ -347,3 +359,47 @@ class GNN(nn.Module):
             raise RuntimeError(
                 f"Cholesky decomposition failed after {max_attempts} attempts with jitter up to {jitter:.2e}"
             ) from e
+    
+    def print_polynomial_steps(self, means, n=10, start_t=0):
+        """
+        means shape:
+            (K, 12)
+
+        where each mode contains:
+            [x0, x1, x2, x3,
+            y0, y1, y2, y3,
+            s0, s1, s2, s3]
+        """
+
+        def eval_poly(coeffs, t):
+            return (
+                coeffs[0]
+                + coeffs[1] * t
+                + coeffs[2] * (t**2)
+                + coeffs[3] * (t**3)
+            )
+
+        K = means.shape[0]
+
+        for k in range(K):
+            coeffs = means[k].reshape(3, 4)
+
+            x_coeffs = coeffs[0]
+            y_coeffs = coeffs[1]
+            s_coeffs = coeffs[2]
+
+            print(f"\n================ MODE {k} ================\n")
+
+            for step in range(n):
+                t = start_t + step
+
+                x = eval_poly(x_coeffs, t)
+                y = eval_poly(y_coeffs, t)
+                s = eval_poly(s_coeffs, t)
+
+                print(
+                    f"t={t:2d} | "
+                    f"x={float(x):12.4f} | "
+                    f"y={float(y):12.4f} | "
+                    f"scale={float(s):12.4f}"
+                )

@@ -1,49 +1,110 @@
+from AnytimeTrajectoryPredictor.models.TrajectoryPredictor import (
+    TrajectoryPredictor,
+)
+from AnytimeTrajectoryPredictor.Data.feature_extractor import FeatureDataset
+from AnytimeTrajectoryPredictor.trainer import Trainer
 import argparse
 import yaml
+from box import Box
 import torch
 from torch.utils.data import DataLoader
-from box import Box
+import random
+import matplotlib.pyplot as plt
 
-from AnytimeTrajectoryPredictor.Data.feature_extractor import FeatureDataset
 
+def plot_inputs_and_traj(inputs, traj, num_points=100, device="cpu"):
+    """
+    inputs: (3, N) flattened observations per mode
+    traj: (3, 4) polynomial coefficients per mode
+    """
 
-def make_dataloader(args):
-    dataset = FeatureDataset(
+    inputs = inputs.to(device)
+    traj = traj.to(device)
+
+    num_modes = traj.shape[0]
+
+    # shared x-axis for polynomials
+    x = torch.linspace(-10, 10, num_points, device=device)
+
+    plt.figure()
+
+    for i in range(num_modes):
+        # ----- plot polynomial -----
+        print(traj[i])
+        a, b, c, d = traj[i]
+        y_poly = a + b * x + c * x**2 + d * x**3
+
+        plt.plot(
+            x.cpu(),
+            y_poly.detach().cpu(),
+            label=f"traj poly {i}"
+        )
+
+        # ----- plot inputs (assume sampled y-values) -----
+        inp = inputs[i]
+
+        # map input to same x-grid (resample)
+        inp_x = torch.linspace(-10, 10, inp.numel(), device=device)
+
+        plt.scatter(
+            inp_x.cpu(),
+            inp.detach().cpu(),
+            s=20,
+            label=f"inputs {i}"
+        )
+
+    plt.title("Inputs vs Trajectory Polynomials")
+    plt.legend()
+    plt.grid(True)
+    print("DD")
+    plt.savefig("/home/muralikr/VisualThinkingProject/AnytimeTrajectoryPredictor/scripts/a.png", dpi=300, bbox_inches="tight")
+    plt.show()
+
+def make_dataloaders(args):
+    """
+    Create dataloaders for training and validation datasets.
+    """
+
+    val_dataset = FeatureDataset(
         args.feature_extractor,
+        split="validation",
     )
 
-    loader = DataLoader(
-        dataset,
-        batch_size=2,
-        shuffle=True,
-        num_workers=0,  # IMPORTANT for debugging
+
+
+    val_loader = DataLoader(
+        val_dataset, batch_size=1, shuffle=False, num_workers=args.num_workers
     )
 
-    return dataset, loader
+    return None, val_loader
 
 
-def test_dataloader(args):
+def main(args):
+    """Main function to set up data, model, optimizer, and trainer."""
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    dataset, loader = make_dataloader(args)
+    
 
-    print(f"\nDataset size: {len(dataset)}")
+    # Check if model exists and load it, otherwise create a new one
 
-    for i, batch in enumerate(loader):
-        print(f"\n================ Batch {i} ================")
+    print("Loading model from:", "/home/muralikr/VisualThinkingProject/AnytimeTrajectoryPredictor/checkpoints/model_epoch_2.pt")
+    model = TrajectoryPredictor.create_model(args).to(device)
+    print("Q")
+    ckpt = torch.load("/home/muralikr/VisualThinkingProject/AnytimeTrajectoryPredictor/checkpoints/model_epoch_2.pt", map_location="cpu")
 
-        x = batch["features"]
-        y = batch["trajectory"]
+    model.load_state_dict(ckpt["model_state_dict"])
 
-        print("x shape:", x.shape)  # (B, T, F)
-        print("y shape:", y.shape)  # (B, T, 3)
-
-        print("\nStats:")
-        print("x min/max:", x.min().item(), x.max().item())
-        print("y min/max:", y.min().item(), y.max().item())
-
-        if i >= 3:  # only a few batches
-            break
+    train_loader, val_loader = make_dataloaders(args)
+    print("B")
+    for batch in val_loader:
+        with torch.no_grad():
+            f_ =  [random.randint(1, 3) for _ in range(len(batch["features"]))]
+            predictions = model(batch["features"].to(device), f_)[-1][-1]
+            means = predictions[...,:model.coeff_dim][0]
+        print(means)
+        print("traj:", batch["trajectory"][-1][-1][0])
+        plot_inputs_and_traj(means, batch["trajectory"][-1][-1][0])
+        break  # Remove this break to evaluate on the entire validation set 
 
 
 if __name__ == "__main__":
@@ -51,7 +112,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", type=str, required=True)
     cli_args = parser.parse_args()
 
-    with open(cli_args.config, "r") as f:
+    with open(cli_args.config) as f:
         args = Box(yaml.safe_load(f))
 
-    test_dataloader(args)
+    main(args)

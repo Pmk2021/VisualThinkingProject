@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=traj_gnn
-#SBATCH --time=08:00:00
+#SBATCH --time=10:00:00
 #SBATCH --account=cs-503
 #SBATCH --qos=cs-503
 #SBATCH --partition=gpu
