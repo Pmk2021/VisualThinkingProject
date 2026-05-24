@@ -9,13 +9,6 @@ import torch.nn as nn
 
 
 
-def eval_poly(coeffs, t):
-    """
-    coeffs: (..., 4)
-    returns: (..., T)
-    """
-    a, b, c, d = coeffs[..., 0], coeffs[..., 1], coeffs[..., 2], coeffs[..., 3]
-    return a[..., None] + b[..., None]*t + c[..., None]*t**2 + d[..., None]*t**3
 
 def fully_connected_edge_index(N, device):
     adj = torch.ones(N, N, device=device)
@@ -145,17 +138,17 @@ class GNN(nn.Module):
 
             # 3. Message passing in graph
 
-            h_flat = h.reshape(B * N, self.hidden_dim)
+            h_flat = h.view(B * N, self.hidden_dim)
 
             h_flat = self.gnn(h_flat, edge_index)
 
-            h = h_flat.reshape(B, N, self.hidden_dim)
+            h = h_flat.view(B, N, self.hidden_dim)
 
             # 4. Initial trajectory prediction
 
             y = self.traj_head(h)  # (B, N, P * params)
 
-            y = y.reshape(B, N, self.num_trajectory_possibilities, -1) * 0
+            y = y.view(B, N, self.num_trajectory_possibilities, -1) * 0
 
             # 4. Iterative refinement with graph convolution and residuals
 
@@ -166,15 +159,15 @@ class GNN(nn.Module):
 
                 # 1. Message passing over nodes
 
-                h_flat = h.reshape(B * N, -1)
+                h_flat = h.view(B * N, -1)
 
                 h_flat = self.gnn(h_flat, edge_index)
 
-                h = h_flat.reshape(B, N, -1)
+                h = h_flat.view(B, N, -1)
 
                 # 2. trajectory-aware interaction
 
-                y_flat = y.reshape(B, N, -1)
+                y_flat = y.view(B, N, -1)
 
                 inp = torch.cat([h, y_flat], dim=-1)
 
@@ -184,7 +177,7 @@ class GNN(nn.Module):
 
                 delta = self.delta_head(h_ref)
 
-                delta = delta.reshape_as(y)
+                delta = delta.view_as(y)
 
                 y = y + delta
 
@@ -215,7 +208,21 @@ class GNN(nn.Module):
 
         return total_loss / len(frames_features)
 
-    def get_single_loss(self, x, trajectory, f_):
+    def get_single_loss(
+        self,
+        x,
+        trajectory,
+        f_,
+    ):
+        """
+        trajectory shape:
+            (frames, batch, objects, 3, 4)
+
+        where:
+            trajectory[..., 0, :] -> x coeffs
+            trajectory[..., 1, :] -> y coeffs
+            trajectory[..., 2, :] -> scale coeffs
+        """
 
         frames, b, n_objects, _ = x.shape
 
@@ -224,59 +231,92 @@ class GNN(nn.Module):
 
         output_entire = self.forward(x, f_)
 
-        device = x.device
-
-        # -------------------------------------------------
-        # precompute polynomial basis once
-        # (T, 4)
-        # -------------------------------------------------
-        t = torch.linspace(0, 90 / 5, 8, device=device)
-        B = torch.stack([t**0, t**1, t**2, t**3], dim=-1)  # (T, 4)
-
         loss = 0.0
 
         for frame in range(frames):
+            output = output_entire[frame]
 
-            output = output_entire[frame].reshape(
+            # ------------------------------------------
+            # reshape:
+            #
+            # (B, O, K, params_per_mode)
+            # ------------------------------------------
+
+            output = output.view(
                 b,
                 n_objects,
                 K,
                 self.single_trajectory_param_size,
             )
 
-            means = output[..., :D].clamp(-10, 10)  # (B, O, K, 12)
+            means = output[..., :D].clamp(-100000, 100000)
 
-            # reshape coefficients
-            means = means.reshape(b, n_objects, K, 3, 4)  # (B,O,K,3,4)
 
-            # -------------------------------------------------
-            # flatten batch+objects
-            # -------------------------------------------------
-            N = b * n_objects
+            covs = output[..., D:].clamp(-100000, 100000)
 
-            means = means.reshape(N, K, 3, 4)
-            true = trajectory[frame].reshape(N, 3, 4)
+            # reshape covariance
+            covs = covs.view(
+                b,
+                n_objects,
+                K,
+                D,
+                D,
+            )
 
-            # -------------------------------------------------
-            # trajectory via matmul (NO eval_poly)
-            # -------------------------------------------------
-            # (N,K,3,4) @ (4,T) -> (N,K,3,T)
-            pred_traj = torch.einsum("n k c d, t d -> n k c t", means, B)
+            for obj_idx in range(n_objects):
+                for batch_idx in range(b):
+                    # ----------------------------------
+                    # GT polynomial coefficients
+                    # shape: (3, 4)
+                    # flatten -> (12,)
+                    # ----------------------------------
 
-            # true trajectory once
-            true_traj = torch.einsum("n c d, t d -> n c t", true, B)
+                    true = trajectory[
+                        frame,
+                        batch_idx,
+                        obj_idx,
+                    ].reshape(-1)
 
-            # -------------------------------------------------
-            # compute per-mode loss
-            # -------------------------------------------------
-            # expand true for broadcasting over K
-            true_traj = true_traj.unsqueeze(1)  # (N,1,3,T)
+                    means_b = means[
+                        batch_idx,
+                        obj_idx,
+                    ]  # (K, 12)
 
-            losses = (pred_traj - true_traj).pow(2).mean(dim=(2, 3))  # (N,K)
+                    covs_b = covs[
+                        batch_idx,
+                        obj_idx,
+                    ]  # (K, 12, 12)
 
-            best_loss = losses.min(dim=1).values  # (N,)
+                    # ----------------------------------
+                    # choose best trajectory mode
+                    # ----------------------------------
 
-            loss = loss + best_loss.sum()
+                    d = torch.norm(
+                        means_b - true.unsqueeze(0),
+                        dim=-1,
+                    )
+
+                    k = torch.argmin(d)
+
+                    mean = means_b[k]
+                    
+                    diff = true - mean
+                    return F.huber_loss(mean, true, delta=50.0)
+                    mse = (true - mean).pow(2).mean()
+                    return mse
+                    #cov = self.stabilize_covariance(covs_b[k])
+                    #cov = torch.eye(D, device=cov.device)
+                                        
+                    diag_var = torch.nn.functional.softplus(torch.diagonal(covs_b[k])) + 0.1
+                   
+                    diag_var = diag_var.clamp(min=0.1)  # Ensure positivity
+
+                    log_det = torch.log(diag_var + 1e-6).sum()
+                    solve_term = ((diff ** 2) / (diag_var + 1e-6)).sum()
+                    
+                    nll = 0.5 * (log_det + solve_term)
+                    nll = torch.clamp(nll, max=1000.0)
+                    loss += nll
 
         return loss / (frames * b * n_objects)
         
@@ -365,4 +405,10 @@ class GNN(nn.Module):
                 )
 
 
- 
+    def eval_poly(coeffs, t):
+        """
+        coeffs: (..., 4)
+        returns: (..., T)
+        """
+        a, b, c, d = coeffs[..., 0], coeffs[..., 1], coeffs[..., 2], coeffs[..., 3]
+        return a[..., None] + b[..., None]*t + c[..., None]*t**2 + d[..., None]*t**3

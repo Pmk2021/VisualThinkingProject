@@ -184,8 +184,14 @@ class FeatureDataset(dataset.Dataset):
             legacy_path_key="image_trajectories_path",
             split=split,
         )
-       
-
+        print("B")
+        latent_feature_files = _resolve_table_files(
+            args,
+            dataset_root=args.feature_root,
+            table_name="fe_gt_local_latent_features",
+            legacy_path_key="fe_gt_local_latent_features_path",
+            split=split,
+        )
         print("C")
         self.img_traj_table = _read_table_files(
             image_trajectory_files,
