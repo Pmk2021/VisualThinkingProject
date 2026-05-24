@@ -58,7 +58,7 @@ def row_to_waymo_label(row: pd.Series, width: int, height: int) -> str | None:
     h = float(bbox_height) / height
     if w <= 0.0 or h <= 0.0:
         return None
-    return f"{int(object_type)-1} {cx:.6f} {cy:.6f} {w:.6f} {h:.6f}"
+    return f"{int(object_type)} {cx:.6f} {cy:.6f} {w:.6f} {h:.6f}"
 
 def convert_chunk(chunk_dir: Path, output_root: Path) -> None:
     split = chunk_dir.name.split("__")[0]
@@ -114,8 +114,8 @@ def make_yaml(output_root: Path) -> None:
     yaml_path = output_root / "data.yaml"
     yaml_content = f"""train: {output_root / 'images' / ('train' if IZAR else 'waymo')}
 val: {output_root / 'images' / 'val'}
-nc: 3
-names: ['TYPE_VEHICLE', 'TYPE_CYCLIST', 'TYPE_PEDESTRIAN']
+nc: 5
+names: ['TYPE_UNKNOWN', 'TYPE_VEHICLE', 'TYPE_PEDESTRIAN', 'TYPE_SIGN', 'TYPE_CYCLIST']
 """
     yaml_path.write_text(yaml_content, encoding="utf-8")
 
@@ -138,7 +138,7 @@ def create_val() -> None:
             image_path.unlink()
             label_path.unlink()
 
-def main(val=False) -> None:
+def main(val=False, yaml_only=False) -> None:
     if val:
         chunk_dirs = list(DEFAULT_SOURCE_ROOT.glob("**/validation__*")) if IZAR else []
     else:
@@ -147,6 +147,10 @@ def main(val=False) -> None:
     DEFAULT_OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)  
 	
     make_yaml(DEFAULT_OUTPUT_ROOT)
+
+    if yaml_only:
+        print("YAML file created, skipping image and label processing.")
+        return
 
     for chunk_dir in tqdm(chunk_dirs):  
         convert_chunk(chunk_dir, DEFAULT_OUTPUT_ROOT)
@@ -163,6 +167,11 @@ if __name__ == "__main__":
         action="store_true",
         help="Process validation directories only.",
     )
+    parser.add_argument(
+        "--yaml-only",
+        action="store_true",
+        help="Only create the data.yaml file without processing images and labels.",
+    )
     args = parser.parse_args()
 
-    main(args.val)
+    main(args.val, args.yaml_only)
