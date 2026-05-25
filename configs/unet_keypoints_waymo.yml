@@ -1,0 +1,33 @@
+feature_extractor:
+  waymo_root: /work/cs-503/santanto/waymo
+  validation_fraction: 0.1
+  split_seed: 503
+  max_segments: 20
+  max_images: 4000
+  camera_name: 1
+  image_height: 256
+  image_width: 384
+  heatmap_sigma: 4.0
+  cache_segments: 1
+
+training:
+  batch_size: 8
+  num_epochs: 15
+  learning_rate: 1.0e-4
+  weight_decay: 5.0e-4
+  gradient_clip_norm: 1.0
+  mixed_precision: true
+  num_workers: 8
+  persistent_workers: true
+  prefetch_factor: 2
+  pin_memory: true
+  positive_weight: 50.0
+  save_every_epoch_fraction: 0.5
+  save_to: checkpoints/unet_keypoints_waymo_latest.pth
+  wandb_project: astra-unet-keypoints-waymo
+  wandb_mode: online
+
+model:
+  feature_extractor: resnet18
+  encoder_weights: null
+  pretrained_weights: astra/pretrained_weights/unet/pie_unet_model_best.pt

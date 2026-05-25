@@ -1,9 +1,14 @@
 import argparse
+import sys
+from pathlib import Path
 
 import torch
 import yaml
 from box import Box
 from torch.utils.data import DataLoader
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT))
 
 from AnytimeTrajectoryPredictor.Data.feature_extractor import WaymoPredictionDataset
 from AnytimeTrajectoryPredictor.models.TrajectoryPredictor import TrajectoryPredictor

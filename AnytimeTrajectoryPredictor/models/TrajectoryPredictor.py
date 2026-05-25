@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
-from architectures.linear_model import linear_model
-from architectures.astra_edm_diffusion import ASTRAEDMDiffusionModel
+from AnytimeTrajectoryPredictor.models.architectures.astra_edm_diffusion import ASTRAEDMDiffusionModel
 
 
 class TrajectoryPredictor(nn.Module):
@@ -13,6 +12,8 @@ class TrajectoryPredictor(nn.Module):
         """Factory method to create a TrajectoryPredictor model based on the provided configuration."""
         model_type = args.model.type
         if model_type == "linear":
+            from AnytimeTrajectoryPredictor.models.architectures.linear_model import linear_model
+
             return linear_model(
                 state_dim=len(args.feature_extractor.features),
                 num_trajectory_possibilities=args.model.num_trajectory_possibilities,

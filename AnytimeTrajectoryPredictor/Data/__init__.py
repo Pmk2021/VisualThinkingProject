@@ -1,1 +1,6 @@
-from feature_extractor import FeatureExtractor
+from AnytimeTrajectoryPredictor.Data.feature_extractor import (
+    FeatureDataset,
+    FeatureExtractor,
+    WaymoImagePlaneDataset,
+    WaymoPredictionDataset,
+)
