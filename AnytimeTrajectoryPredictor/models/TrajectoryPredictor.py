@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from AnytimeTrajectoryPredictor.models.architectures.astra_edm_diffusion import ASTRAEDMDiffusionModel
+from AnytimeTrajectoryPredictor.models.architectures.image_plane_mlp_baseline import ImagePlaneMLPGMMBaseline
 
 
 class TrajectoryPredictor(nn.Module):
@@ -20,5 +21,7 @@ class TrajectoryPredictor(nn.Module):
             )
         if model_type == "astra_edm_diffusion":
             return ASTRAEDMDiffusionModel(args.model)
+        if model_type == "image_plane_mlp_gmm":
+            return ImagePlaneMLPGMMBaseline(args.model)
         else:
             raise ValueError(f"Unsupported model type: {model_type}")

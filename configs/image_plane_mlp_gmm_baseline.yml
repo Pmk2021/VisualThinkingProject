@@ -1,0 +1,61 @@
+feature_extractor:
+  dataset_type: waymo_image_plane
+  waymo_root: /work/cs-503/santanto/waymo
+  history_steps: 10
+  future_steps: 80
+  validation_fraction: 0.1
+  split_seed: 503
+  min_future_valid: 5
+  max_segments: 20
+  max_samples: 2000
+  window_stride: 10
+  max_windows_per_track: 4
+  camera_name: 1
+  image_height: 256
+  image_width: 384
+  cache_segments: 1
+  use_sample_cache: true
+  sample_cache_dir: cache/waymo_image_plane
+  use_image_cache: true
+  image_cache_dir: cache/waymo_image_plane
+
+training:
+  batch_size: 32
+  num_epochs: 15
+  learning_rate: 1.0e-3
+  weight_decay: 1.0e-4
+  optimizer: adamw
+  gradient_clip_norm: 5.0
+  mixed_precision: true
+  num_workers: 0
+  persistent_workers: false
+  prefetch_factor: 2
+  pin_memory: true
+  from_checkpoint: false
+  save_to: checkpoints/image_plane_mlp_gmm_baseline_latest.pth
+  early_stopping_monitor: val/loss
+  early_stopping_patience: 8
+  early_stopping_min_delta: 1.0e-4
+  wandb_mode: disabled
+  diagnostics_enabled: false
+  visualization_enabled: false
+
+model:
+  type: image_plane_mlp_gmm
+  input_dim: 4
+  max_agents: 1
+  num_modes_K: 6
+  trajectory_dim_dy: 2
+  hidden_dim: 256
+  num_layers: 2
+  dropout: 0.1
+  log_std_min: -5.0
+  log_std_max: 2.0
+  offdiag_clip: 2.0
+  lambda_nll: 0.02
+  lambda_ade: 1.0
+  lambda_fde: 1.0
+  lambda_mode: 0.2
+  lambda_cov: 0.001
+  lambda_diversity: 0.05
+  diversity_margin: 0.05

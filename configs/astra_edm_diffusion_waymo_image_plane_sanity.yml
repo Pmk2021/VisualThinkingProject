@@ -104,6 +104,13 @@ model:
   lambda_entropy: 0.0
   lambda_diversity: 0.05
   diversity_margin: 0.12
+  diversity_reference_box_size: 0.08
+  diversity_min_scale: 0.35
+  diversity_max_scale: 2.50
+  diversity_y_top_scale: 0.75
+  diversity_y_bottom_scale: 1.25
+  diversity_size_exponent: 1.0
+  diversity_y_exponent: 1.0
   speed_cap: 0.35
   use_self_conditioning: true
   self_condition_prob: 0.5

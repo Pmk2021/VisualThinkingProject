@@ -561,6 +561,13 @@ class ASTRAEDMDiffusionModel(nn.Module):
         self.lambda_entropy = float(_get(config, "lambda_entropy", 0.0))
         self.lambda_diversity = float(_get(config, "lambda_diversity", 0.0))
         self.diversity_margin = float(_get(config, "diversity_margin", 0.15))
+        self.diversity_reference_box_size = float(_get(config, "diversity_reference_box_size", 0.08))
+        self.diversity_min_scale = float(_get(config, "diversity_min_scale", 0.35))
+        self.diversity_max_scale = float(_get(config, "diversity_max_scale", 2.50))
+        self.diversity_y_top_scale = float(_get(config, "diversity_y_top_scale", 0.75))
+        self.diversity_y_bottom_scale = float(_get(config, "diversity_y_bottom_scale", 1.25))
+        self.diversity_size_exponent = float(_get(config, "diversity_size_exponent", 1.0))
+        self.diversity_y_exponent = float(_get(config, "diversity_y_exponent", 1.0))
         self.speed_cap = float(_get(config, "speed_cap", 0.40))
 
         context_layers = _get(config, "context_layers", 2)
@@ -898,7 +905,7 @@ class ASTRAEDMDiffusionModel(nn.Module):
         loss_prior_residual = self._prior_residual_loss(params.mu, prior_full, mask)
         loss_speed = self._speed_cap_loss(params.mu, mask)
         loss_entropy = self._entropy_loss(params.mode_probs)
-        loss_diversity = self._diversity_loss(params.mu, mask)
+        loss_diversity = self._diversity_loss(params.mu, mask, batch)
 
         loss = (
             self.lambda_diff * loss_diff_total
@@ -1073,11 +1080,42 @@ class ASTRAEDMDiffusionModel(nn.Module):
         entropy = -(mode_probs * mode_probs.clamp_min(1e-8).log()).sum(dim=1)
         return -entropy.mean()
 
-    def _diversity_loss(self, mu, mask):
+    def _diversity_effective_margin(self, batch, mu, mask):
+        base_margin = mu.new_full(mask.shape[:2], self.diversity_margin)
+        boxes = batch.get("box_history", batch.get("features")) if batch is not None else None
+        if boxes is None or boxes.shape[-1] < 4:
+            return base_margin
+
+        boxes = boxes.to(device=mu.device, dtype=mu.dtype)
+        observed_mask = batch.get("observed_mask") if batch is not None else None
+        if observed_mask is None:
+            observed_mask = torch.ones(boxes.shape[:-1], device=mu.device, dtype=mu.dtype)
+        else:
+            observed_mask = observed_mask.to(device=mu.device, dtype=mu.dtype)
+
+        valid_counts = observed_mask.sum(dim=-1).long().clamp_min(1)
+        last_idx = (valid_counts - 1).view(boxes.shape[0], boxes.shape[1], 1, 1).expand(-1, -1, 1, boxes.shape[-1])
+        last_box = boxes.gather(dim=2, index=last_idx).squeeze(2)
+
+        box_size = torch.sqrt((last_box[..., 2].clamp_min(1e-4) * last_box[..., 3].clamp_min(1e-4)).clamp_min(1e-8))
+        size_scale = box_size / max(self.diversity_reference_box_size, 1e-6)
+
+        y01 = ((last_box[..., 1].clamp(-1.0, 1.0) + 1.0) * 0.5).clamp(0.0, 1.0)
+        y_scale = self.diversity_y_top_scale + (self.diversity_y_bottom_scale - self.diversity_y_top_scale) * y01
+
+        scale = size_scale.clamp_min(1e-6).pow(self.diversity_size_exponent) * y_scale.clamp_min(1e-6).pow(self.diversity_y_exponent)
+        scale = scale.clamp(self.diversity_min_scale, self.diversity_max_scale)
+        return base_margin * scale
+
+    def _diversity_loss(self, mu, mask, batch=None):
         modes = mu.shape[1]
         if modes < 2:
             return mu.new_tensor(0.0)
         upper = torch.triu_indices(modes, modes, offset=1, device=mu.device)
         pair_dist = torch.linalg.norm(mu[:, upper[0]] - mu[:, upper[1]], dim=-1)
-        pair_ade = (pair_dist * mask[:, None]).sum(dim=(2, 3)) / mask[:, None].sum(dim=(2, 3)).clamp_min(1.0)
-        return F.relu(self.diversity_margin - pair_ade).mean()
+        valid = mask[:, None]
+        pair_ade = (pair_dist * valid).sum(dim=-1) / valid.sum(dim=-1).clamp_min(1.0)
+        margin = self._diversity_effective_margin(batch, mu, mask)[:, None]
+        agent_valid = (mask.sum(dim=-1) > 0).to(dtype=mu.dtype)[:, None]
+        loss = F.relu(margin - pair_ade) * agent_valid
+        return loss.sum() / agent_valid.expand_as(loss).sum().clamp_min(1.0)

@@ -82,8 +82,11 @@ def _draw_target_boxes(draw, batch, width, height):
         draw.rectangle(rect, outline=color + (255,), width=3)
         label = f"agent {agent_idx}" if boxes.shape[0] > 1 else "target box"
         label_w = max(74, 10 + 7 * len(label))
-        draw.rectangle([rect[0], max(0, rect[1] - 16), rect[0] + label_w, rect[1]], fill=(0, 0, 0, 150))
-        draw.text((rect[0] + 4, max(0, rect[1] - 15)), label, fill=color + (255,))
+        label_y1 = max(0, rect[1])
+        label_y0 = max(0, label_y1 - 16)
+        if label_y1 > label_y0:
+            draw.rectangle([rect[0], label_y0, rect[0] + label_w, label_y1], fill=(0, 0, 0, 150))
+        draw.text((rect[0] + 4, max(0, label_y1 - 15)), label, fill=color + (255,))
 
 
 def _turbo_color(values):
