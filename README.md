@@ -1,46 +1,129 @@
-# VisualThinkingProject
+# Anytime Trajectory Prediction
 
-## Instructions for training model
+## Environment Setup
 
-### Step 1: Add your model
-
-First, go to `AnytimeTrajectoryPredictor/models/architectures` and create a new file for your model. For simplicity,
-you can import `AnytimeTrjectoryPredictor.base_model.base_model` and use it as a parent class. The only function that should be defined is `forward`.
-
-To add your model to the pipeline, open `AnytimeTrajectoryPredictor/models/TrajectoryPredictor` and follow the examle to add your model. Ideally, let your model parameters be loaded from a config file
-
-### Step 2: Create config file
-You can copy `configs/base_config.yml` as a guide.
-
-#### Data
-Replace the paths in `feature_extractor` with the path to wherever your data is
-
-#### Training
-Set the training parameters to whatever you choose. If you're loading from a path, set `from_checkpoint` to your checkpoint. And set `save_to` to wherever you'd like to save your model.
-
-**Important** Please make your checkpoint name unique(ie. don't do model.pth or weights.pth). This is just to avoid people accidentally overriding checkpoint files when testing out different models.
-
-#### Model
-The model field is relatively open. The only thing you need to ensure is that `model.type` matches the model type you defined in Step 1 within `AnytimeTrajectoryPredictor/models/TrajectoryPredictor`
- 
-To avoid any overriding, name your config `[model_name].config` or `[run_name].config` or something along those lines(pretty much anything except `model.config`).
-
-
-
-### Step 3 Training:
-To train your model, call:
+A conda environment is provided in `environment.yaml`. To create the environment, run:
 
 ```bash
-    python AnytimeTrajectoryPredictor/scripts/train_trajectory_model.py --config path_to_config
+    conda env create -f environment.yaml
 ```
 
-where `path_to_config` is your config path
+It contains the following dependencies:
 
+```
+name: vtp
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - numpy>=2.4.6
+  - matplotlib>=3.10.9
+  - scipy>=1.17.1
+  - pytorch>=2.3
+  - torchvision>=0.26.0
+  - ipykernel>=6.29.5
+  - tqdm>=4.67.3
+  # astra
+  - python-box>=7.4.1
+  - segmentation-models-pytorch
+  - icecream
+  - opencv
+  # waymo converter
+  - pandas>=3.0.3
+  - pyarrow>=24.0.0
+  - pillow>=12.2.0
+  - pip
+  - torch_geometric
+  - pip:
+      - opencv-python
+      - ultralytics
+      - black
+      - -e .
+```
 
-Try to keep your code reproducable since it might be run on different machines and different folders. So do your best to only change the code blocks above. If you'd like to add some model-specific code, it's probably better to make a separate folder for your model or something instead of directly changing the pipeline code. That way we can merge pr's without having to worry about anything breaking
+## How to run the code
 
+### Step 1: Download and format the Waymo dataset
 
+TODO
 
+### Step 2: Extract features for the dataset
 
-1) Update config file with right paths
-2) Update feature extractor lists with what features you want
+Once the dataset is downloaded and formatted, extract YOLO features for the dataset by running:
+
+```bash
+    python AnytimeTrajectoryPredictor/scripts/save_fe_features.py
+```
+
+or, if you want to extract features for the GT boxes instead of the predicted boxes, run:
+
+```bash
+    python AnytimeTrajectoryPredictor/scripts/save_fe_features_gt.py
+```
+
+### Step 3: Train your model
+
+TODO
+
+### Step 4: Evaluate your model
+
+TODO
+
+## File Hierarchy
+
+Here is a description of the key files and folders in the repository:
+
+```
+./AnytimeTrajectoryPredictor: # Main codebase (models, training scripts, evaluation scripts, etc.)
+Data/ # Data processing and feature extraction code
+evaluation/ # Evaluation metrics
+models/ # Model architectures and pipeline code
+scripts/ # Various scripts for training, testing, and feature extraction
+trainer.py # Main training loop
+
+./AnytimeTrajectoryPredictor/Data:
+feature_extractor.py # Dataset definition, allows to load saved parquet files and extract features for training
+
+./AnytimeTrajectoryPredictor/evaluation:
+diversity.py # Mode diversity metric
+latency.py # Latency metric
+
+./AnytimeTrajectoryPredictor/models:
+ObjectTracker.py # Object tracking code (YOLO, ByteTrack)
+Pipeline.py # End-to-end pipeline code, takes model and feature extractor args to allow end-to-end inference.
+
+./AnytimeTrajectoryPredictor/models/architectures:
+astra_edm_diffusion.py # ASTRA model
+base_model.py # Base model class
+DiT.py # DiT model
+gnn.py # Graph Neural Network
+gru.py # GRU
+
+./AnytimeTrajectoryPredictor/scripts:
+compute_fe_stats.py # Computes performance stats for feature extractor (mAP, IoU, number of objects detected, etc.) to compare to the Waymo ground truth
+convert_dataset_for_yolo.py # Converts Waymo dataset to YOLO format for training the object detector
+finetune_yolo.py # Script for finetuning YOLO on Waymo data (ran into crashing issues)
+gt_fe_health_check.py # Script for checking the saved feature extractor features on Waymo samples.
+save_fe_features_gt.py # Extracts and saves feature extractor features for the Waymo dataset ground truth (ie. using the GT boxes instead of the predicted boxes)
+save_fe_features.py # Extracts and saves feature extractor features by running the feature extractor on the Waymo dataset and saving the features.
+test_trajectory_model.py # Plotting convenience script for model health check
+train_gnn.sh # GNN training script
+train_trajectory_model.py # Main training script for trajectory prediction models
+yolo_conversion_health_check.py # Health check for convert_dataset_for_yolo.py
+
+./configs: # Contains the config files for training.
+
+./notebooks:
+explore_scenes.ipynb # Notebook for visualizing Waymo scenes and trajectories to extract intersting ones for qualitative evaluation
+13056 test_object_tracker.ipynb # Notebook for testing the object tracker on Waymo data and visualizing the results
+
+./outputs: # Contains images saved from the notebooks and scripts for visualization purposes
+
+./visualizations: # Various visualization scripts
+
+./waymo/docs: # Documentation for the Waymo dataset conversion code, which allows to understand how we can use the dataset for our task.
+
+./waymo/scripts: # Scripts for downloading and formatting the Waymo dataset.
+```
