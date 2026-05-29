@@ -96,22 +96,22 @@ model:
   log_std_max: 2.0
   offdiag_clip: 2.0
   lambda_diff: 0.25
-  lambda_wta_diff: 1.0
+  lambda_wta_diff: 0.0
   lambda_nll: 0.05
   lambda_ade: 1.0
   lambda_fde: 1.0
   lambda_mode: 0.5
-  lambda_mode_margin: 0.2
+  lambda_mode_margin: 0.0
   mode_margin: 0.5
-  lambda_cov: 0.01
-  lambda_bounds: 0.25
-  lambda_smooth: 0.15
-  lambda_accel: 0.05
-  lambda_jerk: 0.05
+  lambda_cov: 0.00
+  lambda_bounds: 0.0
+  lambda_smooth: 0.0
+  lambda_accel: 0.0
+  lambda_jerk: 0.0
   lambda_prior_residual: 0.01
-  lambda_speed: 0.05
+  lambda_speed: 0.0
   lambda_entropy: 0.0
-  lambda_diversity: 0.20
+  lambda_diversity: 0.0
   diversity_margin: 0.24
   diversity_reference_box_size: 0.08
   diversity_min_scale: 0.35

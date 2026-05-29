@@ -1,0 +1,57 @@
+feature_extractor:
+  dataset_type: waymo_image_plane
+  waymo_root: /work/cs-503/santanto/waymo
+  history_steps: 10
+  future_steps: 80
+  validation_fraction: 0.1
+  split_seed: 503
+  min_future_valid: 5
+  max_segments: 20
+  max_samples: null
+  window_stride: 10
+  max_windows_per_track: 4
+  camera_name: 1
+  image_height: 256
+  image_width: 384
+  cache_segments: 1
+  use_sample_cache: true
+  sample_cache_dir: cache/waymo_image_plane
+  use_image_cache: true
+  image_cache_dir: cache/waymo_image_plane
+
+astra:
+  config: ASTRA/configs/pie.yaml
+  dataset_name: ETH_UCY
+  subset: waymo_image_plane
+  use_pretrained_unet: true
+  unet_weights: checkpoints/unet_keypoints_waymo_latest.pth
+  freeze_unet: true
+  feature_extractor: resnet18
+  feature_dim: 512
+  unet_dim: 16
+  use_social: false
+  use_vae: false
+  include_velocity: false
+  transformer_mask: true
+
+training:
+  batch_size: 16
+  num_epochs: 250
+  learning_rate: 1.0e-4
+  weight_decay: 5.0e-4
+  gradient_clip_norm: 1.0
+  loss: SmoothL1
+  weighted_penalty: quadratic
+  kl_weight: 0.0
+  gaussian_kl_weight: 0.0
+  diversity_weight: 0.0
+  cvae_recon_weight: 0.0
+  num_workers: 8
+  persistent_workers: true
+  prefetch_factor: 2
+  pin_memory: true
+  max_train_batches: null
+  max_val_batches: null
+  early_stopping_patience: 30
+  early_stopping_min_delta: 1.0e-4
+  save_to: checkpoints/astra_waymo_image_plane_baseline_unet.pth

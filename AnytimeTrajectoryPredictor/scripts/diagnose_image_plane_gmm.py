@@ -17,6 +17,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from AnytimeTrajectoryPredictor.Data.feature_extractor import WaymoImagePlaneDataset
 from AnytimeTrajectoryPredictor.models.TrajectoryPredictor import TrajectoryPredictor
 from AnytimeTrajectoryPredictor.models.architectures.astra_edm_diffusion import make_karras_sigmas
+from AnytimeTrajectoryPredictor.scripts.train_astra_image_plane import ASTRAImagePlaneAdapter, make_astra_cfg
 
 
 def _cfg_get(config, key, default=None):
@@ -66,6 +67,12 @@ def _load_model_and_data(config_path, checkpoint_path, split, batch_size, num_wo
     args.model.trajectory_std = getattr(dataset, "target_std", _cfg_get(args.model, "trajectory_std", [1.0, 1.0]))
     args.model.history_steps_H = getattr(dataset, "history_steps", _cfg_get(args.model, "history_steps_H", 10))
     args.model.future_horizon_T = getattr(dataset, "future_steps", _cfg_get(args.model, "future_horizon_T", 80))
+    weights_path = _cfg_get(args.model, "rgb_backbone_weights", None) if hasattr(args, "model") else None
+    if weights_path and not Path(weights_path).exists():
+        fallback_weights = Path("checkpoints/unet_keypoints_waymo_latest.pth")
+        if fallback_weights.exists():
+            print(f"rgb_backbone_weights not found: {weights_path}; using {fallback_weights}", flush=True)
+            args.model.rgb_backbone_weights = str(fallback_weights)
     print("Creating model", flush=True)
     model = TrajectoryPredictor.create_model(args).to(device)
     print("Created model", flush=True)
@@ -279,6 +286,205 @@ def _sample_params_with_context(model, batch, context, num_sampling_steps=None, 
     return params
 
 
+
+def _load_gmm_model_for_eval(config_path, checkpoint_path, split, batch_size, num_workers, device, max_samples=None, image_width=None, image_height=None):
+    args, model, dataset, loader = _load_model_and_data(
+        config_path,
+        checkpoint_path,
+        split,
+        batch_size,
+        num_workers,
+        device,
+        max_samples=max_samples,
+        image_width=image_width,
+        image_height=image_height,
+    )
+    return args, model, dataset, loader
+
+
+def _load_astra_baseline_for_eval(config_path, checkpoint_path, split, batch_size, num_workers, device, max_samples=None, image_width=None, image_height=None):
+    print(f"Loading ASTRA baseline config: {config_path}", flush=True)
+    with open(config_path, "r") as f:
+        args = Box(yaml.safe_load(f))
+    args.feature_extractor.max_samples = max_samples or _cfg_get(args.feature_extractor, "max_samples", None)
+    if image_width is not None:
+        old_width = int(_cfg_get(args.feature_extractor, "image_width", 384))
+        old_height = int(_cfg_get(args.feature_extractor, "image_height", 256))
+        args.feature_extractor.image_width = int(image_width)
+        args.feature_extractor.image_height = int(image_height if image_height is not None else max(1, round(old_height * image_width / max(old_width, 1))))
+    elif image_height is not None:
+        args.feature_extractor.image_height = int(image_height)
+    args.training.batch_size = int(batch_size)
+    dataset = WaymoImagePlaneDataset(args.feature_extractor, split=split)
+    astra_cfg = make_astra_cfg(args, device, dataset.history_steps, dataset.future_steps)
+    model = ASTRAImagePlaneAdapter(
+        astra_cfg,
+        unet_weights=_cfg_get(args.astra, "unet_weights", "checkpoints/unet_keypoints_waymo_latest.pth"),
+        freeze_unet=bool(_cfg_get(args.astra, "freeze_unet", True)),
+    ).to(device)
+    if checkpoint_path is None:
+        checkpoint_path = _best_checkpoint_from_save_to(_cfg_get(args.training, "save_to", None))
+    if checkpoint_path:
+        print(f"Loading ASTRA baseline checkpoint: {checkpoint_path}", flush=True)
+        ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
+        missing, unexpected = model.load_state_dict(ckpt.get("model_state_dict", ckpt), strict=False)
+        if missing:
+            print(f"ASTRA missing keys: {len(missing)}")
+        if unexpected:
+            print(f"ASTRA unexpected keys: {len(unexpected)}")
+    else:
+        print("No ASTRA baseline checkpoint supplied/found; using randomly initialized model.")
+    model.eval()
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=device.type == "cuda", drop_last=True)
+    return args, model, dataset, loader
+
+
+def _trajectory_summary_from_modes(pred_modes, y, mask, latency_ms, nll=None):
+    distances = torch.linalg.norm(pred_modes - y[:, None], dim=-1)
+    mask_modes = mask[:, None]
+    ade = (distances * mask_modes).sum(dim=(2, 3)) / mask_modes.sum(dim=(2, 3)).clamp_min(1.0)
+    minade = ade.min(dim=1).values
+    maxade = ade.max(dim=1).values
+    valid_counts = mask.long().sum(dim=-1).clamp_min(1)
+    last_idx = (valid_counts - 1).view(mask.shape[0], 1, mask.shape[1], 1).expand(-1, pred_modes.shape[1], -1, 1)
+    final_dist = distances.gather(dim=3, index=last_idx).squeeze(-1)
+    agent_valid = (mask.sum(dim=-1) > 0).to(distances.dtype)
+    fde = (final_dist * agent_valid[:, None]).sum(dim=2) / agent_valid[:, None].sum(dim=2).clamp_min(1.0)
+    minfde = fde.min(dim=1).values
+    return {
+        "minADE_mean": minade.mean(),
+        "maxADE": maxade.max(),
+        "minFDE_mean": minfde.mean(),
+        "NLL": y.new_tensor(float("nan")) if nll is None else nll,
+        "latency_ms_mean": y.new_tensor(float(latency_ms)),
+    }
+
+
+def _accumulate_summary(totals, metrics, batch_n):
+    for key, value in metrics.items():
+        scalar = _finite_scalar(value)
+        if key == "maxADE":
+            totals[key] = max(totals.get(key, float("-inf")), scalar)
+        elif math.isfinite(scalar):
+            totals[key] = totals.get(key, 0.0) + scalar * batch_n
+        else:
+            totals[key] = float("nan")
+
+
+def _finalize_summary(label, totals, count):
+    count = max(count, 1)
+    row = {"model": label, "sampling_steps": label, "samples_evaluated": count}
+    for key, value in totals.items():
+        if key == "maxADE" or not math.isfinite(float(value)):
+            row[key] = value
+        else:
+            row[key] = value / count
+    return row
+
+
+def _eval_gmm_model(label, model, loader, device, max_batches, sampler=None, steps=None):
+    totals = {}
+    count = 0
+    original_sampler = getattr(model, "sampler_type", None)
+    if sampler is not None:
+        model.sampler_type = sampler
+    with torch.no_grad():
+        for batch_idx, batch in enumerate(loader):
+            if max_batches is not None and batch_idx >= max_batches:
+                break
+            batch = _move_batch(batch, device)
+            y = model.normalizer.normalize(batch["trajectory"])
+            mask = batch.get("future_mask")
+            mask = mask.to(device=device, dtype=y.dtype) if mask is not None else torch.ones(y.shape[:-1], device=device, dtype=y.dtype)
+            batch_n = y.shape[0]
+            uses_sampler = _model_uses_sampler(model)
+            context = None
+            if uses_sampler:
+                context = model.encode_context(batch)
+            if device.type == "cuda":
+                torch.cuda.synchronize(device)
+            start = time.perf_counter()
+            if uses_sampler:
+                params = _sample_params_with_context(model, batch, context, num_sampling_steps=steps, denormalize=False)
+            else:
+                params = model._sample_params(batch, denormalize=False)
+            if device.type == "cuda":
+                torch.cuda.synchronize(device)
+            latency_ms = (time.perf_counter() - start) * 1000.0 / max(batch_n, 1)
+            nll = _nll(model, params, y, mask)
+            metrics = _trajectory_summary_from_modes(params.mu, y, mask, latency_ms, nll=nll)
+            _accumulate_summary(totals, metrics, batch_n)
+            count += batch_n
+            print(f"{label} batch={batch_idx} n={count} minADE={_finite_scalar(metrics['minADE_mean']):.4f} maxADE={_finite_scalar(metrics['maxADE']):.4f} minFDE={_finite_scalar(metrics['minFDE_mean']):.4f} NLL={_finite_scalar(metrics['NLL']):.4f} latency_ms={latency_ms:.3f}", flush=True)
+    if sampler is not None:
+        model.sampler_type = original_sampler
+    return _finalize_summary(label, totals, count)
+
+
+def _eval_astra_model(label, model, loader, device, max_batches):
+    totals = {}
+    count = 0
+    with torch.no_grad():
+        for batch_idx, batch in enumerate(loader):
+            if max_batches is not None and batch_idx >= max_batches:
+                break
+            batch = _move_batch(batch, device)
+            y = batch["trajectory"].to(device=device, dtype=torch.float32)
+            mask = batch.get("future_mask")
+            mask = mask.to(device=device, dtype=y.dtype) if mask is not None else torch.ones(y.shape[:-1], device=device, dtype=y.dtype)
+            batch_n = y.shape[0]
+            if device.type == "cuda":
+                torch.cuda.synchronize(device)
+            start = time.perf_counter()
+            pred_modes = model.predict_modes(batch)
+            if device.type == "cuda":
+                torch.cuda.synchronize(device)
+            latency_ms = (time.perf_counter() - start) * 1000.0 / max(batch_n, 1)
+            metrics = _trajectory_summary_from_modes(pred_modes, y, mask, latency_ms, nll=None)
+            _accumulate_summary(totals, metrics, batch_n)
+            count += batch_n
+            print(f"{label} batch={batch_idx} n={count} minADE={_finite_scalar(metrics['minADE_mean']):.4f} maxADE={_finite_scalar(metrics['maxADE']):.4f} minFDE={_finite_scalar(metrics['minFDE_mean']):.4f} NLL=nan latency_ms={latency_ms:.3f}", flush=True)
+    return _finalize_summary(label, totals, count)
+
+
+def _run_full_baseline_eval(args, device):
+    rows = []
+    print("Running full comparison: ASTRA-EDM Euler steps 1,4,8 + MLP + ASTRA", flush=True)
+    _, edm_model, _, edm_loader = _load_gmm_model_for_eval(
+        args.config, args.checkpoint, args.split, args.batch_size, args.num_workers, device,
+        max_samples=args.max_samples, image_width=args.image_width, image_height=args.image_height,
+    )
+    edm_model.eval()
+    for steps in (1, 4, 8):
+        rows.append(_eval_gmm_model(f"astra_edm_euler_{steps}", edm_model, edm_loader, device, args.max_batches, sampler="euler", steps=steps))
+
+    _, mlp_model, _, mlp_loader = _load_gmm_model_for_eval(
+        args.mlp_config, args.mlp_checkpoint, args.split, args.batch_size, args.num_workers, device,
+        max_samples=args.max_samples, image_width=args.image_width, image_height=args.image_height,
+    )
+    mlp_model.eval()
+    rows.append(_eval_gmm_model("mlp_baseline", mlp_model, mlp_loader, device, args.max_batches))
+
+    _, astra_model, _, astra_loader = _load_astra_baseline_for_eval(
+        args.astra_config, args.astra_checkpoint, args.split, args.batch_size, args.num_workers, device,
+        max_samples=args.max_samples, image_width=args.image_width, image_height=args.image_height,
+    )
+    astra_model.eval()
+    rows.append(_eval_astra_model("astra_baseline", astra_model, astra_loader, device, args.max_batches))
+
+    summary_csv = Path(args.summary_csv or args.output_csv or "visualizations/image_plane_training/full_baseline_eval_summary.csv")
+    table_png = Path(args.table_png or _derive_output_path(summary_csv, "_table", ".png"))
+    _write_summary_csv(rows, summary_csv)
+    metric_rows = _parse_table_rows("minADE,maxADE,minFDE,NLL,latency")
+    _write_table_png(rows, table_png, rows=metric_rows)
+    print("\nFULL COMPARISON SUMMARY")
+    for row in rows:
+        print(
+            f"{row['model']}: minADE={row.get('minADE_mean', float('nan')):.6f} "
+            f"maxADE={row.get('maxADE', float('nan')):.6f} minFDE={row.get('minFDE_mean', float('nan')):.6f} "
+            f"NLL={row.get('NLL', float('nan')):.6f} latency_ms={row.get('latency_ms_mean', float('nan')):.6f}"
+        )
+
 def _derive_output_path(base_path, suffix, extension=None):
     base = Path(base_path)
     ext = extension if extension is not None else base.suffix
@@ -370,8 +576,25 @@ def _write_table_png(summary_rows, path, rows=None):
     grid = "#d8cbb8"
 
     metrics = rows if rows is not None else _parse_table_rows(None)
+
+    def _column_label(row):
+        model = str(row.get("model", ""))
+        sampler = str(row.get("sampler_type", "") or "")
+        steps = str(row.get("sampling_steps", "") or "")
+        if sampler:
+            return f"{sampler}\n{steps} steps" if steps and steps != "default" else sampler
+        if model.startswith("astra_edm_"):
+            parts = model.split("_")
+            if len(parts) >= 4:
+                return f"{parts[-2]}\n{parts[-1]} steps"
+        if steps.startswith("astra_edm_"):
+            parts = steps.split("_")
+            if len(parts) >= 4:
+                return f"{parts[-2]}\n{parts[-1]} steps"
+        return model or steps
+
     columns = [
-        (str(row.get("sampler_type", "")) + "\n" + str(row["sampling_steps"])) if row.get("sampler_type") else str(row["sampling_steps"])
+        _column_label(row)
         for row in summary_rows
     ]
     cell_text = []
@@ -443,9 +666,18 @@ def main():
     parser.add_argument("--rows", default=None, help="Comma-separated PNG table rows. Use all/default, labels like minADE,NLL, or metric keys like minADE_mean.")
     parser.add_argument("--image_width", type=int, default=None, help="Override image-plane dataset resize width. If height is omitted, preserves config aspect ratio.")
     parser.add_argument("--image_height", type=int, default=None, help="Override image-plane dataset resize height.")
+    parser.add_argument("--full_baseline_eval", action="store_true", help="Run ASTRA-EDM Euler steps 1,4,8 plus MLP and ASTRA baselines in one comparison table.")
+    parser.add_argument("--mlp_config", default="configs/image_plane_mlp_gmm_baseline.yml")
+    parser.add_argument("--mlp_checkpoint", default=None)
+    parser.add_argument("--astra_config", default="configs/astra_waymo_image_plane_baseline.yml")
+    parser.add_argument("--astra_checkpoint", default=None)
     args = parser.parse_args()
 
     device = torch.device(args.device) if args.device else torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if args.full_baseline_eval:
+        _run_full_baseline_eval(args, device)
+        return
+
     _, model, dataset, loader = _load_model_and_data(
         args.config,
         args.checkpoint,

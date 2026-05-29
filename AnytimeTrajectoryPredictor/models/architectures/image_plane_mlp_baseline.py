@@ -132,7 +132,7 @@ class ImagePlaneMLPGMMBaseline(nn.Module):
             cov_raw=cov_raw,
         )
 
-    def _sample_params(self, batch, num_sampling_steps=None, denormalize=True, capture_steps=False):
+    def _sample_params(self, batch, num_sampling_steps=None, denormalize=True, capture_steps=False, capture_initial_noise=False):
         params = self._raw_to_params(self.net(self._build_input(batch)))
         if denormalize:
             params.mu = self.normalizer.denormalize(params.mu)
@@ -140,8 +140,14 @@ class ImagePlaneMLPGMMBaseline(nn.Module):
             return params, []
         return params
 
-    def forward(self, batch, num_sampling_steps=None, denormalize=True, capture_steps=False):
-        return self._sample_params(batch, num_sampling_steps=num_sampling_steps, denormalize=denormalize, capture_steps=capture_steps)
+    def forward(self, batch, num_sampling_steps=None, denormalize=True, capture_steps=False, capture_initial_noise=False):
+        return self._sample_params(
+            batch,
+            num_sampling_steps=num_sampling_steps,
+            denormalize=denormalize,
+            capture_steps=capture_steps,
+            capture_initial_noise=capture_initial_noise,
+        )
 
     def compute_loss(self, batch):
         y = self.normalizer.normalize(batch['trajectory'])

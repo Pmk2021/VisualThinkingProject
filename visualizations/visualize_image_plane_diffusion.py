@@ -269,7 +269,7 @@ def _render_gt_only(base, batch, step_idx, total_steps):
     return Image.alpha_composite(image, overlay).convert("RGB")
 
 
-def _render_step(base, params, batch, step_idx, total_steps, sigma, mode_selection="best", gmm_heatmap="all", heatmap_alpha=105, knot_indices=None):
+def _render_step(base, params, batch, step_idx, total_steps, sigma, mode_selection="best", gmm_heatmap="all", heatmap_alpha=105, knot_indices=None, frame_label=None):
     image = base.copy()
     overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay, "RGBA")
@@ -305,7 +305,7 @@ def _render_step(base, params, batch, step_idx, total_steps, sigma, mode_selecti
     gt_maneuver = _maneuver(gt[0][mask[0]])
     minade = float(mode_ade[shown_mode])
     panel = [
-        f"step {step_idx}/{total_steps}  sigma={sigma:.4f}",
+        f"{frame_label or f'step {step_idx}/{total_steps}'}  sigma={sigma:.4f}",
         f"shown={shown_mode} p={prob:.2f} top={top_mode} entropy={entropy:.2f}",
         f"minADE(norm)={minade:.3f}  gt={gt_maneuver} pred={pred_maneuver}",
     ]
@@ -402,6 +402,7 @@ def main():
     parser.add_argument("--num_steps", type=int, default=None)
     parser.add_argument("--frame_ms", type=int, default=450)
     parser.add_argument("--gt_only_frames", type=int, default=2)
+    parser.add_argument("--show_initial_noise", action=argparse.BooleanOptionalAction, default=False, help="Include the initial fan-out noise as the first refinement frame.")
     parser.add_argument("--mode_selection", choices=["best", "top"], default="best")
     parser.add_argument("--gmm_heatmap", choices=["all", "shown", "top", "off"], default="all")
     parser.add_argument("--heatmap_alpha", type=int, default=105)
@@ -413,7 +414,12 @@ def main():
     batch = next(iter(loader))
     batch_d = {k: v.to(device) if torch.is_tensor(v) else v for k, v in batch.items()}
     with torch.no_grad():
-        final_params, frames = model(batch_d, num_sampling_steps=args.num_steps, capture_steps=True)
+        final_params, frames = model(
+            batch_d,
+            num_sampling_steps=args.num_steps,
+            capture_steps=True,
+            capture_initial_noise=args.show_initial_noise,
+        )
     if not frames:
         frames = [{"sigma": 0.0, "params": final_params}]
     base = _pil_from_history(batch)
@@ -430,9 +436,10 @@ def main():
                 total,
                 frame["sigma"],
                 mode_selection=args.mode_selection,
-                gmm_heatmap=args.gmm_heatmap,
+                gmm_heatmap="off" if frame.get("kind") == "initial_noise" else args.gmm_heatmap,
                 heatmap_alpha=args.heatmap_alpha,
                 knot_indices=knot_indices,
+                frame_label="initial fan-out noise" if frame.get("kind") == "initial_noise" else None,
             )
         )
     images += [images[-1]] * 2

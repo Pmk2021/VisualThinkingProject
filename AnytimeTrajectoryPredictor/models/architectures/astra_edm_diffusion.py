@@ -94,6 +94,7 @@ def make_catmull_rom_basis(knot_indices, future_horizon):
         denom = max(knots[seg + 1] - knots[seg], 1)
         u = float(max(0.0, min(1.0, (t - knots[seg]) / denom)))
         u2, u3 = u * u, u * u * u
+        #TODO: What is this
         w0 = -0.5 * u + u2 - 0.5 * u3
         w1 = 1.0 - 2.5 * u2 + 1.5 * u3
         w2 = 0.5 * u + 2.0 * u2 - 1.5 * u3
@@ -761,6 +762,26 @@ class ASTRAEDMDiffusionModel(nn.Module):
             return init_prior + self.prior_residual_scale * torch.randn(shape, device=device, dtype=dtype) + sigma0 * torch.randn(shape, device=device, dtype=dtype)
         return torch.randn(shape, device=device, dtype=dtype) * sigma0
 
+    def _noise_frame_params(self, x, denormalize, prior=None):
+        mu = self._expand_mu(x)
+        if prior is not None:
+            mu = mu + self._expand_mu(prior)
+        if denormalize:
+            mu = self.normalizer.denormalize(mu)
+        mode_logits = x.new_zeros((x.shape[0], x.shape[1]))
+        mode_probs = F.softmax(mode_logits, dim=1)
+        chol = mu.new_zeros((*mu.shape[:-1], 2, 2))
+        chol[..., 0, 0] = 0.01
+        chol[..., 1, 1] = 0.01
+        cov_raw = mu.new_zeros((*mu.shape[:-1], 3))
+        return GMMParams(
+            mode_logits=mode_logits,
+            mode_probs=mode_probs,
+            mu=mu,
+            cov_cholesky=chol,
+            cov_raw=cov_raw,
+        )
+
     def _sampler_step(self, x, context, sigma, sigma_next, self_cond=None):
         sigma_batch = sigma.expand(x.shape[0])
         x_clean, hidden = self.denoise(x, context, sigma_batch, self_cond=self_cond)
@@ -782,7 +803,7 @@ class ASTRAEDMDiffusionModel(nn.Module):
         x_next = x + (sigma_next - sigma) * 0.5 * (d + d_next)
         return x_next, hidden_next, x_clean_next.detach()
 
-    def _sample_params(self, batch, num_sampling_steps=None, denormalize=True, capture_steps=False):
+    def _sample_params(self, batch, num_sampling_steps=None, denormalize=True, capture_steps=False, capture_initial_noise=False):
         context = self.encode_context(batch)
         trajectory = batch.get("trajectory")
         if trajectory is not None:
@@ -798,6 +819,12 @@ class ASTRAEDMDiffusionModel(nn.Module):
         hidden = None
         self_cond = None
         frames = []
+        if capture_steps and capture_initial_noise:
+            frames.append({
+                "sigma": float(sigmas[0].detach().cpu()),
+                "params": self._noise_frame_params(x, denormalize, prior=prior),
+                "kind": "initial_noise",
+            })
         for i in range(len(sigmas) - 1):
             x, hidden, self_cond = self._sampler_step(x, context, sigmas[i], sigmas[i + 1], self_cond=self_cond)
             if capture_steps and hidden is not None:
@@ -805,15 +832,21 @@ class ASTRAEDMDiffusionModel(nn.Module):
                 params_i = self._expand_params(params_i)
                 if denormalize:
                     params_i.mu = self.normalizer.denormalize(params_i.mu)
-                frames.append({"sigma": float(sigmas[i + 1].detach().cpu()), "params": params_i})
+                frames.append({"sigma": float(sigmas[i + 1].detach().cpu()), "params": params_i, "kind": "denoised"})
         params = self._apply_prediction_prior(self.gmm_head(x, hidden), prior)
         params = self._expand_params(params)
         if denormalize:
             params.mu = self.normalizer.denormalize(params.mu)
         return (params, frames) if capture_steps else params
 
-    def forward(self, batch, num_sampling_steps=None, capture_steps=False):
-        return self._sample_params(batch, num_sampling_steps=num_sampling_steps, denormalize=True, capture_steps=capture_steps)
+    def forward(self, batch, num_sampling_steps=None, capture_steps=False, capture_initial_noise=False):
+        return self._sample_params(
+            batch,
+            num_sampling_steps=num_sampling_steps,
+            denormalize=True,
+            capture_steps=capture_steps,
+            capture_initial_noise=capture_initial_noise,
+        )
 
     @torch.no_grad()
     def _make_rollout_state(self, y_modes, context, num_steps=None):
@@ -1004,21 +1037,26 @@ class ASTRAEDMDiffusionModel(nn.Module):
         return -torch.logsumexp(log_mix, dim=1).mean()
 
     def _minade_minfde(self, mu, y, mask):
-        distances = torch.linalg.norm(mu - y[:, None], dim=-1)
+        # calculate squared error for trajectory
+        _, modes, agents, timesteps, _ = mu.shape
+        distances = torch.linalg.norm(mu - y[:, None], dim=-1)**2 # [B K A T 2] -> [B K A T]
         mask_modes = mask[:, None]
-        ade = (distances * mask_modes).sum(dim=(2, 3)) / mask_modes.sum(dim=(2, 3)).clamp_min(1.0)
-        minade, best_mode = ade.min(dim=1)
-        valid_counts = mask.long().sum(dim=-1).clamp_min(1)
-        last_idx = (valid_counts - 1).view(mask.shape[0], 1, mask.shape[1], 1).expand(-1, mu.shape[1], -1, 1)
-        final_dist = distances.gather(dim=3, index=last_idx).squeeze(-1)
-        agent_valid = (mask.sum(dim=-1) > 0).to(distances.dtype)
-        fde = (final_dist * agent_valid[:, None]).sum(dim=2) / agent_valid[:, None].sum(dim=2).clamp_min(1.0)
-        minfde = fde.min(dim=1)[0]
-        return minade.mean(), minfde.mean(), best_mode
+        # calculate average distance per mode
+        avg_ade = (distances * mask_modes).mean(dim=-1) # [B K A]
+        
+        # find best mode per agent
+        minade, best_mode = avg_ade.min(dim=1) #  [B, A]
+        
+        # final distance
+        fde = distances[:, :, :, -1] # [B K A]
+        minfde = fde.min(dim=1)[0] # [B A]
+        
+        #FIXME: squeeze is because we only have one agent
+        return minade, minfde, best_mode.squeeze(1)
 
     def _winner_take_all_diff(self, denoised, denoise_target, mask_points, best_mode, sigma=None):
         batch_size, _, agents, num_points, dim = denoised.shape
-        gather_idx = best_mode.view(batch_size, 1, 1, 1, 1).expand(-1, 1, agents, num_points, dim)
+        gather_idx = best_mode.view(batch_size, 1, agents, 1, 1).expand(-1, 1, agents, num_points, dim)
         pred = denoised.gather(dim=1, index=gather_idx).squeeze(1)
         target = denoise_target.gather(dim=1, index=gather_idx).squeeze(1)
         diff = F.smooth_l1_loss(pred, target, reduction="none")

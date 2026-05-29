@@ -101,6 +101,7 @@ def _apply_config_defaults(args):
     )
     args.seed = args.seed if args.seed is not None else _cfg_get(training, "visualization_seed", None)
     args.num_steps = args.num_steps if args.num_steps is not None else _cfg_get(training, "visualization_num_steps", None)
+    args.show_initial_noise = bool(args.show_initial_noise if args.show_initial_noise is not None else _cfg_get(training, "visualization_show_initial_noise", False))
     args.frame_ms = int(args.frame_ms if args.frame_ms is not None else _cfg_get(training, "visualization_frame_ms", 450))
     args.gt_only_frames = int(
         args.gt_only_frames if args.gt_only_frames is not None else _cfg_get(training, "visualization_gt_only_frames", 2)
@@ -479,13 +480,19 @@ def render_one(
     save_gmm_png=True,
     gmm_png_future_step=None,
     sample_seed=None,
+    show_initial_noise=False,
 ):
     loader = DataLoader(torch.utils.data.Subset(dataset, [index]), batch_size=1, shuffle=False)
     batch = next(iter(loader))
     batch_d = _batch_to_device(batch, device)
     _set_torch_seed(sample_seed)
     with torch.no_grad():
-        final_params, frames = model(batch_d, num_sampling_steps=num_steps, capture_steps=True)
+        final_params, frames = model(
+            batch_d,
+            num_sampling_steps=num_steps,
+            capture_steps=True,
+            capture_initial_noise=show_initial_noise,
+        )
     if not frames:
         frames = [{"sigma": 0.0, "params": final_params}]
     base = _pil_from_history(batch)
@@ -500,9 +507,10 @@ def render_one(
             len(frames),
             frame["sigma"],
             mode_selection=mode_selection,
-            gmm_heatmap=gmm_heatmap,
+            gmm_heatmap="off" if frame.get("kind") == "initial_noise" else gmm_heatmap,
             heatmap_alpha=heatmap_alpha,
             knot_indices=knot_indices,
+            frame_label="initial fan-out noise" if frame.get("kind") == "initial_noise" else None,
         )
         for i, frame in enumerate(frames, start=1)
     ]
@@ -550,6 +558,7 @@ def main():
     parser.add_argument("--min_motion_px", type=float, default=None, help="Minimum bbox-center motion in image pixels for --moving_only.")
     parser.add_argument("--seed", type=int, default=None, help="Random seed. Omit for a different random scene/indices each run.")
     parser.add_argument("--num_steps", type=int, default=None)
+    parser.add_argument("--show_initial_noise", action=argparse.BooleanOptionalAction, default=None, help="Include the initial fan-out noise as the first refinement frame.")
     parser.add_argument("--frame_ms", type=int, default=None)
     parser.add_argument("--gt_only_frames", type=int, default=None)
     parser.add_argument("--mode_selection", choices=["best", "top"], default=None)
@@ -577,7 +586,7 @@ def main():
         f"Visualization config: checkpoint={args.checkpoint} output_dir={args.output_dir} "
         f"indices={args.indices} random={args.random} random_scene={args.random_scene} "
         f"bad={args.bad} good={args.good} mode_selection={args.mode_selection} "
-        f"num_samples={args.num_samples} num_steps={args.num_steps}{quality_seed_note}",
+        f"num_samples={args.num_samples} num_steps={args.num_steps} show_initial_noise={args.show_initial_noise}{quality_seed_note}",
         flush=True,
     )
     device = torch.device(args.device) if args.device else torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -613,6 +622,7 @@ def main():
             save_gmm_png=args.save_gmm_png,
             gmm_png_future_step=args.gmm_png_future_step,
             sample_seed=_sample_seed(args.quality_seed, idx) if _quality_requested(args) else None,
+            show_initial_noise=args.show_initial_noise,
         )
         if idx in selection_by_idx:
             row["selection_bucket"] = selection_by_idx[idx]

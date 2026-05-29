@@ -10,6 +10,7 @@ data/waymoyolo
 *.pth
 # Model checkpoint files
 astra/pretrained_weights/
+checkpoints/
 
 # wandb
 wandb/
