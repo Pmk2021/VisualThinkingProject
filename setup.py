@@ -17,7 +17,6 @@ setup(
         "torch",
         "torchvision",
         "tqdm",
-        "python-box",
         "wandb",
         "Pillow",
         "ultralytics",

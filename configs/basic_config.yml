@@ -1,22 +1,10 @@
+data:
+  train_path: /path/to/train/data
+  val_path: /path/to/validation/data  
+  test_path: /path/to/test/data
+
 feature_extractor:
-  dataset_root: /work/cs-503/santanto/waymo
-  feature_root: /work/cs-503/gromb/waymo
-  tables:
-    images: images.parquet
-    ego_poses: ego_poses.parquet
-    trajectories: trajectories.parquet
-    image_trajectories: image_trajectories.parquet
-    latent_features: fe_local_latent_features.parquet
-
-
-  features:
-    image_trajectories:
-      - bbox_center_x
-      - bbox_center_y
-      - bbox_width
-      - bbox_height
-
-  #Not using this for now
+  features: [feature1, feature2, feature3]
   train_feature_path: data/features/train.csv #path to store extracted features
   val_feature_path: data/features/val.csv #path to store extracted features
   test_feature_path: data/features/test.csv #path to store extracted features
@@ -26,18 +14,7 @@ training:
   batch_size: 64
   num_epochs: 100
   learning_rate: 0.001
-  from_checkpoint: false
-  save_to: checkpoint/model_paths.pth
-  wandb_project: "AnytimeTrajectoryPredictor"
-  measure_diversity: true
-  measure_latency: true
-  training_log:
-    metric: batch
-    steps: 1
-  validation_log:
-    metric: batch
-    steps: 50
 
 model:
-  type: linear
-  num_trajectory_possibilities: 8
+  type: Linear
+  num_trajectory_possibilities: 3

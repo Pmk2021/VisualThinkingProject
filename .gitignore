@@ -8,6 +8,16 @@ data/waymoyolo
 # Pytorch model checkpoints
 *.pt
 *.pth
+# Model checkpoint files
+astra/pretrained_weights/
+
+# wandb
+wandb/
+
+# results 
+*.gif
+*.png
+logs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

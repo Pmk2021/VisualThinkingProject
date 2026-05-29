@@ -1,7 +1,12 @@
-import torch
-import wandb
+import csv
+import os
 import random
 from itertools import islice
+import sys
+from contextlib import contextmanager
+from pathlib import Path
+
+import torch
 from tqdm import tqdm
 import os
 
@@ -56,384 +61,402 @@ def _should_log(count, log_config):
 def _epoch_progress(epoch, batch_idx, num_batches):
     return epoch + batch_idx / max(num_batches, 1)
 
+try:
+    import wandb
+except ImportError:
+    wandb = None
+
+
+def _cfg_get(config, key, default=None):
+    return getattr(config, key, default) if config is not None else default
+
+
+def _box_to_dict(value):
+    if hasattr(value, "to_dict"):
+        return value.to_dict()
+    if isinstance(value, dict):
+        return {k: _box_to_dict(v) for k, v in value.items()}
+    return value
+
+
+def _as_int_list(value, default):
+    if value is None:
+        value = default
+    if value is None:
+        return []
+    return [int(item) for item in value]
+
+
+@contextmanager
+def _preserve_torch_rng(seed=None):
+    cpu_state = torch.get_rng_state()
+    cuda_states = torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None
+    try:
+        if seed is not None:
+            torch.manual_seed(int(seed))
+        yield
+    finally:
+        torch.set_rng_state(cpu_state)
+        if cuda_states is not None:
+            torch.cuda.set_rng_state_all(cuda_states)
+
 
 class Trainer:
-    def __init__(
-        self, model, optimizer, train_loader, val_loader, device, args
-    ):
+    def __init__(self, model, optimizer, train_loader, val_loader, device, args):
         self.model = model
         self.optimizer = optimizer
         self.train_loader = train_loader
         self.val_loader = val_loader
         self.device = device
         self.args = args
-        self.measure_diversity = _get_training_arg(args, "measure_diversity", False)
-        self.measure_latency = _get_training_arg(args, "measure_latency", False)
-        self.training_log = _get_log_config(
-            args,
-            key="training_log",
-            fallback_metric="batch",
-            fallback_steps=_get_training_arg(args, "batch_logging_steps", 1),
+        self.gradient_clip_norm = _cfg_get(args.training, "gradient_clip_norm", None)
+        self.use_amp = bool(_cfg_get(args.training, "mixed_precision", False)) and device.type == "cuda"
+        self.scaler = torch.amp.GradScaler("cuda", enabled=self.use_amp)
+        self.best_validation = float("inf")
+        self.save_to = _cfg_get(args.training, "save_to", "checkpoints/model.pth")
+        self.early_stopping_patience = _cfg_get(args.training, "early_stopping_patience", None)
+        if self.early_stopping_patience is not None:
+            self.early_stopping_patience = max(int(self.early_stopping_patience), 1)
+        self.early_stopping_min_delta = float(_cfg_get(args.training, "early_stopping_min_delta", 0.0))
+        self.early_stopping_monitor = _cfg_get(args.training, "early_stopping_monitor", "val/loss")
+        self.diagnostics_enabled = bool(_cfg_get(args.training, "diagnostics_enabled", True))
+        self.diagnostics_interval = max(int(_cfg_get(args.training, "diagnostics_interval", 1)), 1)
+        self.diagnostics_batches = max(int(_cfg_get(args.training, "diagnostics_batches", 1)), 0)
+        default_steps = getattr(model, "monotonicity_eval_steps", [1, 2, 4, 8, 16])
+        self.monotonicity_eval_steps = _as_int_list(
+            _cfg_get(args.training, "monotonicity_eval_steps", default_steps),
+            default_steps,
         )
-        self.validation_log = _get_log_config(
-            args,
-            key="validation_log",
-            fallback_metric="epoch",
-            fallback_steps=_get_training_arg(args, "logging_steps", 1),
+        self.monotonicity_repeats = max(int(_cfg_get(args.training, "monotonicity_repeats", 1)), 1)
+        self.monotonicity_seed = _cfg_get(args.training, "monotonicity_seed", None)
+        self.mode_diagnostics_sampling_steps = _cfg_get(args.training, "mode_diagnostics_sampling_steps", None)
+        self.mode_collapse_prob_threshold = float(_cfg_get(args.training, "mode_collapse_prob_threshold", 0.90))
+        self.mode_collapse_diversity_threshold = float(
+            _cfg_get(args.training, "mode_collapse_diversity_threshold", 0.05)
         )
-        total_grad_norm = torch.nn.utils.clip_grad_norm_(
-            self.model.parameters(),
-            max_norm=1.0
+        self.visualization_enabled = bool(_cfg_get(args.training, "visualization_enabled", False))
+        self.visualization_interval = max(int(_cfg_get(args.training, "visualization_interval", 1)), 1)
+        self.visualization_num_samples = max(int(_cfg_get(args.training, "visualization_num_samples", 4)), 0)
+        self.visualization_indices = _cfg_get(args.training, "visualization_indices", None)
+        self.visualization_random = bool(_cfg_get(args.training, "visualization_random", False))
+        self.visualization_seed = _cfg_get(args.training, "visualization_seed", None)
+        if self.visualization_seed is not None:
+            self.visualization_seed = int(self.visualization_seed)
+        self.visualization_num_steps = _cfg_get(args.training, "visualization_num_steps", None)
+        self.visualization_frame_ms = int(_cfg_get(args.training, "visualization_frame_ms", 450))
+        self.visualization_gt_only_frames = max(int(_cfg_get(args.training, "visualization_gt_only_frames", 2)), 0)
+        self.visualization_mode_selection = _cfg_get(args.training, "visualization_mode_selection", "best")
+        self.visualization_gmm_heatmap = _cfg_get(args.training, "visualization_gmm_heatmap", "all")
+        self.visualization_heatmap_alpha = int(_cfg_get(args.training, "visualization_heatmap_alpha", 105))
+        self.visualization_save_gmm_png = bool(_cfg_get(args.training, "visualization_save_gmm_png", True))
+        self.visualization_output_dir = _cfg_get(
+            args.training,
+            "visualization_output_dir",
+            "visualizations/image_plane_training",
         )
-        self.global_step = 0
-        wandb.init(project=args.training.wandb_project, config=args)
-        wandb.define_metric("global_step")
-        wandb.define_metric("train/*", step_metric="global_step")
-        wandb.define_metric("validation/*", step_metric="global_step")
-        wandb.define_metric("diversity/*", step_metric="global_step")
-
-    def train_single_epoch(self, epoch):
-        self.model.train()
-        loss_total = 0
-        num_batches = len(self.train_loader)
-        batch_pbar = tqdm(
-            self.train_loader,
-            desc=f"Epoch {epoch + 1} batches",
-            leave=False,
-            position=1,
-        )
-        for batch_idx, batch in enumerate(batch_pbar, start=1):
-            feature, trajectory = batch["features"], batch["trajectory"]
-            feature = feature.transpose(0, 1).to(self.device)
-            trajectory = trajectory.transpose(0, 1).to(self.device)
-            if epoch > 1:
-                refinement_steps = [5] * len(feature) #[random.randint(1, 10) for _ in range(len(feature))]
-            else:
-                refinement_steps = [random.randint(1, 10) for _ in range(len(feature))]
-            # Compute Loss
-            loss = self.model.compute_loss(feature, trajectory, refinement_steps)
-            batch_loss = loss.item()
-            loss_total += batch_loss
-            # Apply Gradient Step
-            self.optimizer.zero_grad()
-
-            loss.backward()
-
-            # ---- gradient monitoring ----
-            total_grad_norm = torch.nn.utils.clip_grad_norm_(
-                self.model.parameters(),
-                max_norm=0.8
-            )
-
-            self.optimizer.step()
-
-          
-            self.global_step += 1
-            epoch_progress = _epoch_progress(epoch, batch_idx, num_batches)
-            batch_pbar.set_postfix(
-                {
-                    "loss": f"{batch_loss:.4f}",
-                    "avg_loss": f"{loss_total / batch_idx:.4f}",
-                    "epoch": f"{epoch_progress:.3f}",
-                    "step": self.global_step,
-                    "grad_norm": f"{total_grad_norm:.4f}"
-                }
-            )
-            if (
-                self.training_log["metric"] == "batch"
-                and _should_log(self.global_step, self.training_log)
-            ):
-                wandb.log(
-                    {
-                        "global_step": self.global_step,
-                        "epoch": epoch_progress,
-                        "train/batch": batch_idx,
-                        "train/batch_loss": batch_loss,
-                        "train/epoch_loss_so_far": loss_total / batch_idx,
-                        "train/learning_rate": self.optimizer.param_groups[0]["lr"],
-                        "grad_norm": f"{total_grad_norm:.4f}"
-                    }
+        wandb_mode = _cfg_get(args.training, "wandb_mode", "offline")
+        self.use_wandb = wandb is not None and wandb_mode != "disabled"
+        if self.use_wandb:
+            try:
+                wandb.init(
+                    project=_cfg_get(args.training, "wandb_project", "astra_edm_diffusion"),
+                    config=_box_to_dict(args),
+                    mode=wandb_mode,
                 )
+            except Exception as exc:
+                self.use_wandb = False
+                print(f"W&B initialization failed; continuing without W&B logging. Error: {exc}")
 
-            if (
-                self.validation_log["metric"] == "batch"
-                and _should_log(self.global_step, self.validation_log)
-            ):
-                validation_loss, diversity = self.validate(
-                    max_number_of_batches=self.validation_log[
-                        "max_number_of_batches"
-                    ]
-                )
-                log_payload: dict[str, object] = {
-                    "global_step": self.global_step,
-                    "epoch": epoch_progress,
-                    "validation/batch": batch_idx,
-                    "validation/batch_loss": validation_loss,
-                }
-                if diversity is not None:
-                    log_payload["diversity/batch_apd"] = diversity["apd"]
-                    log_payload["diversity/batch_mean_pairwise_w2"] = diversity[
-                        "mean_pairwise_w2"
-                    ]
-                wandb.log(log_payload)
+    def _move_batch(self, value):
+        if torch.is_tensor(value):
+            return value.to(self.device, non_blocking=True)
+        if isinstance(value, dict):
+            return {key: self._move_batch(item) for key, item in value.items()}
+        if isinstance(value, (list, tuple)):
+            return type(value)(self._move_batch(item) for item in value)
+        return value
 
-        save_dir = getattr(self.args.training, "checkpoint_dir", "checkpoints")
-        os.makedirs(save_dir, exist_ok=True)
+    def _compute_loss(self, batch):
+        if getattr(self.model, "expects_batch", False):
+            return self.model.compute_loss(batch)
 
-        checkpoint_path = os.path.join(
-            save_dir,
-            f"model_epoch_{epoch}.pt"
+        feature, trajectory = batch["features"], batch["trajectory"]
+        feature = feature.transpose(0, 1).to(self.device)
+        trajectory = trajectory.transpose(0, 1).to(self.device)
+        f_ = [random.randint(1, 10) for _ in range(len(feature))]
+        return {"loss": self.model.compute_loss(feature, trajectory, f_)}
+
+    def _scalar_logs(self, output, prefix):
+        logs = {}
+        for key, value in output.items():
+            metric_key = f"{prefix}/loss" if key == "loss" else f"{prefix}/{key}"
+            if torch.is_tensor(value):
+                logs[metric_key] = float(value.detach().mean().cpu())
+            elif isinstance(value, (int, float)):
+                logs[metric_key] = float(value)
+            if key == "loss" and metric_key in logs:
+                logs[f"{prefix}/total_loss"] = logs[metric_key]
+        return logs
+
+    def _monotonicity_scalar_logs(self, metrics, prefix):
+        logs = {
+            f"{prefix}/monotonicity/repeats": float(metrics["repeats"]),
+            f"{prefix}/monotonicity/minade_violations": float(metrics["monotonic_minade_violations"]),
+            f"{prefix}/monotonicity/minfde_violations": float(metrics["monotonic_minfde_violations"]),
+            f"{prefix}/monotonicity/best_minade_step": float(metrics["best_minade_step"]),
+            f"{prefix}/monotonicity/best_minfde_step": float(metrics["best_minfde_step"]),
+        }
+        for index, step in enumerate(metrics["steps"]):
+            tag = f"step_{int(step)}"
+            logs[f"{prefix}/monotonicity/nfe_{tag}"] = float(metrics["nfe"][index])
+            logs[f"{prefix}/monotonicity/minade_mean_{tag}"] = float(metrics["minade_mean"][index])
+            logs[f"{prefix}/monotonicity/minfde_mean_{tag}"] = float(metrics["minfde_mean"][index])
+            logs[f"{prefix}/monotonicity/nll_mean_{tag}"] = float(metrics["nll_mean"][index])
+        return logs
+
+    def _mode_diversity_logs(self, params, batch, prefix):
+        mu = params.mu.detach()
+        probs = params.mode_probs.detach()
+        logs = {}
+        if mu.ndim != 5 or probs.ndim != 2:
+            return logs
+
+        batch_size, modes, agents, horizon, _ = mu.shape
+        entropy = -(probs * probs.clamp_min(1e-8).log()).sum(dim=1)
+        logs[f"{prefix}/mode_diversity/prob_entropy_mean"] = float(entropy.mean().cpu())
+        logs[f"{prefix}/mode_diversity/effective_modes_mean"] = float(torch.exp(entropy).mean().cpu())
+        logs[f"{prefix}/mode_diversity/max_mode_prob_mean"] = float(probs.max(dim=1).values.mean().cpu())
+        if modes > 1:
+            logs[f"{prefix}/mode_diversity/prob_entropy_normalized_mean"] = float(
+                (entropy / torch.log(torch.tensor(float(modes), device=entropy.device))).mean().cpu()
+            )
+        else:
+            logs[f"{prefix}/mode_diversity/prob_entropy_normalized_mean"] = 0.0
+
+        max_prob = probs.max(dim=1).values
+        logs[f"{prefix}/mode_diversity/prob_collapse_rate"] = float(
+            (max_prob >= self.mode_collapse_prob_threshold).float().mean().cpu()
         )
+        if modes < 2:
+            return logs
 
-        torch.save(
-            {
-                "epoch": epoch,
-                "global_step": self.global_step,
-                "model_state_dict": self.model.state_dict(),
-                "optimizer_state_dict": self.optimizer.state_dict(),
-            },
-            checkpoint_path,
+        upper = torch.triu_indices(modes, modes, offset=1, device=mu.device)
+        pair_dist = torch.linalg.norm(mu[:, upper[0]] - mu[:, upper[1]], dim=-1)
+        mask = batch.get("future_mask")
+        if mask is None:
+            mask = torch.ones(batch_size, agents, horizon, device=mu.device, dtype=mu.dtype)
+        else:
+            mask = mask.to(device=mu.device, dtype=mu.dtype)
+        pair_ade = (pair_dist * mask[:, None]).sum(dim=(2, 3)) / mask[:, None].sum(dim=(2, 3)).clamp_min(1.0)
+        min_pair_ade = pair_ade.min(dim=1).values
+        logs[f"{prefix}/mode_diversity/pairwise_ade_mean"] = float(pair_ade.mean().cpu())
+        logs[f"{prefix}/mode_diversity/pairwise_ade_min_mean"] = float(min_pair_ade.mean().cpu())
+        logs[f"{prefix}/mode_diversity/low_diversity_rate"] = float(
+            (min_pair_ade <= self.mode_collapse_diversity_threshold).float().mean().cpu()
         )
+        return logs
 
-        print(f"[Checkpoint] Saved model to {checkpoint_path}")
+    def _validation_diagnostics(self, epoch):
+        if (
+            not self.diagnostics_enabled
+            or self.diagnostics_batches <= 0
+            or epoch % self.diagnostics_interval != 0
+            or not getattr(self.model, "expects_batch", False)
+        ):
+            return {}
 
-        return loss_total / max(num_batches, 1)
-
-    def _compute_validation_batch_metrics(self, batch):
-        feature, trajectory = (
-            batch["features"].transpose(0, 1).to(self.device),
-            batch["trajectory"].transpose(0, 1).to(self.device),
-        )
-        refinement_steps = [random.randint(1, 10) for _ in range(len(feature))]
-        loss = self.model.compute_loss(feature, trajectory, refinement_steps)
-
-        diversity = None
-        if self.measure_diversity:
-            predictions = self.model(feature, refinement_steps)
-            diversity = compute_diversity_metrics(predictions, self.model)
-
-        return loss.item(), diversity
-
-    def validate(self, max_number_of_batches=None):
-        max_number_of_batches=20
-        if max_number_of_batches is not None:
-            max_number_of_batches = int(max_number_of_batches)
-            if max_number_of_batches <= 0:
-                raise ValueError("max_number_of_batches must be positive")
-
-        total_loss = 0
-        apd_sum = 0.0
-        w2_sum = 0.0
-        num_batches = 0
         was_training = self.model.training
         self.model.eval()
+        totals = {}
+        count = 0
+        with torch.no_grad(), _preserve_torch_rng(self.monotonicity_seed):
+            for batch in self.val_loader:
+                batch = self._move_batch(batch)
+                if hasattr(self.model, "evaluate_monotonicity") and self.monotonicity_eval_steps:
+                    metrics = self.model.evaluate_monotonicity(
+                        batch,
+                        step_counts=self.monotonicity_eval_steps,
+                        repeats=self.monotonicity_repeats,
+                        seed=self.monotonicity_seed,
+                    )
+                    for key, value in self._monotonicity_scalar_logs(metrics, "val").items():
+                        totals[key] = totals.get(key, 0.0) + value
+                params = self.model(batch, num_sampling_steps=self.mode_diagnostics_sampling_steps)
+                for key, value in self._mode_diversity_logs(params, batch, "val").items():
+                    totals[key] = totals.get(key, 0.0) + value
+                count += 1
+                if count >= self.diagnostics_batches:
+                    break
+        if was_training:
+            self.model.train()
+        return {key: value / max(count, 1) for key, value in totals.items()}
+
+    def _parse_visualization_indices(self, dataset_len):
+        value = self.visualization_indices
+        if value is None:
+            if self.visualization_random:
+                rng = random.Random(self.visualization_seed)
+                return rng.sample(range(dataset_len), k=min(self.visualization_num_samples, dataset_len))
+            return list(range(min(self.visualization_num_samples, dataset_len)))
+        if isinstance(value, str):
+            raw_parts = [part.strip() for part in value.split(",") if part.strip()]
+        else:
+            raw_parts = [str(part).strip() for part in value]
+        indices = []
+        for part in raw_parts:
+            if "-" in part:
+                lo, hi = part.split("-", 1)
+                indices.extend(range(int(lo), int(hi) + 1))
+            else:
+                indices.append(int(part))
+        return [idx for idx in indices if 0 <= idx < dataset_len]
+
+    def _render_epoch_visualizations(self, epoch):
+        if not self.visualization_enabled:
+            return []
+        if self.visualization_num_samples <= 0:
+            return []
+        if epoch % self.visualization_interval != 0:
+            return []
+        if not getattr(self.model, "use_rgb_context", False):
+            return []
+
+        dataset = getattr(self.val_loader, "dataset", None)
+        if dataset is None:
+            print("Skipping visualization: validation loader has no dataset attribute.")
+            return []
+        indices = self._parse_visualization_indices(len(dataset))
+        if not indices:
+            print("Skipping visualization: no valid validation sample indices selected.")
+            return []
+
+        visualizations_dir = Path(__file__).resolve().parents[1] / "visualizations"
+        if str(visualizations_dir) not in sys.path:
+            sys.path.insert(0, str(visualizations_dir))
         try:
-            with torch.no_grad():
-                validation_batches = self.val_loader
-                validation_total = len(self.val_loader)
-                if max_number_of_batches is not None:
-                    validation_batches = islice(
-                        self.val_loader, max_number_of_batches
-                    )
-                    validation_total = min(
-                        validation_total, max_number_of_batches
-                    )
+            from visualize_image_plane_batch import render_one
+        except Exception as exc:
+            print(f"Skipping visualization: failed to import renderer. Error: {exc}")
+            return []
 
-                val_pbar = tqdm(
-                    validation_batches,
-                    total=validation_total,
-                    desc="Validation",
-                    leave=False,
-                    position=1,
+        was_training = self.model.training
+        self.model.eval()
+        output_dir = Path(self.visualization_output_dir) / f"epoch_{epoch:04d}"
+        rows = []
+        try:
+            for idx in indices:
+                gif_path = output_dir / f"sample_{idx:06d}.gif"
+                row = render_one(
+                    self.model,
+                    dataset,
+                    idx,
+                    self.device,
+                    gif_path,
+                    num_steps=self.visualization_num_steps,
+                    frame_ms=self.visualization_frame_ms,
+                    gt_only_frames=self.visualization_gt_only_frames,
+                    mode_selection=self.visualization_mode_selection,
+                    gmm_heatmap=self.visualization_gmm_heatmap,
+                    heatmap_alpha=self.visualization_heatmap_alpha,
+                    save_gmm_png=self.visualization_save_gmm_png,
                 )
-                for batch in val_pbar:
-                    batch_loss, diversity = self._compute_validation_batch_metrics(
-                        batch
-                    )
-                    total_loss += batch_loss
-                    num_batches += 1
-                    if diversity is not None:
-                        apd_sum += diversity["apd"]
-                        w2_sum += diversity["mean_pairwise_w2"]
-
+                row["gif"] = str(gif_path)
+                rows.append(row)
+            if rows:
+                output_dir.mkdir(parents=True, exist_ok=True)
+                summary_path = output_dir / "summary.csv"
+                with open(summary_path, "w", newline="") as f:
+                    writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+                    writer.writeheader()
+                    writer.writerows(rows)
+                print(f"Wrote epoch visualizations to {output_dir}")
         finally:
             if was_training:
                 self.model.train()
+        return rows
 
-        loss = total_loss / max(num_batches, 1)
-        print(f"Validation Loss: {loss:.4f}")
+    def train_single_epoch(self):
+        self.model.train()
+        totals = {}
+        for batch in self.train_loader:
+            batch = self._move_batch(batch)
+            self.optimizer.zero_grad(set_to_none=True)
+            with torch.amp.autocast("cuda", enabled=self.use_amp):
+                output = self._compute_loss(batch)
+                loss = output["loss"]
+            self.scaler.scale(loss).backward()
+            if self.gradient_clip_norm is not None:
+                self.scaler.unscale_(self.optimizer)
+                grad_norm = torch.nn.utils.clip_grad_norm_(self.model.parameters(), float(self.gradient_clip_norm))
+                output["grad_norm"] = grad_norm.detach()
+            self.scaler.step(self.optimizer)
+            self.scaler.update()
+            for key, value in self._scalar_logs(output, "train").items():
+                totals[key] = totals.get(key, 0.0) + value
+        return {key: value / max(len(self.train_loader), 1) for key, value in totals.items()}
 
-        diversity = (
-            {
-                "apd": apd_sum / max(num_batches, 1),
-                "mean_pairwise_w2": w2_sum / max(num_batches, 1),
-            }
-            if self.measure_diversity
-            else None
-        )
+    def validate(self):
+        self.model.eval()
+        totals = {}
+        with torch.no_grad():
+            for batch in self.val_loader:
+                batch = self._move_batch(batch)
+                output = self._compute_loss(batch)
+                for key, value in self._scalar_logs(output, "val").items():
+                    totals[key] = totals.get(key, 0.0) + value
+        logs = {key: value / max(len(self.val_loader), 1) for key, value in totals.items()}
+        if self.use_wandb:
+            try:
+                wandb.log(logs)
+            except Exception as exc:
+                self.use_wandb = False
+                print(f"W&B logging failed; disabling W&B for this run. Error: {exc}")
+        return logs
 
-        return loss, diversity
+    def save_checkpoint(self, epoch, metrics, is_best=False):
+        path = self.save_to
+        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+        checkpoint = {
+            "epoch": epoch,
+            "model_state_dict": self.model.state_dict(),
+            "optimizer_state_dict": self.optimizer.state_dict(),
+            "metrics": metrics,
+            "config": _box_to_dict(self.args),
+        }
+        torch.save(checkpoint, path)
+        if is_best:
+            base, ext = os.path.splitext(path)
+            torch.save(checkpoint, f"{base}.best{ext or '.pth'}")
 
     def train(self, num_epochs):
-        pbar = tqdm(range(num_epochs), desc="Training", position=0)
-
+        pbar = tqdm(range(num_epochs), desc="Training")
+        epochs_without_improvement = 0
         for epoch in pbar:
-            loss = self.train_single_epoch(epoch)
-            learning_rate = self.optimizer.param_groups[0]["lr"]
-
-            postfix = {
-                "loss": loss,
-                "lr": learning_rate,
-            }
-            log_payload: dict[str, object] = {
-                "global_step": self.global_step,
-                "epoch": float(epoch + 1),
-            }
-
-            if self.training_log["metric"] == "epoch" and _should_log(
-                epoch + 1, self.training_log
-            ):
-                log_payload["loss"] = loss
-                log_payload["train/epoch_loss"] = loss
-                log_payload["learning_rate"] = learning_rate
-                log_payload["train/learning_rate"] = learning_rate
-
-            if self.validation_log["metric"] == "epoch" and _should_log(
-                epoch + 1, self.validation_log
-            ):
-                validation_loss, diversity = self.validate(
-                    max_number_of_batches=self.validation_log[
-                        "max_number_of_batches"
-                    ]
+            train_logs = self.train_single_epoch()
+            val_logs = self.validate()
+            diagnostic_logs = self._validation_diagnostics(epoch)
+            visualization_rows = self._render_epoch_visualizations(epoch)
+            visualization_logs = {"visualization/num_samples": float(len(visualization_rows))} if visualization_rows else {}
+            epoch_logs = {"epoch": epoch, **train_logs, **val_logs, **diagnostic_logs, **visualization_logs}
+            validation_score = epoch_logs.get(self.early_stopping_monitor, epoch_logs.get("val/loss", float("inf")))
+            is_best = validation_score < self.best_validation - self.early_stopping_min_delta
+            if is_best:
+                self.best_validation = validation_score
+                epochs_without_improvement = 0
+            else:
+                epochs_without_improvement += 1
+            self.save_checkpoint(epoch, epoch_logs, is_best=is_best)
+            pbar.set_postfix({"train_loss": train_logs.get("train/loss"), "val_loss": validation_score})
+            if self.use_wandb:
+                try:
+                    wandb.log(epoch_logs)
+                except Exception as exc:
+                    self.use_wandb = False
+                    print(f"W&B logging failed; disabling W&B for this run. Error: {exc}")
+            if self.early_stopping_patience is not None and epochs_without_improvement >= self.early_stopping_patience:
+                print(
+                    f"Early stopping at epoch {epoch}: {self.early_stopping_monitor} "
+                    f"did not improve by {self.early_stopping_min_delta} for "
+                    f"{self.early_stopping_patience} epochs. Best={self.best_validation:.6f}."
                 )
-
-                postfix["validation_loss"] = validation_loss
-                log_payload["validation_loss"] = validation_loss
-                log_payload["validation/loss"] = validation_loss
-                if diversity is not None:
-                    postfix["apd"] = diversity["apd"]
-                    postfix["w2"] = diversity["mean_pairwise_w2"]
-                    log_payload["diversity/apd"] = diversity["apd"]
-                    log_payload["diversity/mean_pairwise_w2"] = diversity["mean_pairwise_w2"]
-
-            pbar.set_postfix(postfix)
-            if len(log_payload) > 2:
-                wandb.log(log_payload)
-
-        if self.measure_latency:
-            self.profile_latency()
-
-    # ------------------------------------------------------------------ #
-    # Latency profiling
-    # ------------------------------------------------------------------ #
-
-    def profile_latency(self):
-        """Measure inference latency once and log to wandb.
-
-        Logs:
-            * ``wandb.summary["latency/pass_*"]``: single refinement-pass stats.
-            * ``wandb.summary["latency/full_k{K}_*"]``: full-forward stats for
-              each ``k`` in the anytime sweep.
-            * ``wandb.log``: a line plot of median full-forward latency vs.
-              number of refinement steps.
-
-        Controlled by the ``evaluation`` config section. Skipped silently
-        if ``evaluation.measure_latency`` is false or unset.
-        """
-
-        # Use a single batch from the validation set for timing.
-        batch = next(iter(self.val_loader))
-        feature, trajectory = (
-            batch["features"].to(self.device),
-            batch["trajectory"].to(self.device),
-        )
-
-        # Timing parameters
-        n_warmup = 10
-        n_runs = 100
-        batch_size = feature.shape[1]  # Use the entire batch for timing by default
-        max_steps = 10 # Maximum refinement steps
-
-        # Slice features for reproducible timing input.
-        num_frames = 5  # Use only the first 5 frames for timing to reduce runtime and GPU memory usage
-        features = feature[:num_frames, :batch_size].contiguous()
-
-        profiler = LatencyProfiler(
-            device=self.device, n_warmup=n_warmup, n_runs=n_runs
-        )
-
-        was_training = self.model.training
-        self.model.eval()
-        try:
-            with torch.no_grad():
-                # Single refinement-pass latency (1 frame, 1 step).
-                single_frame = features[:1].contiguous()
-                pass_stats = profiler.measure(
-                    lambda: self.model(single_frame, f_=[1])
-                )
-
-                # Anytime curve: full-forward latency for k = 1..max_steps.
-                curve = []  # list of (k, median_ms, mean_ms, p95_ms)
-                for k in range(1, max_steps + 1):
-                    schedule = [k] * num_frames
-                    stats = profiler.measure(
-                        lambda s=schedule: self.model(features, f_=s)
-                    )
-                    curve.append(
-                        (
-                            k,
-                            stats["median_ms"],
-                            stats["mean_ms"],
-                            stats["p95_ms"],
-                        )
-                    )
-        finally:
-            if was_training:
-                self.model.train()
-
-        # ---- wandb.summary: scalar metrics for cross-run comparison ----
-        summary = {}
-        for key, value in pass_stats.items():
-            summary[f"latency/pass_{key}"] = value
-        for k, median_ms, mean_ms, p95_ms in curve:
-            summary[f"latency/full_k{k}_median_ms"] = median_ms
-            summary[f"latency/full_k{k}_mean_ms"] = mean_ms
-            summary[f"latency/full_k{k}_p95_ms"] = p95_ms
-        summary["latency/meta/num_frames"] = int(num_frames)
-        summary["latency/meta/batch_size"] = int(features.shape[1])
-        summary["latency/meta/num_objects"] = int(features.shape[2])
-        summary["latency/meta/state_dim"] = int(features.shape[3])
-        summary["latency/meta/max_refinement_steps"] = int(max_steps)
-        summary["latency/meta/device"] = self.device.type
-        wandb.summary.update(summary)
-
-        # ---- wandb.log: anytime-curve line plot ----
-        table = wandb.Table(
-            columns=["refinement_steps", "median_ms", "mean_ms", "p95_ms"],
-            data=[list(row) for row in curve],
-        )
-        wandb.log(
-            {
-                "latency/anytime_curve": wandb.plot.line(
-                    table,
-                    x="refinement_steps",
-                    y="median_ms",
-                    title="Full-forward latency vs. refinement steps",
-                ),
-            }
-        )
-
-        print(
-            "[latency] pass median = {:.3f} ms | full@k=1 = {:.3f} ms | "
-            "full@k={} = {:.3f} ms (device={}, batch={})".format(
-                pass_stats["median_ms"],
-                curve[0][1],
-                max_steps,
-                curve[-1][1],
-                self.device.type,
-                features.shape[1],
-            )
-        )
-
-        return summary
-
+                break

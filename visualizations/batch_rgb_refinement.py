@@ -20,7 +20,7 @@ PROJECT_ROOT = next(
 )
 sys.path.insert(0, str(PROJECT_ROOT))
 
-import visualizations.visualize_refinement as vd
+import visualizations.visualize_diffusion as vd
 
 
 def _segment_candidates(waymo_root: Path, max_segments: int | None, rng: random.Random) -> list[Path]:
@@ -52,7 +52,7 @@ def _safe_name(value: str) -> str:
 def _complete_sample_dirs(output_dir: Path) -> list[Path]:
     required = {
         "rgb_refinement.gif",
-        "scene_refinement.gif",
+        "scene_diffusion.gif",
         "gmm_output.png",
         "rgb_heatmap.png",
     }
@@ -209,7 +209,7 @@ def generate_batch(args) -> list[Path]:
                     args.frame_ms, args.final_hold_frames,
                 )
                 _save_bev_gif(
-                    frames, agents, sample_dir / "scene_refinement.gif",
+                    frames, agents, sample_dir / "scene_diffusion.gif",
                     args.frame_ms, args.final_hold_frames,
                 )
                 _save_gmm_png(frames, agents, sample_dir / "gmm_output.png")
@@ -240,8 +240,8 @@ def generate_batch(args) -> list[Path]:
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--config", default="configs/astra_edm_refinement_waymo.yml")
-    p.add_argument("--checkpoint", default="checkpoints/astra_edm_refinement_waymo_latest.pth")
+    p.add_argument("--config", default="configs/astra_edm_diffusion_waymo.yml")
+    p.add_argument("--checkpoint", default="checkpoints/astra_edm_diffusion_waymo_latest.pth")
     p.add_argument("--waymo_root", default=None)
     p.add_argument("--output_dir", default="visualizations/outs/batch_all")
     p.add_argument("--count", type=int, default=10)

@@ -10,7 +10,14 @@ dependencies:
   - scipy
   - pytorch>=2.3
   - torchvision
+  - ipykernel
   - tqdm
+  # astra
+  - python-box
+  - torch-geometric
+  - segmentation-models-pytorch
+  - icecream
+  - opencv
   # waymo converter
   - pandas
   - pyarrow
@@ -20,4 +27,5 @@ dependencies:
   - pip:
       - ultralytics
       - black
+      - opencv-python
       - -e .
