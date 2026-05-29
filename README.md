@@ -14,13 +14,84 @@ Main replication flow:
 
 ## Setup
 
+ASTRA is a git submodule and must be checked out first (it ships empty):
+
+```bash
+git submodule update --init --recursive
+```
+
+Download the pretrained U-Net keypoint-embedding weights (the configs expect
+`astra/pretrained_weights/unet/pie_unet_model_best.pt`). The ASTRA submodule
+ships the downloader (`pip install gdown` first if needed):
+
+```bash
+( cd ASTRA && bash scripts/down_pretrained_unet_models.bash )
+mkdir -p astra/pretrained_weights/unet
+cp ASTRA/pretrained_unet_weights/pie_unet_model_best.pt \
+   astra/pretrained_weights/unet/pie_unet_model_best.pt
+```
+
+Then create the environment. `environment.yml` has been corrected to install
+CUDA torch and the previously missing deps
+
 ```bash
 conda env create -f environment.yml
 conda activate vtp
-pip install -e .
+pip install -e .   # already done by environment.yml, safe to re-run
+```
+
+Verify the GPU build:
+
+```bash
+python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
+# -> 2.5.1+cu121 True
 ```
 
 Use a CUDA GPU for training. Edit `feature_extractor.waymo_root` in configs before running on a new machine; the checked-in configs use local paths such as `/work/cs-503/santanto/waymo`.
+
+> **izar note:** `conda activate vtp` may leave `/usr/bin` ahead of the env on
+> `PATH`, so `python`/`pip` silently resolve to the system Python 3.9 and
+> installs leak into `~/.local`. If `which python` is not inside the env, call
+> the env binaries by absolute path and set `PYTHONNOUSERSITE=1`, e.g.
+> `PYTHONNOUSERSITE=1 ~/miniconda3/envs/vtp/bin/python <script>`.
+
+Run the steps in dependency order: **Setup → Build Caches → Feature Extractor
+(U-Net) → Main Model / Baselines → Evaluation → Visualizations.** The U-Net
+checkpoint is a hard prerequisite for both the main model and the ASTRA
+baseline.
+
+## Replication run (verified)
+
+The full flow above was executed end-to-end on izar (single Tesla V100-32GB,
+`waymo_root=/work/cs-503/santanto/waymo`, 20 segments / 2000 train+val samples
+via the cached config). Every documented command runs after the corrections
+above. Always invoke the env python by absolute path with `PYTHONNOUSERSITE=1`
+(see the izar note in Setup).
+
+Quantitative table from `--full_baseline_eval` on `val`
+(`visualizations/image_plane_training/full_baseline_eval_summary.{csv,png}`):
+
+| Model | minADE | maxADE | minFDE | NLL | latency_ms |
+| --- | --- | --- | --- | --- | --- |
+| astra_edm_euler_1 | 0.089 | 0.932 | 0.176 | -63.6 | 2.1 |
+| astra_edm_euler_4 | 0.099 | 0.929 | 0.182 | -57.0 | 1.8 |
+| astra_edm_euler_8 | 0.100 | 0.870 | 0.184 | -58.1 | 3.3 |
+| mlp_baseline | 0.185 | 1.435 | 0.244 | -22.5 | 1.0 |
+| astra_baseline | 0.319 | 0.623 | 0.563 | nan | 11.0 |
+
+Artifacts produced:
+
+- Tables: `visualizations/image_plane_training/full_baseline_eval_summary.{csv,png}`, `.../gmm_eval_{summary.csv,table.png}`
+- Qualitative: `visualizations/outs/samples_1090_1100/` (per-sample refinement GIFs + GMM heatmap PNGs), `visualizations/outs/sample_1090_refinement.gif`, `visualizations/outs/astra_baseline_1090_1100/` (PNGs)
+- Checkpoints: U-Net keypoints, main ASTRA-EDM, ASTRA baseline, MLP GMM baseline (under `checkpoints/`).
+
+> **These are smoke-level numbers, not the final figures.** To validate the
+> plumbing quickly the baselines were trained for **1 epoch** and the main
+> ASTRA-EDM for **~30 of its 100 epochs**. ASTRA-EDM already beats both
+> baselines on every comparable metric, but for paper-grade results train each
+> model for its full configured `num_epochs` (U-Net 15, ASTRA-EDM 100, ASTRA
+> baseline 250, MLP 15) with the canonical configs (the 1-epoch ASTRA-baseline
+> run used a throwaway `configs/_smoke_*.yml`, not the canonical config).
 
 ## Waymo Data
 

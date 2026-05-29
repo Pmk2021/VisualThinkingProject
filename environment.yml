@@ -1,6 +1,12 @@
 name: vtp
+# Corrected for replication. The original spec did not solve and produced a
+# CPU-only torch. Changes:
+#   * removed the duplicate `torch_geometric` (underscore) dep -- it is not a
+#     conda package, so `conda env create` aborted with PackagesNotFoundError.
+#   * torch/torchvision now come from the CUDA 12.1 pip wheels (the conda
+#     `pytorch` channel resolved to a CPU-only build on the GPU cluster).
+#   * added wandb (trainers import it) and imageio/imageio-ffmpeg (GIF viz).
 channels:
-  - pytorch
   - conda-forge
   - defaults
 dependencies:
@@ -8,24 +14,27 @@ dependencies:
   - numpy
   - matplotlib
   - scipy
-  - pytorch>=2.3
-  - torchvision
   - ipykernel
   - tqdm
-  # astra
+  # astra / waymo converter
   - python-box
-  - torch-geometric
-  - segmentation-models-pytorch
   - icecream
-  - opencv
-  # waymo converter
   - pandas
   - pyarrow
   - pillow
   - pip
-  - torch_geometric
   - pip:
+      # CUDA 12.1 wheels (work with the izar V100 / driver 12.2). For a
+      # CPU-only box drop the two +cu121 pins and the --extra-index-url line.
+      - --extra-index-url https://download.pytorch.org/whl/cu121
+      - torch==2.5.1+cu121
+      - torchvision==0.20.1+cu121
+      - segmentation-models-pytorch
+      - torch-geometric
       - ultralytics
-      - black
+      - wandb
+      - imageio
+      - imageio-ffmpeg
       - opencv-python
+      - black
       - -e .

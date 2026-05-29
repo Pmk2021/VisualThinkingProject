@@ -944,8 +944,8 @@ class ASTRAEDMDiffusionModel(nn.Module):
             self.lambda_diff * loss_diff_total
             + self.lambda_wta_diff * loss_wta_diff
             + self.lambda_nll * loss_nll
-            + self.lambda_ade * loss_minade
-            + self.lambda_fde * loss_minfde
+            + self.lambda_ade * loss_minade.mean()
+            + self.lambda_fde * loss_minfde.mean()
             + self.lambda_mode * loss_mode
             + self.lambda_mode_margin * loss_mode_margin
             + self.lambda_cov * loss_cov
@@ -999,8 +999,8 @@ class ASTRAEDMDiffusionModel(nn.Module):
             for _ in range(max(int(repeats), 1)):
                 params = self._sample_params(batch, num_sampling_steps=steps, denormalize=False)
                 minade, minfde, _ = self._minade_minfde(params.mu, y, mask)
-                ade_vals.append(float(minade.cpu()))
-                fde_vals.append(float(minfde.cpu()))
+                ade_vals.append(float(minade.mean().cpu()))
+                fde_vals.append(float(minfde.mean().cpu()))
                 nll_vals.append(float(self._gmm_nll(params, y, mask).cpu()))
             minade_means.append(float(torch.tensor(ade_vals).mean()))
             minfde_means.append(float(torch.tensor(fde_vals).mean()))
