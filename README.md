@@ -31,8 +31,7 @@ cp ASTRA/pretrained_unet_weights/pie_unet_model_best.pt \
    astra/pretrained_weights/unet/pie_unet_model_best.pt
 ```
 
-Then create the environment. `environment.yml` has been corrected to install
-CUDA torch and the previously missing deps
+Then create the environment `environment.yml`
 
 ```bash
 conda env create -f environment.yml
