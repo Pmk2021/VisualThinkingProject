@@ -1,1413 +1,0 @@
-wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from /home/muralikr/.netrc.
-wandb: Currently logged in as: pranavmk (pranavmk2) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
-wandb: setting up run jcvjaxzi
-wandb: Tracking run with wandb version 0.26.1
-wandb: Run data is saved locally in /home/muralikr/VisualThinkingProject/AnytimeTrajectoryPredictor/wandb/run-20260524_003633-jcvjaxzi
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run vibrant-river-86
-wandb: ⭐️ View project at https://wandb.ai/pranavmk2/Hello
-wandb: 🚀 View run at https://wandb.ai/pranavmk2/Hello/runs/jcvjaxzi
-Training:   0%|          | 0/3 [00:00<?, ?it/s]
-Epoch 1 batches:   0%|          | 0/1711 [00:00<?, ?it/s][A
-Epoch 1 batches:   0%|          | 0/1711 [00:27<?, ?it/s, loss=4038.1814, avg_loss=4038.1814, epoch=0.001, step=1, grad_norm=58249.9062][A
-Epoch 1 batches:   0%|          | 1/1711 [00:27<13:02:19, 27.45s/it, loss=4038.1814, avg_loss=4038.1814, epoch=0.001, step=1, grad_norm=58249.9062][A
-Epoch 1 batches:   0%|          | 1/1711 [00:27<13:02:19, 27.45s/it, loss=20200.8145, avg_loss=12119.4979, epoch=0.001, step=2, grad_norm=66933.9609][A
-Epoch 1 batches:   0%|          | 2/1711 [00:27<5:26:06, 11.45s/it, loss=20200.8145, avg_loss=12119.4979, epoch=0.001, step=2, grad_norm=66933.9609] [A
-Epoch 1 batches:   0%|          | 2/1711 [00:27<5:26:06, 11.45s/it, loss=1854.9915, avg_loss=8697.9958, epoch=0.002, step=3, grad_norm=88112.0938]  [A
-Epoch 1 batches:   0%|          | 3/1711 [00:27<3:00:25,  6.34s/it, loss=1854.9915, avg_loss=8697.9958, epoch=0.002, step=3, grad_norm=88112.0938][A
-Epoch 1 batches:   0%|          | 3/1711 [00:28<3:00:25,  6.34s/it, loss=1127.7457, avg_loss=6805.4333, epoch=0.002, step=4, grad_norm=48198.4258][A
-Epoch 1 batches:   0%|          | 4/1711 [00:28<1:51:58,  3.94s/it, loss=1127.7457, avg_loss=6805.4333, epoch=0.002, step=4, grad_norm=48198.4258][A
-Epoch 1 batches:   0%|          | 4/1711 [00:28<1:51:58,  3.94s/it, loss=1555.7395, avg_loss=5755.4945, epoch=0.003, step=5, grad_norm=79164.3594][A
-Epoch 1 batches:   0%|          | 5/1711 [00:28<1:14:09,  2.61s/it, loss=1555.7395, avg_loss=5755.4945, epoch=0.003, step=5, grad_norm=79164.3594][A
-Epoch 1 batches:   0%|          | 5/1711 [00:28<1:14:09,  2.61s/it, loss=1829.9785, avg_loss=5101.2418, epoch=0.004, step=6, grad_norm=92896.2344][A
-Epoch 1 batches:   0%|          | 6/1711 [00:28<51:19,  1.81s/it, loss=1829.9785, avg_loss=5101.2418, epoch=0.004, step=6, grad_norm=92896.2344]  [A
-Epoch 1 batches:   0%|          | 6/1711 [00:31<51:19,  1.81s/it, loss=1469.7596, avg_loss=4582.4587, epoch=0.004, step=7, grad_norm=83822.0234][A
-Epoch 1 batches:   0%|          | 7/1711 [00:31<1:03:37,  2.24s/it, loss=1469.7596, avg_loss=4582.4587, epoch=0.004, step=7, grad_norm=83822.0234][A
-Epoch 1 batches:   0%|          | 7/1711 [00:36<1:03:37,  2.24s/it, loss=9327.7041, avg_loss=5175.6143, epoch=0.005, step=8, grad_norm=29164.6914][A
-Epoch 1 batches:   0%|          | 8/1711 [00:36<1:25:08,  3.00s/it, loss=9327.7041, avg_loss=5175.6143, epoch=0.005, step=8, grad_norm=29164.6914][A
-Epoch 1 batches:   0%|          | 8/1711 [00:36<1:25:08,  3.00s/it, loss=1683.4172, avg_loss=4787.5924, epoch=0.005, step=9, grad_norm=60360.7422][A
-Epoch 1 batches:   1%|          | 9/1711 [00:36<1:00:39,  2.14s/it, loss=1683.4172, avg_loss=4787.5924, epoch=0.005, step=9, grad_norm=60360.7422][A
-Epoch 1 batches:   1%|          | 9/1711 [00:39<1:00:39,  2.14s/it, loss=19326.4941, avg_loss=6241.4826, epoch=0.006, step=10, grad_norm=23369.8301][A
-Epoch 1 batches:   1%|          | 10/1711 [00:39<1:09:15,  2.44s/it, loss=19326.4941, avg_loss=6241.4826, epoch=0.006, step=10, grad_norm=23369.8301][A
-Epoch 1 batches:   1%|          | 10/1711 [00:45<1:09:15,  2.44s/it, loss=1165.9281, avg_loss=5780.0686, epoch=0.006, step=11, grad_norm=76249.0859] [A
-Epoch 1 batches:   1%|          | 11/1711 [00:45<1:41:10,  3.57s/it, loss=1165.9281, avg_loss=5780.0686, epoch=0.006, step=11, grad_norm=76249.0859][A
-Epoch 1 batches:   1%|          | 11/1711 [00:46<1:41:10,  3.57s/it, loss=18112.0801, avg_loss=6807.7362, epoch=0.007, step=12, grad_norm=6808.6162][A
-Epoch 1 batches:   1%|          | 12/1711 [00:46<1:13:08,  2.58s/it, loss=18112.0801, avg_loss=6807.7362, epoch=0.007, step=12, grad_norm=6808.6162][A
-Epoch 1 batches:   1%|          | 12/1711 [00:51<1:13:08,  2.58s/it, loss=781.0752, avg_loss=6344.1469, epoch=0.008, step=13, grad_norm=49886.4883] [A
-Epoch 1 batches:   1%|          | 13/1711 [00:51<1:32:23,  3.26s/it, loss=781.0752, avg_loss=6344.1469, epoch=0.008, step=13, grad_norm=49886.4883][A
-Epoch 1 batches:   1%|          | 13/1711 [00:55<1:32:23,  3.26s/it, loss=723.0865, avg_loss=5942.6426, epoch=0.008, step=14, grad_norm=35017.4062][A
-Epoch 1 batches:   1%|          | 14/1711 [00:55<1:40:16,  3.55s/it, loss=723.0865, avg_loss=5942.6426, epoch=0.008, step=14, grad_norm=35017.4062][A
-Epoch 1 batches:   1%|          | 14/1711 [00:55<1:40:16,  3.55s/it, loss=556.2520, avg_loss=5583.5499, epoch=0.009, step=15, grad_norm=39611.0820][A
-Epoch 1 batches:   1%|          | 15/1711 [00:55<1:12:12,  2.55s/it, loss=556.2520, avg_loss=5583.5499, epoch=0.009, step=15, grad_norm=39611.0820][A
-Epoch 1 batches:   1%|          | 15/1711 [00:59<1:12:12,  2.55s/it, loss=2028.2288, avg_loss=5361.3423, epoch=0.009, step=16, grad_norm=54848.5977][A
-Epoch 1 batches:   1%|          | 16/1711 [00:59<1:25:03,  3.01s/it, loss=2028.2288, avg_loss=5361.3423, epoch=0.009, step=16, grad_norm=54848.5977][A
-Epoch 1 batches:   1%|          | 16/1711 [01:03<1:25:03,  3.01s/it, loss=720.5060, avg_loss=5088.3519, epoch=0.010, step=17, grad_norm=53021.7461] [A
-Epoch 1 batches:   1%|          | 17/1711 [01:03<1:32:19,  3.27s/it, loss=720.5060, avg_loss=5088.3519, epoch=0.010, step=17, grad_norm=53021.7461][A
-Epoch 1 batches:   1%|          | 17/1711 [01:04<1:32:19,  3.27s/it, loss=4372.6108, avg_loss=5048.5885, epoch=0.011, step=18, grad_norm=26755.3984][A
-Epoch 1 batches:   1%|          | 18/1711 [01:04<1:11:31,  2.53s/it, loss=4372.6108, avg_loss=5048.5885, epoch=0.011, step=18, grad_norm=26755.3984][A
-Epoch 1 batches:   1%|          | 18/1711 [01:11<1:11:31,  2.53s/it, loss=13556.7031, avg_loss=5496.3840, epoch=0.011, step=19, grad_norm=63771.2852][A
-Epoch 1 batches:   1%|          | 19/1711 [01:11<1:50:10,  3.91s/it, loss=13556.7031, avg_loss=5496.3840, epoch=0.011, step=19, grad_norm=63771.2852][A
-Epoch 1 batches:   1%|          | 19/1711 [01:17<1:50:10,  3.91s/it, loss=1533.7684, avg_loss=5298.2533, epoch=0.012, step=20, grad_norm=56658.3320] [A
-Epoch 1 batches:   1%|          | 20/1711 [01:17<2:04:12,  4.41s/it, loss=1533.7684, avg_loss=5298.2533, epoch=0.012, step=20, grad_norm=56658.3320][A
-Epoch 1 batches:   1%|          | 20/1711 [01:17<2:04:12,  4.41s/it, loss=1212.4092, avg_loss=5103.6893, epoch=0.012, step=21, grad_norm=101352.0547][A
-Epoch 1 batches:   1%|          | 21/1711 [01:17<1:29:05,  3.16s/it, loss=1212.4092, avg_loss=5103.6893, epoch=0.012, step=21, grad_norm=101352.0547][A
-Epoch 1 batches:   1%|          | 21/1711 [01:21<1:29:05,  3.16s/it, loss=491.6046, avg_loss=4894.0490, epoch=0.013, step=22, grad_norm=34829.2227]  [A
-Epoch 1 batches:   1%|▏         | 22/1711 [01:21<1:39:04,  3.52s/it, loss=491.6046, avg_loss=4894.0490, epoch=0.013, step=22, grad_norm=34829.2227][A
-Epoch 1 batches:   1%|▏         | 22/1711 [01:26<1:39:04,  3.52s/it, loss=625.7036, avg_loss=4708.4688, epoch=0.013, step=23, grad_norm=49902.9727][A
-Epoch 1 batches:   1%|▏         | 23/1711 [01:26<1:54:02,  4.05s/it, loss=625.7036, avg_loss=4708.4688, epoch=0.013, step=23, grad_norm=49902.9727][A
-Epoch 1 batches:   1%|▏         | 23/1711 [01:27<1:54:02,  4.05s/it, loss=711.5070, avg_loss=4541.9287, epoch=0.014, step=24, grad_norm=30111.4316][A
-Epoch 1 batches:   1%|▏         | 24/1711 [01:27<1:21:55,  2.91s/it, loss=711.5070, avg_loss=4541.9287, epoch=0.014, step=24, grad_norm=30111.4316][A
-Epoch 1 batches:   1%|▏         | 24/1711 [01:29<1:21:55,  2.91s/it, loss=1703.8809, avg_loss=4428.4068, epoch=0.015, step=25, grad_norm=33697.9688][A
-Epoch 1 batches:   1%|▏         | 25/1711 [01:29<1:13:37,  2.62s/it, loss=1703.8809, avg_loss=4428.4068, epoch=0.015, step=25, grad_norm=33697.9688][A
-Epoch 1 batches:   1%|▏         | 25/1711 [01:35<1:13:37,  2.62s/it, loss=1781.0120, avg_loss=4326.5839, epoch=0.015, step=26, grad_norm=27087.1543][A
-Epoch 1 batches:   2%|▏         | 26/1711 [01:35<1:42:03,  3.63s/it, loss=1781.0120, avg_loss=4326.5839, epoch=0.015, step=26, grad_norm=27087.1543][A
-Epoch 1 batches:   2%|▏         | 26/1711 [01:35<1:42:03,  3.63s/it, loss=6920.2783, avg_loss=4422.6467, epoch=0.016, step=27, grad_norm=74495.8359][A
-Epoch 1 batches:   2%|▏         | 27/1711 [01:35<1:13:29,  2.62s/it, loss=6920.2783, avg_loss=4422.6467, epoch=0.016, step=27, grad_norm=74495.8359][A
-Epoch 1 batches:   2%|▏         | 27/1711 [01:38<1:13:29,  2.62s/it, loss=22679.6250, avg_loss=5074.6816, epoch=0.016, step=28, grad_norm=63593.3594][A
-Epoch 1 batches:   2%|▏         | 28/1711 [01:38<1:17:31,  2.76s/it, loss=22679.6250, avg_loss=5074.6816, epoch=0.016, step=28, grad_norm=63593.3594][A
-Epoch 1 batches:   2%|▏         | 28/1711 [01:43<1:17:31,  2.76s/it, loss=439.7039, avg_loss=4914.8548, epoch=0.017, step=29, grad_norm=21544.8457]  [A
-Epoch 1 batches:   2%|▏         | 29/1711 [01:43<1:37:44,  3.49s/it, loss=439.7039, avg_loss=4914.8548, epoch=0.017, step=29, grad_norm=21544.8457][A
-Epoch 1 batches:   2%|▏         | 29/1711 [01:43<1:37:44,  3.49s/it, loss=361.5367, avg_loss=4763.0775, epoch=0.018, step=30, grad_norm=36471.6289][A
-Epoch 1 batches:   2%|▏         | 30/1711 [01:43<1:10:33,  2.52s/it, loss=361.5367, avg_loss=4763.0775, epoch=0.018, step=30, grad_norm=36471.6289][A
-Epoch 1 batches:   2%|▏         | 30/1711 [01:46<1:10:33,  2.52s/it, loss=853.3004, avg_loss=4636.9557, epoch=0.018, step=31, grad_norm=70871.6016][A
-Epoch 1 batches:   2%|▏         | 31/1711 [01:46<1:14:52,  2.67s/it, loss=853.3004, avg_loss=4636.9557, epoch=0.018, step=31, grad_norm=70871.6016][A
-Epoch 1 batches:   2%|▏         | 31/1711 [01:51<1:14:52,  2.67s/it, loss=3590.8228, avg_loss=4604.2640, epoch=0.019, step=32, grad_norm=7273.7515][A
-Epoch 1 batches:   2%|▏         | 32/1711 [01:51<1:30:54,  3.25s/it, loss=3590.8228, avg_loss=4604.2640, epoch=0.019, step=32, grad_norm=7273.7515][A
-Epoch 1 batches:   2%|▏         | 32/1711 [01:51<1:30:54,  3.25s/it, loss=873.1334, avg_loss=4491.1995, epoch=0.019, step=33, grad_norm=24976.2617][A
-Epoch 1 batches:   2%|▏         | 33/1711 [01:51<1:05:36,  2.35s/it, loss=873.1334, avg_loss=4491.1995, epoch=0.019, step=33, grad_norm=24976.2617][A
-Epoch 1 batches:   2%|▏         | 33/1711 [01:53<1:05:36,  2.35s/it, loss=131.5146, avg_loss=4362.9735, epoch=0.020, step=34, grad_norm=14937.6230][A
-Epoch 1 batches:   2%|▏         | 34/1711 [01:53<1:00:58,  2.18s/it, loss=131.5146, avg_loss=4362.9735, epoch=0.020, step=34, grad_norm=14937.6230][A
-Epoch 1 batches:   2%|▏         | 34/1711 [02:00<1:00:58,  2.18s/it, loss=26075.9238, avg_loss=4983.3435, epoch=0.020, step=35, grad_norm=30313.7266][A
-Epoch 1 batches:   2%|▏         | 35/1711 [02:00<1:44:29,  3.74s/it, loss=26075.9238, avg_loss=4983.3435, epoch=0.020, step=35, grad_norm=30313.7266][A
-Epoch 1 batches:   2%|▏         | 35/1711 [02:01<1:44:29,  3.74s/it, loss=270.6849, avg_loss=4852.4363, epoch=0.021, step=36, grad_norm=18840.7500]  [A
-Epoch 1 batches:   2%|▏         | 36/1711 [02:01<1:15:13,  2.69s/it, loss=270.6849, avg_loss=4852.4363, epoch=0.021, step=36, grad_norm=18840.7500][A
-Epoch 1 batches:   2%|▏         | 36/1711 [02:02<1:15:13,  2.69s/it, loss=18280.5254, avg_loss=5215.3576, epoch=0.022, step=37, grad_norm=23875.0488][A
-Epoch 1 batches:   2%|▏         | 37/1711 [02:02<1:07:31,  2.42s/it, loss=18280.5254, avg_loss=5215.3576, epoch=0.022, step=37, grad_norm=23875.0488][A
-Epoch 1 batches:   2%|▏         | 37/1711 [02:09<1:07:31,  2.42s/it, loss=18958.4004, avg_loss=5577.0166, epoch=0.022, step=38, grad_norm=65154.1680][A
-Epoch 1 batches:   2%|▏         | 38/1711 [02:09<1:41:18,  3.63s/it, loss=18958.4004, avg_loss=5577.0166, epoch=0.022, step=38, grad_norm=65154.1680][A
-Epoch 1 batches:   2%|▏         | 38/1711 [02:09<1:41:18,  3.63s/it, loss=231.0730, avg_loss=5439.9412, epoch=0.023, step=39, grad_norm=26912.4844]  [A
-Epoch 1 batches:   2%|▏         | 39/1711 [02:09<1:12:58,  2.62s/it, loss=231.0730, avg_loss=5439.9412, epoch=0.023, step=39, grad_norm=26912.4844][A
-Epoch 1 batches:   2%|▏         | 39/1711 [02:10<1:12:58,  2.62s/it, loss=237.3840, avg_loss=5309.8772, epoch=0.023, step=40, grad_norm=24765.3750][A
-Epoch 1 batches:   2%|▏         | 40/1711 [02:10<59:20,  2.13s/it, loss=237.3840, avg_loss=5309.8772, epoch=0.023, step=40, grad_norm=24765.3750]  [A
-Epoch 1 batches:   2%|▏         | 40/1711 [02:17<59:20,  2.13s/it, loss=1896.4875, avg_loss=5226.6238, epoch=0.024, step=41, grad_norm=51728.0312][A
-Epoch 1 batches:   2%|▏         | 41/1711 [02:17<1:35:59,  3.45s/it, loss=1896.4875, avg_loss=5226.6238, epoch=0.024, step=41, grad_norm=51728.0312][A
-Epoch 1 batches:   2%|▏         | 41/1711 [02:17<1:35:59,  3.45s/it, loss=135.3694, avg_loss=5105.4035, epoch=0.025, step=42, grad_norm=12212.9775] [A
-Epoch 1 batches:   2%|▏         | 42/1711 [02:17<1:09:15,  2.49s/it, loss=135.3694, avg_loss=5105.4035, epoch=0.025, step=42, grad_norm=12212.9775][A
-Epoch 1 batches:   2%|▏         | 42/1711 [02:18<1:09:15,  2.49s/it, loss=5440.3701, avg_loss=5113.1934, epoch=0.025, step=43, grad_norm=21592.6445][A
-Epoch 1 batches:   3%|▎         | 43/1711 [02:18<56:53,  2.05s/it, loss=5440.3701, avg_loss=5113.1934, epoch=0.025, step=43, grad_norm=21592.6445]  [A
-Epoch 1 batches:   3%|▎         | 43/1711 [02:28<56:53,  2.05s/it, loss=59.2715, avg_loss=4998.3315, epoch=0.026, step=44, grad_norm=8839.2744]   [A
-Epoch 1 batches:   3%|▎         | 44/1711 [02:28<1:59:27,  4.30s/it, loss=59.2715, avg_loss=4998.3315, epoch=0.026, step=44, grad_norm=8839.2744][A
-Epoch 1 batches:   3%|▎         | 44/1711 [02:28<1:59:27,  4.30s/it, loss=1139.1973, avg_loss=4912.5730, epoch=0.026, step=45, grad_norm=33426.5586][A
-Epoch 1 batches:   3%|▎         | 45/1711 [02:28<1:25:37,  3.08s/it, loss=1139.1973, avg_loss=4912.5730, epoch=0.026, step=45, grad_norm=33426.5586][A
-Epoch 1 batches:   3%|▎         | 45/1711 [02:28<1:25:37,  3.08s/it, loss=14390.8926, avg_loss=5118.6234, epoch=0.027, step=46, grad_norm=14916.0176][A
-Epoch 1 batches:   3%|▎         | 46/1711 [02:28<1:01:58,  2.23s/it, loss=14390.8926, avg_loss=5118.6234, epoch=0.027, step=46, grad_norm=14916.0176][A
-Epoch 1 batches:   3%|▎         | 46/1711 [02:36<1:01:58,  2.23s/it, loss=374.4145, avg_loss=5017.6828, epoch=0.027, step=47, grad_norm=37867.2930]  [A
-Epoch 1 batches:   3%|▎         | 47/1711 [02:36<1:46:15,  3.83s/it, loss=374.4145, avg_loss=5017.6828, epoch=0.027, step=47, grad_norm=37867.2930][A
-Epoch 1 batches:   3%|▎         | 47/1711 [02:36<1:46:15,  3.83s/it, loss=104.3983, avg_loss=4915.3227, epoch=0.028, step=48, grad_norm=17111.5938][A
-Epoch 1 batches:   3%|▎         | 48/1711 [02:36<1:16:33,  2.76s/it, loss=104.3983, avg_loss=4915.3227, epoch=0.028, step=48, grad_norm=17111.5938][A
-Epoch 1 batches:   3%|▎         | 48/1711 [02:36<1:16:33,  2.76s/it, loss=43.5923, avg_loss=4815.8996, epoch=0.029, step=49, grad_norm=7872.5200]  [A
-Epoch 1 batches:   3%|▎         | 49/1711 [02:36<55:35,  2.01s/it, loss=43.5923, avg_loss=4815.8996, epoch=0.029, step=49, grad_norm=7872.5200]  [A
-Epoch 1 batches:   3%|▎         | 49/1711 [02:45<55:35,  2.01s/it, loss=14629.4785, avg_loss=5012.1712, epoch=0.029, step=50, grad_norm=57883.9648][A
-Validation:   0%|          | 0/20 [00:00<?, ?it/s][A
-Validation:   5%|▌         | 1/20 [00:02<00:56,  2.99s/it][A
-Validation:  10%|█         | 2/20 [00:03<00:24,  1.34s/it][A
-Validation:  15%|█▌        | 3/20 [00:03<00:13,  1.25it/s][A
-Validation:  20%|██        | 4/20 [00:04<00:17,  1.09s/it][A
-Validation:  25%|██▌       | 5/20 [00:05<00:12,  1.23it/s][A
-Validation:  30%|███       | 6/20 [00:06<00:15,  1.12s/it][A
-Validation:  35%|███▌      | 7/20 [00:08<00:15,  1.20s/it][A
-Validation:  40%|████      | 8/20 [00:08<00:11,  1.07it/s][A
-Validation:  45%|████▌     | 9/20 [00:09<00:11,  1.01s/it][A
-Validation:  50%|█████     | 10/20 [00:11<00:10,  1.07s/it][A
-Validation:  55%|█████▌    | 11/20 [00:11<00:07,  1.16it/s][A
-Validation:  60%|██████    | 12/20 [00:12<00:07,  1.06it/s][A
-Validation:  65%|██████▌   | 13/20 [00:13<00:06,  1.09it/s][A
-Validation:  70%|███████   | 14/20 [00:13<00:04,  1.28it/s][A
-Validation:  75%|███████▌  | 15/20 [00:14<00:04,  1.16it/s][A
-Validation:  80%|████████  | 16/20 [00:15<00:03,  1.32it/s][A
-Validation:  85%|████████▌ | 17/20 [00:15<00:01,  1.55it/s][A
-Validation:  90%|█████████ | 18/20 [00:16<00:01,  1.32it/s][A
-Validation:  95%|█████████▌| 19/20 [00:17<00:00,  1.44it/s][A
-Validation: 100%|██████████| 20/20 [00:17<00:00,  1.87it/s][A
-                                                           [A
-Epoch 1 batches:   3%|▎         | 50/1711 [03:04<4:30:00,  9.75s/it, loss=14629.4785, avg_loss=5012.1712, epoch=0.029, step=50, grad_norm=57883.9648][A
-Epoch 1 batches:   3%|▎         | 50/1711 [03:04<4:30:00,  9.75s/it, loss=35143.4062, avg_loss=5602.9798, epoch=0.030, step=51, grad_norm=84367.3281][A
-Epoch 1 batches:   3%|▎         | 51/1711 [03:04<3:10:50,  6.90s/it, loss=35143.4062, avg_loss=5602.9798, epoch=0.030, step=51, grad_norm=84367.3281][A
-Epoch 1 batches:   3%|▎         | 51/1711 [03:04<3:10:50,  6.90s/it, loss=624.3055, avg_loss=5507.2360, epoch=0.030, step=52, grad_norm=20251.0156]  [A
-Epoch 1 batches:   3%|▎         | 52/1711 [03:04<2:15:38,  4.91s/it, loss=624.3055, avg_loss=5507.2360, epoch=0.030, step=52, grad_norm=20251.0156][A
-Epoch 1 batches:   3%|▎         | 52/1711 [03:05<2:15:38,  4.91s/it, loss=1184.3007, avg_loss=5425.6712, epoch=0.031, step=53, grad_norm=45260.8945][A
-Epoch 1 batches:   3%|▎         | 53/1711 [03:05<1:36:59,  3.51s/it, loss=1184.3007, avg_loss=5425.6712, epoch=0.031, step=53, grad_norm=45260.8945][A
-Epoch 1 batches:   3%|▎         | 53/1711 [03:05<1:36:59,  3.51s/it, loss=11320.5332, avg_loss=5534.8353, epoch=0.032, step=54, grad_norm=55594.8711][A
-Epoch 1 batches:   3%|▎         | 54/1711 [03:05<1:09:52,  2.53s/it, loss=11320.5332, avg_loss=5534.8353, epoch=0.032, step=54, grad_norm=55594.8711][A
-Epoch 1 batches:   3%|▎         | 54/1711 [03:05<1:09:52,  2.53s/it, loss=886.8223, avg_loss=5450.3260, epoch=0.032, step=55, grad_norm=31422.0508]  [A
-Epoch 1 batches:   3%|▎         | 55/1711 [03:05<51:00,  1.85s/it, loss=886.8223, avg_loss=5450.3260, epoch=0.032, step=55, grad_norm=31422.0508]  [A
-Epoch 1 batches:   3%|▎         | 55/1711 [03:05<51:00,  1.85s/it, loss=228.1110, avg_loss=5357.0721, epoch=0.033, step=56, grad_norm=36010.6406][A
-Epoch 1 batches:   3%|▎         | 56/1711 [03:05<37:49,  1.37s/it, loss=228.1110, avg_loss=5357.0721, epoch=0.033, step=56, grad_norm=36010.6406][A
-Epoch 1 batches:   3%|▎         | 56/1711 [03:14<37:49,  1.37s/it, loss=11426.9990, avg_loss=5463.5621, epoch=0.033, step=57, grad_norm=79781.7500][A
-Epoch 1 batches:   3%|▎         | 57/1711 [03:14<1:33:18,  3.38s/it, loss=11426.9990, avg_loss=5463.5621, epoch=0.033, step=57, grad_norm=79781.7500][A
-Epoch 1 batches:   3%|▎         | 57/1711 [03:15<1:33:18,  3.38s/it, loss=14723.2139, avg_loss=5623.2113, epoch=0.034, step=58, grad_norm=26139.4609][A
-Epoch 1 batches:   3%|▎         | 58/1711 [03:15<1:14:28,  2.70s/it, loss=14723.2139, avg_loss=5623.2113, epoch=0.034, step=58, grad_norm=26139.4609][A
-Epoch 1 batches:   3%|▎         | 58/1711 [03:15<1:14:28,  2.70s/it, loss=15270.8115, avg_loss=5786.7299, epoch=0.034, step=59, grad_norm=58065.2539][A
-Epoch 1 batches:   3%|▎         | 59/1711 [03:15<54:10,  1.97s/it, loss=15270.8115, avg_loss=5786.7299, epoch=0.034, step=59, grad_norm=58065.2539]  [A
-Epoch 1 batches:   3%|▎         | 59/1711 [03:22<54:10,  1.97s/it, loss=14023.9941, avg_loss=5924.0176, epoch=0.035, step=60, grad_norm=61915.4883][A
-Epoch 1 batches:   4%|▎         | 60/1711 [03:22<1:39:14,  3.61s/it, loss=14023.9941, avg_loss=5924.0176, epoch=0.035, step=60, grad_norm=61915.4883][A
-Epoch 1 batches:   4%|▎         | 60/1711 [03:23<1:39:14,  3.61s/it, loss=3037.7192, avg_loss=5876.7013, epoch=0.036, step=61, grad_norm=63466.6680] [A
-Epoch 1 batches:   4%|▎         | 61/1711 [03:23<1:11:32,  2.60s/it, loss=3037.7192, avg_loss=5876.7013, epoch=0.036, step=61, grad_norm=63466.6680][A
-Epoch 1 batches:   4%|▎         | 61/1711 [03:23<1:11:32,  2.60s/it, loss=13648.4941, avg_loss=6002.0528, epoch=0.036, step=62, grad_norm=17511.2773][A
-Epoch 1 batches:   4%|▎         | 62/1711 [03:23<52:12,  1.90s/it, loss=13648.4941, avg_loss=6002.0528, epoch=0.036, step=62, grad_norm=17511.2773]  [A
-Epoch 1 batches:   4%|▎         | 62/1711 [03:32<52:12,  1.90s/it, loss=180.2489, avg_loss=5909.6432, epoch=0.037, step=63, grad_norm=37502.9492]  [A
-Epoch 1 batches:   4%|▎         | 63/1711 [03:32<1:51:22,  4.05s/it, loss=180.2489, avg_loss=5909.6432, epoch=0.037, step=63, grad_norm=37502.9492][A
-Epoch 1 batches:   4%|▎         | 63/1711 [03:32<1:51:22,  4.05s/it, loss=55.0823, avg_loss=5818.1657, epoch=0.037, step=64, grad_norm=17483.8125] [A
-Epoch 1 batches:   4%|▎         | 64/1711 [03:32<1:19:54,  2.91s/it, loss=55.0823, avg_loss=5818.1657, epoch=0.037, step=64, grad_norm=17483.8125][A
-Epoch 1 batches:   4%|▎         | 64/1711 [03:32<1:19:54,  2.91s/it, loss=608.7595, avg_loss=5738.0210, epoch=0.038, step=65, grad_norm=41071.0195][A
-Epoch 1 batches:   4%|▍         | 65/1711 [03:32<58:00,  2.11s/it, loss=608.7595, avg_loss=5738.0210, epoch=0.038, step=65, grad_norm=41071.0195]  [A
-Epoch 1 batches:   4%|▍         | 65/1711 [03:40<58:00,  2.11s/it, loss=9863.2197, avg_loss=5800.5240, epoch=0.039, step=66, grad_norm=28336.0234][A
-Epoch 1 batches:   4%|▍         | 66/1711 [03:40<1:42:26,  3.74s/it, loss=9863.2197, avg_loss=5800.5240, epoch=0.039, step=66, grad_norm=28336.0234][A
-Epoch 1 batches:   4%|▍         | 66/1711 [03:44<1:42:26,  3.74s/it, loss=4061.0076, avg_loss=5774.5610, epoch=0.039, step=67, grad_norm=16685.2695][A
-Epoch 1 batches:   4%|▍         | 67/1711 [03:44<1:41:11,  3.69s/it, loss=4061.0076, avg_loss=5774.5610, epoch=0.039, step=67, grad_norm=16685.2695][A
-Epoch 1 batches:   4%|▍         | 67/1711 [03:44<1:41:11,  3.69s/it, loss=34.4570, avg_loss=5690.1477, epoch=0.040, step=68, grad_norm=8018.2407]   [A
-Epoch 1 batches:   4%|▍         | 68/1711 [03:44<1:16:16,  2.79s/it, loss=34.4570, avg_loss=5690.1477, epoch=0.040, step=68, grad_norm=8018.2407][A
-Epoch 1 batches:   4%|▍         | 68/1711 [03:51<1:16:16,  2.79s/it, loss=10617.0850, avg_loss=5761.5526, epoch=0.040, step=69, grad_norm=54171.0742][A
-Epoch 1 batches:   4%|▍         | 69/1711 [03:51<1:45:45,  3.86s/it, loss=10617.0850, avg_loss=5761.5526, epoch=0.040, step=69, grad_norm=54171.0742][A
-Epoch 1 batches:   4%|▍         | 69/1711 [03:52<1:45:45,  3.86s/it, loss=374.7681, avg_loss=5684.5986, epoch=0.041, step=70, grad_norm=22709.7578]  [A
-Epoch 1 batches:   4%|▍         | 70/1711 [03:52<1:24:07,  3.08s/it, loss=374.7681, avg_loss=5684.5986, epoch=0.041, step=70, grad_norm=22709.7578][A
-Epoch 1 batches:   4%|▍         | 70/1711 [03:53<1:24:07,  3.08s/it, loss=990.5026, avg_loss=5618.4845, epoch=0.041, step=71, grad_norm=39373.4453][A
-Epoch 1 batches:   4%|▍         | 71/1711 [03:53<1:05:52,  2.41s/it, loss=990.5026, avg_loss=5618.4845, epoch=0.041, step=71, grad_norm=39373.4453][A
-Epoch 1 batches:   4%|▍         | 71/1711 [04:00<1:05:52,  2.41s/it, loss=12156.0088, avg_loss=5709.2835, epoch=0.042, step=72, grad_norm=53225.1289][A
-Epoch 1 batches:   4%|▍         | 72/1711 [04:00<1:44:24,  3.82s/it, loss=12156.0088, avg_loss=5709.2835, epoch=0.042, step=72, grad_norm=53225.1289][A
-Epoch 1 batches:   4%|▍         | 72/1711 [04:01<1:44:24,  3.82s/it, loss=15758.4375, avg_loss=5846.9431, epoch=0.043, step=73, grad_norm=21581.0137][A
-Epoch 1 batches:   4%|▍         | 73/1711 [04:01<1:21:26,  2.98s/it, loss=15758.4375, avg_loss=5846.9431, epoch=0.043, step=73, grad_norm=21581.0137][A
-Epoch 1 batches:   4%|▍         | 73/1711 [04:02<1:21:26,  2.98s/it, loss=731.3110, avg_loss=5777.8130, epoch=0.043, step=74, grad_norm=37689.4531]  [A
-Epoch 1 batches:   4%|▍         | 74/1711 [04:02<1:02:49,  2.30s/it, loss=731.3110, avg_loss=5777.8130, epoch=0.043, step=74, grad_norm=37689.4531][A
-Epoch 1 batches:   4%|▍         | 74/1711 [04:08<1:02:49,  2.30s/it, loss=119.3667, avg_loss=5702.3670, epoch=0.044, step=75, grad_norm=25454.8594][A
-Epoch 1 batches:   4%|▍         | 75/1711 [04:08<1:36:33,  3.54s/it, loss=119.3667, avg_loss=5702.3670, epoch=0.044, step=75, grad_norm=25454.8594][A
-Epoch 1 batches:   4%|▍         | 75/1711 [04:08<1:36:33,  3.54s/it, loss=8894.2119, avg_loss=5744.3650, epoch=0.044, step=76, grad_norm=79061.3125][A
-Epoch 1 batches:   4%|▍         | 76/1711 [04:08<1:09:40,  2.56s/it, loss=8894.2119, avg_loss=5744.3650, epoch=0.044, step=76, grad_norm=79061.3125][A
-Epoch 1 batches:   4%|▍         | 76/1711 [04:11<1:09:40,  2.56s/it, loss=364.5597, avg_loss=5674.4974, epoch=0.045, step=77, grad_norm=41208.1758] [A
-Epoch 1 batches:   5%|▍         | 77/1711 [04:11<1:09:10,  2.54s/it, loss=364.5597, avg_loss=5674.4974, epoch=0.045, step=77, grad_norm=41208.1758][A
-Epoch 1 batches:   5%|▍         | 77/1711 [04:18<1:09:10,  2.54s/it, loss=1224.5563, avg_loss=5617.4469, epoch=0.046, step=78, grad_norm=35546.2188][A
-Epoch 1 batches:   5%|▍         | 78/1711 [04:18<1:47:44,  3.96s/it, loss=1224.5563, avg_loss=5617.4469, epoch=0.046, step=78, grad_norm=35546.2188][A
-Epoch 1 batches:   5%|▍         | 78/1711 [04:18<1:47:44,  3.96s/it, loss=17096.1113, avg_loss=5762.7464, epoch=0.046, step=79, grad_norm=81244.7656][A
-Epoch 1 batches:   5%|▍         | 79/1711 [04:18<1:17:33,  2.85s/it, loss=17096.1113, avg_loss=5762.7464, epoch=0.046, step=79, grad_norm=81244.7656][A
-Epoch 1 batches:   5%|▍         | 79/1711 [04:19<1:17:33,  2.85s/it, loss=14443.1162, avg_loss=5871.2510, epoch=0.047, step=80, grad_norm=53300.1680][A
-Epoch 1 batches:   5%|▍         | 80/1711 [04:19<58:59,  2.17s/it, loss=14443.1162, avg_loss=5871.2510, epoch=0.047, step=80, grad_norm=53300.1680]  [A
-Epoch 1 batches:   5%|▍         | 80/1711 [04:27<58:59,  2.17s/it, loss=32121.7012, avg_loss=6195.3307, epoch=0.047, step=81, grad_norm=9483.4336] [A
-Epoch 1 batches:   5%|▍         | 81/1711 [04:27<1:45:07,  3.87s/it, loss=32121.7012, avg_loss=6195.3307, epoch=0.047, step=81, grad_norm=9483.4336][A
-Epoch 1 batches:   5%|▍         | 81/1711 [04:27<1:45:07,  3.87s/it, loss=626.6600, avg_loss=6127.4200, epoch=0.048, step=82, grad_norm=31013.5254] [A
-Epoch 1 batches:   5%|▍         | 82/1711 [04:27<1:15:43,  2.79s/it, loss=626.6600, avg_loss=6127.4200, epoch=0.048, step=82, grad_norm=31013.5254][A
-Epoch 1 batches:   5%|▍         | 82/1711 [04:27<1:15:43,  2.79s/it, loss=17281.8691, avg_loss=6261.8110, epoch=0.049, step=83, grad_norm=22846.3086][A
-Epoch 1 batches:   5%|▍         | 83/1711 [04:27<55:03,  2.03s/it, loss=17281.8691, avg_loss=6261.8110, epoch=0.049, step=83, grad_norm=22846.3086]  [A
-Epoch 1 batches:   5%|▍         | 83/1711 [04:35<55:03,  2.03s/it, loss=4277.6499, avg_loss=6238.1900, epoch=0.049, step=84, grad_norm=24333.9102] [A
-Epoch 1 batches:   5%|▍         | 84/1711 [04:35<1:43:44,  3.83s/it, loss=4277.6499, avg_loss=6238.1900, epoch=0.049, step=84, grad_norm=24333.9102][A
-Epoch 1 batches:   5%|▍         | 84/1711 [04:35<1:43:44,  3.83s/it, loss=836.9292, avg_loss=6174.6458, epoch=0.050, step=85, grad_norm=45489.3984] [A
-Epoch 1 batches:   5%|▍         | 85/1711 [04:35<1:14:38,  2.75s/it, loss=836.9292, avg_loss=6174.6458, epoch=0.050, step=85, grad_norm=45489.3984][A
-Epoch 1 batches:   5%|▍         | 85/1711 [04:36<1:14:38,  2.75s/it, loss=1614.7477, avg_loss=6121.6237, epoch=0.050, step=86, grad_norm=55597.7734][A
-Epoch 1 batches:   5%|▌         | 86/1711 [04:36<54:21,  2.01s/it, loss=1614.7477, avg_loss=6121.6237, epoch=0.050, step=86, grad_norm=55597.7734]  [A
-Epoch 1 batches:   5%|▌         | 86/1711 [04:44<54:21,  2.01s/it, loss=13154.6426, avg_loss=6202.4630, epoch=0.051, step=87, grad_norm=43610.5547][A
-Epoch 1 batches:   5%|▌         | 87/1711 [04:44<1:43:10,  3.81s/it, loss=13154.6426, avg_loss=6202.4630, epoch=0.051, step=87, grad_norm=43610.5547][A
-Epoch 1 batches:   5%|▌         | 87/1711 [04:44<1:43:10,  3.81s/it, loss=58.0754, avg_loss=6132.6404, epoch=0.051, step=88, grad_norm=16768.8516]   [A
-Epoch 1 batches:   5%|▌         | 88/1711 [04:44<1:14:13,  2.74s/it, loss=58.0754, avg_loss=6132.6404, epoch=0.051, step=88, grad_norm=16768.8516][A
-Epoch 1 batches:   5%|▌         | 88/1711 [04:44<1:14:13,  2.74s/it, loss=13459.5781, avg_loss=6214.9656, epoch=0.052, step=89, grad_norm=55913.6953][A
-Epoch 1 batches:   5%|▌         | 89/1711 [04:44<53:54,  1.99s/it, loss=13459.5781, avg_loss=6214.9656, epoch=0.052, step=89, grad_norm=55913.6953]  [A
-Epoch 1 batches:   5%|▌         | 89/1711 [04:54<53:54,  1.99s/it, loss=7165.4541, avg_loss=6225.5265, epoch=0.053, step=90, grad_norm=30030.8359] [A
-Epoch 1 batches:   5%|▌         | 90/1711 [04:54<1:57:03,  4.33s/it, loss=7165.4541, avg_loss=6225.5265, epoch=0.053, step=90, grad_norm=30030.8359][A
-Epoch 1 batches:   5%|▌         | 90/1711 [04:54<1:57:03,  4.33s/it, loss=2054.4082, avg_loss=6179.6901, epoch=0.053, step=91, grad_norm=64457.6562][A
-Epoch 1 batches:   5%|▌         | 91/1711 [04:54<1:23:59,  3.11s/it, loss=2054.4082, avg_loss=6179.6901, epoch=0.053, step=91, grad_norm=64457.6562][A
-Epoch 1 batches:   5%|▌         | 91/1711 [04:55<1:23:59,  3.11s/it, loss=6011.5698, avg_loss=6177.8627, epoch=0.054, step=92, grad_norm=43340.9453][A
-Epoch 1 batches:   5%|▌         | 92/1711 [04:55<1:00:50,  2.25s/it, loss=6011.5698, avg_loss=6177.8627, epoch=0.054, step=92, grad_norm=43340.9453][A
-Epoch 1 batches:   5%|▌         | 92/1711 [05:04<1:00:50,  2.25s/it, loss=3725.8748, avg_loss=6151.4972, epoch=0.054, step=93, grad_norm=26615.2168][A
-Epoch 1 batches:   5%|▌         | 93/1711 [05:04<1:56:59,  4.34s/it, loss=3725.8748, avg_loss=6151.4972, epoch=0.054, step=93, grad_norm=26615.2168][A
-Epoch 1 batches:   5%|▌         | 93/1711 [05:04<1:56:59,  4.34s/it, loss=857.3204, avg_loss=6095.1762, epoch=0.055, step=94, grad_norm=17270.9805] [A
-Epoch 1 batches:   5%|▌         | 94/1711 [05:04<1:23:45,  3.11s/it, loss=857.3204, avg_loss=6095.1762, epoch=0.055, step=94, grad_norm=17270.9805][A
-Epoch 1 batches:   5%|▌         | 94/1711 [05:04<1:23:45,  3.11s/it, loss=13783.0176, avg_loss=6176.1008, epoch=0.056, step=95, grad_norm=46898.2539][A
-Epoch 1 batches:   6%|▌         | 95/1711 [05:04<1:00:28,  2.25s/it, loss=13783.0176, avg_loss=6176.1008, epoch=0.056, step=95, grad_norm=46898.2539][A
-Epoch 1 batches:   6%|▌         | 95/1711 [05:13<1:00:28,  2.25s/it, loss=6191.0347, avg_loss=6176.2564, epoch=0.056, step=96, grad_norm=33556.3594] [A
-Epoch 1 batches:   6%|▌         | 96/1711 [05:13<1:51:02,  4.13s/it, loss=6191.0347, avg_loss=6176.2564, epoch=0.056, step=96, grad_norm=33556.3594][A
-Epoch 1 batches:   6%|▌         | 96/1711 [05:13<1:51:02,  4.13s/it, loss=14942.0469, avg_loss=6266.6254, epoch=0.057, step=97, grad_norm=52604.7656][A
-Epoch 1 batches:   6%|▌         | 97/1711 [05:13<1:19:49,  2.97s/it, loss=14942.0469, avg_loss=6266.6254, epoch=0.057, step=97, grad_norm=52604.7656][A
-Epoch 1 batches:   6%|▌         | 97/1711 [05:13<1:19:49,  2.97s/it, loss=452.3457, avg_loss=6207.2960, epoch=0.057, step=98, grad_norm=25988.6367]  [A
-Epoch 1 batches:   6%|▌         | 98/1711 [05:13<57:58,  2.16s/it, loss=452.3457, avg_loss=6207.2960, epoch=0.057, step=98, grad_norm=25988.6367]  [A
-Epoch 1 batches:   6%|▌         | 98/1711 [05:21<57:58,  2.16s/it, loss=100.7435, avg_loss=6145.6136, epoch=0.058, step=99, grad_norm=26543.0039][A
-Epoch 1 batches:   6%|▌         | 99/1711 [05:21<1:39:17,  3.70s/it, loss=100.7435, avg_loss=6145.6136, epoch=0.058, step=99, grad_norm=26543.0039][A
-Epoch 1 batches:   6%|▌         | 99/1711 [05:21<1:39:17,  3.70s/it, loss=1921.6844, avg_loss=6103.3744, epoch=0.058, step=100, grad_norm=46532.8398][A
-Validation:   0%|          | 0/20 [00:00<?, ?it/s][A
-Validation:   5%|▌         | 1/20 [00:02<00:50,  2.66s/it][A
-Validation:  10%|█         | 2/20 [00:02<00:21,  1.19s/it][A
-Validation:  15%|█▌        | 3/20 [00:03<00:12,  1.36it/s][A
-Validation:  20%|██        | 4/20 [00:04<00:15,  1.00it/s][A
-Validation:  25%|██▌       | 5/20 [00:04<00:12,  1.23it/s][A
-Validation:  30%|███       | 6/20 [00:05<00:12,  1.11it/s][A
-Validation:  35%|███▌      | 7/20 [00:07<00:12,  1.00it/s][A
-Validation:  40%|████      | 8/20 [00:07<00:09,  1.29it/s][A
-Validation:  45%|████▌     | 9/20 [00:08<00:09,  1.18it/s][A
-Validation:  50%|█████     | 10/20 [00:09<00:09,  1.07it/s][A
-Validation:  55%|█████▌    | 11/20 [00:10<00:07,  1.21it/s][A
-Validation:  60%|██████    | 12/20 [00:11<00:06,  1.16it/s][A
-Validation:  65%|██████▌   | 13/20 [00:12<00:06,  1.15it/s][A
-Validation:  70%|███████   | 14/20 [00:12<00:04,  1.47it/s][A
-Validation:  75%|███████▌  | 15/20 [00:12<00:03,  1.46it/s][A
-Validation:  80%|████████  | 16/20 [00:14<00:03,  1.08it/s][A
-Validation:  85%|████████▌ | 17/20 [00:15<00:02,  1.22it/s][A
-Validation:  90%|█████████ | 18/20 [00:15<00:01,  1.18it/s][A
-Validation:  95%|█████████▌| 19/20 [00:16<00:00,  1.41it/s][A
-Validation: 100%|██████████| 20/20 [00:17<00:00,  1.39it/s][A
-                                                           [A
-Epoch 1 batches:   6%|▌         | 100/1711 [05:40<3:46:08,  8.42s/it, loss=1921.6844, avg_loss=6103.3744, epoch=0.058, step=100, grad_norm=46532.8398][A
-Epoch 1 batches:   6%|▌         | 100/1711 [05:40<3:46:08,  8.42s/it, loss=19254.0801, avg_loss=6233.5794, epoch=0.059, step=101, grad_norm=106225.7812][A
-Epoch 1 batches:   6%|▌         | 101/1711 [05:40<2:40:08,  5.97s/it, loss=19254.0801, avg_loss=6233.5794, epoch=0.059, step=101, grad_norm=106225.7812][A
-Epoch 1 batches:   6%|▌         | 101/1711 [05:41<2:40:08,  5.97s/it, loss=2544.9172, avg_loss=6197.4160, epoch=0.060, step=102, grad_norm=51251.3125]  [A
-Epoch 1 batches:   6%|▌         | 102/1711 [05:41<1:54:07,  4.26s/it, loss=2544.9172, avg_loss=6197.4160, epoch=0.060, step=102, grad_norm=51251.3125][A
-Epoch 1 batches:   6%|▌         | 102/1711 [05:41<1:54:07,  4.26s/it, loss=324.9415, avg_loss=6140.4017, epoch=0.060, step=103, grad_norm=19582.3457] [A
-Epoch 1 batches:   6%|▌         | 103/1711 [05:41<1:21:55,  3.06s/it, loss=324.9415, avg_loss=6140.4017, epoch=0.060, step=103, grad_norm=19582.3457][A
-Epoch 1 batches:   6%|▌         | 103/1711 [05:41<1:21:55,  3.06s/it, loss=67.0375, avg_loss=6082.0040, epoch=0.061, step=104, grad_norm=8254.4297]  [A
-Epoch 1 batches:   6%|▌         | 104/1711 [05:41<59:23,  2.22s/it, loss=67.0375, avg_loss=6082.0040, epoch=0.061, step=104, grad_norm=8254.4297]  [A
-Epoch 1 batches:   6%|▌         | 104/1711 [05:41<59:23,  2.22s/it, loss=68.8213, avg_loss=6024.7356, epoch=0.061, step=105, grad_norm=17934.9590][A
-Epoch 1 batches:   6%|▌         | 105/1711 [05:41<43:49,  1.64s/it, loss=68.8213, avg_loss=6024.7356, epoch=0.061, step=105, grad_norm=17934.9590][A
-Epoch 1 batches:   6%|▌         | 105/1711 [05:42<43:49,  1.64s/it, loss=13234.5645, avg_loss=6092.7528, epoch=0.062, step=106, grad_norm=18885.9492][A
-Epoch 1 batches:   6%|▌         | 106/1711 [05:42<32:43,  1.22s/it, loss=13234.5645, avg_loss=6092.7528, epoch=0.062, step=106, grad_norm=18885.9492][A
-Epoch 1 batches:   6%|▌         | 106/1711 [05:49<32:43,  1.22s/it, loss=126.7682, avg_loss=6036.9959, epoch=0.063, step=107, grad_norm=15904.9873]  [A
-Epoch 1 batches:   6%|▋         | 107/1711 [05:49<1:20:13,  3.00s/it, loss=126.7682, avg_loss=6036.9959, epoch=0.063, step=107, grad_norm=15904.9873][A
-Epoch 1 batches:   6%|▋         | 107/1711 [05:50<1:20:13,  3.00s/it, loss=15660.9209, avg_loss=6126.1064, epoch=0.063, step=108, grad_norm=47203.1016][A
-Epoch 1 batches:   6%|▋         | 108/1711 [05:50<1:06:13,  2.48s/it, loss=15660.9209, avg_loss=6126.1064, epoch=0.063, step=108, grad_norm=47203.1016][A
-Epoch 1 batches:   6%|▋         | 108/1711 [05:50<1:06:13,  2.48s/it, loss=2884.3008, avg_loss=6096.3650, epoch=0.064, step=109, grad_norm=36579.5195] [A
-Epoch 1 batches:   6%|▋         | 109/1711 [05:50<48:20,  1.81s/it, loss=2884.3008, avg_loss=6096.3650, epoch=0.064, step=109, grad_norm=36579.5195]  [A
-Epoch 1 batches:   6%|▋         | 109/1711 [05:59<48:20,  1.81s/it, loss=48.8624, avg_loss=6041.3877, epoch=0.064, step=110, grad_norm=12514.5352]  [A
-Epoch 1 batches:   6%|▋         | 110/1711 [05:59<1:46:40,  4.00s/it, loss=48.8624, avg_loss=6041.3877, epoch=0.064, step=110, grad_norm=12514.5352][A
-Epoch 1 batches:   6%|▋         | 110/1711 [06:00<1:46:40,  4.00s/it, loss=50.2635, avg_loss=5987.4136, epoch=0.065, step=111, grad_norm=13146.3447][A
-Epoch 1 batches:   6%|▋         | 111/1711 [06:00<1:17:12,  2.90s/it, loss=50.2635, avg_loss=5987.4136, epoch=0.065, step=111, grad_norm=13146.3447][A
-Epoch 1 batches:   6%|▋         | 111/1711 [06:00<1:17:12,  2.90s/it, loss=651.0207, avg_loss=5939.7673, epoch=0.065, step=112, grad_norm=31709.4238][A
-Epoch 1 batches:   7%|▋         | 112/1711 [06:00<56:05,  2.10s/it, loss=651.0207, avg_loss=5939.7673, epoch=0.065, step=112, grad_norm=31709.4238]  [A
-Epoch 1 batches:   7%|▋         | 112/1711 [06:09<56:05,  2.10s/it, loss=12201.1338, avg_loss=5995.1776, epoch=0.066, step=113, grad_norm=70543.0000][A
-Epoch 1 batches:   7%|▋         | 113/1711 [06:09<1:49:27,  4.11s/it, loss=12201.1338, avg_loss=5995.1776, epoch=0.066, step=113, grad_norm=70543.0000][A
-Epoch 1 batches:   7%|▋         | 113/1711 [06:09<1:49:27,  4.11s/it, loss=755.1885, avg_loss=5949.2128, epoch=0.067, step=114, grad_norm=43367.0039]  [A
-Epoch 1 batches:   7%|▋         | 114/1711 [06:09<1:18:31,  2.95s/it, loss=755.1885, avg_loss=5949.2128, epoch=0.067, step=114, grad_norm=43367.0039][A
-Epoch 1 batches:   7%|▋         | 114/1711 [06:09<1:18:31,  2.95s/it, loss=106.3632, avg_loss=5898.4054, epoch=0.067, step=115, grad_norm=6833.5205] [A
-Epoch 1 batches:   7%|▋         | 115/1711 [06:09<56:55,  2.14s/it, loss=106.3632, avg_loss=5898.4054, epoch=0.067, step=115, grad_norm=6833.5205]  [A
-Epoch 1 batches:   7%|▋         | 115/1711 [06:22<56:55,  2.14s/it, loss=3610.4380, avg_loss=5878.6815, epoch=0.068, step=116, grad_norm=17343.9375][A
-Epoch 1 batches:   7%|▋         | 116/1711 [06:22<2:21:09,  5.31s/it, loss=3610.4380, avg_loss=5878.6815, epoch=0.068, step=116, grad_norm=17343.9375][A
-Epoch 1 batches:   7%|▋         | 116/1711 [06:22<2:21:09,  5.31s/it, loss=59.6050, avg_loss=5828.9458, epoch=0.068, step=117, grad_norm=14548.2656]  [A
-Epoch 1 batches:   7%|▋         | 117/1711 [06:22<1:40:45,  3.79s/it, loss=59.6050, avg_loss=5828.9458, epoch=0.068, step=117, grad_norm=14548.2656][A
-Epoch 1 batches:   7%|▋         | 117/1711 [06:22<1:40:45,  3.79s/it, loss=143.7367, avg_loss=5780.7661, epoch=0.069, step=118, grad_norm=16780.8008][A
-Epoch 1 batches:   7%|▋         | 118/1711 [06:22<1:12:31,  2.73s/it, loss=143.7367, avg_loss=5780.7661, epoch=0.069, step=118, grad_norm=16780.8008][A
-Epoch 1 batches:   7%|▋         | 118/1711 [06:30<1:12:31,  2.73s/it, loss=223.7628, avg_loss=5734.0686, epoch=0.070, step=119, grad_norm=14342.8486][A
-Epoch 1 batches:   7%|▋         | 119/1711 [06:30<1:51:18,  4.20s/it, loss=223.7628, avg_loss=5734.0686, epoch=0.070, step=119, grad_norm=14342.8486][A
-Epoch 1 batches:   7%|▋         | 119/1711 [06:30<1:51:18,  4.20s/it, loss=953.8358, avg_loss=5694.2333, epoch=0.070, step=120, grad_norm=20588.1270][A
-Epoch 1 batches:   7%|▋         | 120/1711 [06:30<1:19:53,  3.01s/it, loss=953.8358, avg_loss=5694.2333, epoch=0.070, step=120, grad_norm=20588.1270][A
-Epoch 1 batches:   7%|▋         | 120/1711 [06:31<1:19:53,  3.01s/it, loss=7865.4585, avg_loss=5712.1773, epoch=0.071, step=121, grad_norm=24151.3223][A
-Epoch 1 batches:   7%|▋         | 121/1711 [06:31<57:54,  2.19s/it, loss=7865.4585, avg_loss=5712.1773, epoch=0.071, step=121, grad_norm=24151.3223]  [A
-Epoch 1 batches:   7%|▋         | 121/1711 [06:37<57:54,  2.19s/it, loss=62.0241, avg_loss=5665.8646, epoch=0.071, step=122, grad_norm=11250.0693]  [A
-Epoch 1 batches:   7%|▋         | 122/1711 [06:37<1:31:24,  3.45s/it, loss=62.0241, avg_loss=5665.8646, epoch=0.071, step=122, grad_norm=11250.0693][A
-Epoch 1 batches:   7%|▋         | 122/1711 [06:37<1:31:24,  3.45s/it, loss=5212.9341, avg_loss=5662.1822, epoch=0.072, step=123, grad_norm=69701.6094][A
-Epoch 1 batches:   7%|▋         | 123/1711 [06:37<1:05:59,  2.49s/it, loss=5212.9341, avg_loss=5662.1822, epoch=0.072, step=123, grad_norm=69701.6094][A
-Epoch 1 batches:   7%|▋         | 123/1711 [06:37<1:05:59,  2.49s/it, loss=87.7444, avg_loss=5617.2271, epoch=0.072, step=124, grad_norm=13070.2998]  [A
-Epoch 1 batches:   7%|▋         | 124/1711 [06:37<48:09,  1.82s/it, loss=87.7444, avg_loss=5617.2271, epoch=0.072, step=124, grad_norm=13070.2998]  [A
-Epoch 1 batches:   7%|▋         | 124/1711 [06:44<48:09,  1.82s/it, loss=1551.7450, avg_loss=5584.7032, epoch=0.073, step=125, grad_norm=44569.9141][A
-Epoch 1 batches:   7%|▋         | 125/1711 [06:44<1:25:11,  3.22s/it, loss=1551.7450, avg_loss=5584.7032, epoch=0.073, step=125, grad_norm=44569.9141][A
-Epoch 1 batches:   7%|▋         | 125/1711 [06:44<1:25:11,  3.22s/it, loss=3429.4712, avg_loss=5567.5982, epoch=0.074, step=126, grad_norm=34461.9219][A
-Epoch 1 batches:   7%|▋         | 126/1711 [06:44<1:01:34,  2.33s/it, loss=3429.4712, avg_loss=5567.5982, epoch=0.074, step=126, grad_norm=34461.9219][A
-Epoch 1 batches:   7%|▋         | 126/1711 [06:44<1:01:34,  2.33s/it, loss=51.2500, avg_loss=5524.1624, epoch=0.074, step=127, grad_norm=13710.9600]  [A
-Epoch 1 batches:   7%|▋         | 127/1711 [06:44<44:57,  1.70s/it, loss=51.2500, avg_loss=5524.1624, epoch=0.074, step=127, grad_norm=13710.9600]  [A
-Epoch 1 batches:   7%|▋         | 127/1711 [06:53<44:57,  1.70s/it, loss=15.8250, avg_loss=5481.1285, epoch=0.075, step=128, grad_norm=2721.5227] [A
-Epoch 1 batches:   7%|▋         | 128/1711 [06:53<1:38:58,  3.75s/it, loss=15.8250, avg_loss=5481.1285, epoch=0.075, step=128, grad_norm=2721.5227][A
-Epoch 1 batches:   7%|▋         | 128/1711 [06:53<1:38:58,  3.75s/it, loss=2084.6851, avg_loss=5454.7995, epoch=0.075, step=129, grad_norm=16237.2744][A
-Epoch 1 batches:   8%|▊         | 129/1711 [06:53<1:11:16,  2.70s/it, loss=2084.6851, avg_loss=5454.7995, epoch=0.075, step=129, grad_norm=16237.2744][A
-Epoch 1 batches:   8%|▊         | 129/1711 [06:53<1:11:16,  2.70s/it, loss=124.9888, avg_loss=5413.8010, epoch=0.076, step=130, grad_norm=13949.0225] [A
-Epoch 1 batches:   8%|▊         | 130/1711 [06:53<51:47,  1.97s/it, loss=124.9888, avg_loss=5413.8010, epoch=0.076, step=130, grad_norm=13949.0225]  [A
-Epoch 1 batches:   8%|▊         | 130/1711 [07:01<51:47,  1.97s/it, loss=326.6533, avg_loss=5374.9678, epoch=0.077, step=131, grad_norm=22368.3301][A
-Epoch 1 batches:   8%|▊         | 131/1711 [07:01<1:38:39,  3.75s/it, loss=326.6533, avg_loss=5374.9678, epoch=0.077, step=131, grad_norm=22368.3301][A
-Epoch 1 batches:   8%|▊         | 131/1711 [07:02<1:38:39,  3.75s/it, loss=57.2526, avg_loss=5334.6820, epoch=0.077, step=132, grad_norm=16300.7988] [A
-Epoch 1 batches:   8%|▊         | 132/1711 [07:02<1:11:04,  2.70s/it, loss=57.2526, avg_loss=5334.6820, epoch=0.077, step=132, grad_norm=16300.7988][A
-Epoch 1 batches:   8%|▊         | 132/1711 [07:02<1:11:04,  2.70s/it, loss=1782.9717, avg_loss=5307.9775, epoch=0.078, step=133, grad_norm=53447.4375][A
-Epoch 1 batches:   8%|▊         | 133/1711 [07:02<51:49,  1.97s/it, loss=1782.9717, avg_loss=5307.9775, epoch=0.078, step=133, grad_norm=53447.4375]  [A
-Epoch 1 batches:   8%|▊         | 133/1711 [07:10<51:49,  1.97s/it, loss=8158.1323, avg_loss=5329.2473, epoch=0.078, step=134, grad_norm=7874.7056] [A
-Epoch 1 batches:   8%|▊         | 134/1711 [07:10<1:39:56,  3.80s/it, loss=8158.1323, avg_loss=5329.2473, epoch=0.078, step=134, grad_norm=7874.7056][A
-Epoch 1 batches:   8%|▊         | 134/1711 [07:10<1:39:56,  3.80s/it, loss=390.8670, avg_loss=5292.6667, epoch=0.079, step=135, grad_norm=27185.0449][A
-Epoch 1 batches:   8%|▊         | 135/1711 [07:10<1:11:55,  2.74s/it, loss=390.8670, avg_loss=5292.6667, epoch=0.079, step=135, grad_norm=27185.0449][A
-Epoch 1 batches:   8%|▊         | 135/1711 [07:10<1:11:55,  2.74s/it, loss=510.6712, avg_loss=5257.5049, epoch=0.079, step=136, grad_norm=28442.2812][A
-Epoch 1 batches:   8%|▊         | 136/1711 [07:10<52:16,  1.99s/it, loss=510.6712, avg_loss=5257.5049, epoch=0.079, step=136, grad_norm=28442.2812]  [A
-Epoch 1 batches:   8%|▊         | 136/1711 [07:18<52:16,  1.99s/it, loss=10793.3750, avg_loss=5297.9128, epoch=0.080, step=137, grad_norm=19173.8301][A
-Epoch 1 batches:   8%|▊         | 137/1711 [07:18<1:38:35,  3.76s/it, loss=10793.3750, avg_loss=5297.9128, epoch=0.080, step=137, grad_norm=19173.8301][A
-Epoch 1 batches:   8%|▊         | 137/1711 [07:19<1:38:35,  3.76s/it, loss=18452.4688, avg_loss=5393.2356, epoch=0.081, step=138, grad_norm=82087.2031][A
-Epoch 1 batches:   8%|▊         | 138/1711 [07:19<1:10:53,  2.70s/it, loss=18452.4688, avg_loss=5393.2356, epoch=0.081, step=138, grad_norm=82087.2031][A
-Epoch 1 batches:   8%|▊         | 138/1711 [07:19<1:10:53,  2.70s/it, loss=145.2337, avg_loss=5355.4802, epoch=0.081, step=139, grad_norm=20227.8145]  [A
-Epoch 1 batches:   8%|▊         | 139/1711 [07:19<51:35,  1.97s/it, loss=145.2337, avg_loss=5355.4802, epoch=0.081, step=139, grad_norm=20227.8145]  [A
-Epoch 1 batches:   8%|▊         | 139/1711 [07:26<51:35,  1.97s/it, loss=7168.8667, avg_loss=5368.4330, epoch=0.082, step=140, grad_norm=57262.3438][A
-Epoch 1 batches:   8%|▊         | 140/1711 [07:26<1:33:26,  3.57s/it, loss=7168.8667, avg_loss=5368.4330, epoch=0.082, step=140, grad_norm=57262.3438][A
-Epoch 1 batches:   8%|▊         | 140/1711 [07:26<1:33:26,  3.57s/it, loss=704.5307, avg_loss=5335.3557, epoch=0.082, step=141, grad_norm=28971.5449] [A
-Epoch 1 batches:   8%|▊         | 141/1711 [07:26<1:07:30,  2.58s/it, loss=704.5307, avg_loss=5335.3557, epoch=0.082, step=141, grad_norm=28971.5449][A
-Epoch 1 batches:   8%|▊         | 141/1711 [07:27<1:07:30,  2.58s/it, loss=69.5984, avg_loss=5298.2729, epoch=0.083, step=142, grad_norm=8671.9355]  [A
-Epoch 1 batches:   8%|▊         | 142/1711 [07:27<49:08,  1.88s/it, loss=69.5984, avg_loss=5298.2729, epoch=0.083, step=142, grad_norm=8671.9355]  [A
-Epoch 1 batches:   8%|▊         | 142/1711 [07:34<49:08,  1.88s/it, loss=309.0003, avg_loss=5263.3828, epoch=0.084, step=143, grad_norm=30234.4414][A
-Epoch 1 batches:   8%|▊         | 143/1711 [07:34<1:30:12,  3.45s/it, loss=309.0003, avg_loss=5263.3828, epoch=0.084, step=143, grad_norm=30234.4414][A
-Epoch 1 batches:   8%|▊         | 143/1711 [07:34<1:30:12,  3.45s/it, loss=4325.3267, avg_loss=5256.8686, epoch=0.084, step=144, grad_norm=30534.6660][A
-Epoch 1 batches:   8%|▊         | 144/1711 [07:34<1:05:01,  2.49s/it, loss=4325.3267, avg_loss=5256.8686, epoch=0.084, step=144, grad_norm=30534.6660][A
-Epoch 1 batches:   8%|▊         | 144/1711 [07:34<1:05:01,  2.49s/it, loss=176.4819, avg_loss=5221.8314, epoch=0.085, step=145, grad_norm=20117.7715] [A
-Epoch 1 batches:   8%|▊         | 145/1711 [07:34<47:29,  1.82s/it, loss=176.4819, avg_loss=5221.8314, epoch=0.085, step=145, grad_norm=20117.7715]  [A
-Epoch 1 batches:   8%|▊         | 145/1711 [07:41<47:29,  1.82s/it, loss=57.6827, avg_loss=5186.4605, epoch=0.085, step=146, grad_norm=18674.1445] [A
-Epoch 1 batches:   9%|▊         | 146/1711 [07:41<1:29:31,  3.43s/it, loss=57.6827, avg_loss=5186.4605, epoch=0.085, step=146, grad_norm=18674.1445][A
-Epoch 1 batches:   9%|▊         | 146/1711 [07:42<1:29:31,  3.43s/it, loss=46.6645, avg_loss=5151.4959, epoch=0.086, step=147, grad_norm=8475.7959] [A
-Epoch 1 batches:   9%|▊         | 147/1711 [07:42<1:04:36,  2.48s/it, loss=46.6645, avg_loss=5151.4959, epoch=0.086, step=147, grad_norm=8475.7959][A
-Epoch 1 batches:   9%|▊         | 147/1711 [07:42<1:04:36,  2.48s/it, loss=19632.2949, avg_loss=5249.3392, epoch=0.086, step=148, grad_norm=50447.3516][A
-Epoch 1 batches:   9%|▊         | 148/1711 [07:42<47:06,  1.81s/it, loss=19632.2949, avg_loss=5249.3392, epoch=0.086, step=148, grad_norm=50447.3516]  [A
-Epoch 1 batches:   9%|▊         | 148/1711 [07:50<47:06,  1.81s/it, loss=10005.5596, avg_loss=5281.2601, epoch=0.087, step=149, grad_norm=42307.3320][A
-Epoch 1 batches:   9%|▊         | 149/1711 [07:50<1:31:59,  3.53s/it, loss=10005.5596, avg_loss=5281.2601, epoch=0.087, step=149, grad_norm=42307.3320][A
-Epoch 1 batches:   9%|▊         | 149/1711 [07:50<1:31:59,  3.53s/it, loss=3337.2869, avg_loss=5268.3003, epoch=0.088, step=150, grad_norm=34116.9297] [A
-Validation:   0%|          | 0/20 [00:00<?, ?it/s][A
-Validation:   5%|▌         | 1/20 [00:04<01:16,  4.01s/it][A
-Validation:  10%|█         | 2/20 [00:04<00:31,  1.77s/it][A
-Validation:  15%|█▌        | 3/20 [00:04<00:18,  1.06s/it][A
-Validation:  20%|██        | 4/20 [00:05<00:19,  1.23s/it][A
-Validation:  25%|██▌       | 5/20 [00:06<00:13,  1.07it/s][A
-Validation:  30%|███       | 6/20 [00:06<00:11,  1.25it/s][A
-Validation:  35%|███▌      | 7/20 [00:08<00:13,  1.03s/it][A
-Validation:  40%|████      | 8/20 [00:09<00:11,  1.07it/s][A
-Validation:  45%|████▌     | 9/20 [00:09<00:08,  1.36it/s][A
-Validation:  50%|█████     | 10/20 [00:10<00:09,  1.01it/s][A
-Validation:  55%|█████▌    | 11/20 [00:11<00:07,  1.17it/s][A
-Validation:  60%|██████    | 12/20 [00:11<00:05,  1.45it/s][A
-Validation:  65%|██████▌   | 13/20 [00:13<00:06,  1.04it/s][A
-Validation:  70%|███████   | 14/20 [00:13<00:04,  1.31it/s][A
-Validation:  75%|███████▌  | 15/20 [00:13<00:02,  1.71it/s][A
-Validation:  80%|████████  | 16/20 [00:15<00:03,  1.17it/s][A
-Validation:  85%|████████▌ | 17/20 [00:15<00:02,  1.37it/s][A
-Validation:  90%|█████████ | 18/20 [00:16<00:01,  1.59it/s][A
-Validation:  95%|█████████▌| 19/20 [00:17<00:00,  1.31it/s][A
-Validation: 100%|██████████| 20/20 [00:17<00:00,  1.63it/s][A
-                                                           [A
-Epoch 1 batches:   9%|▉         | 150/1711 [08:09<3:37:08,  8.35s/it, loss=3337.2869, avg_loss=5268.3003, epoch=0.088, step=150, grad_norm=34116.9297][A
-Epoch 1 batches:   9%|▉         | 150/1711 [08:09<3:37:08,  8.35s/it, loss=39.4173, avg_loss=5233.6719, epoch=0.088, step=151, grad_norm=8134.5840]   [A
-Epoch 1 batches:   9%|▉         | 151/1711 [08:09<2:33:44,  5.91s/it, loss=39.4173, avg_loss=5233.6719, epoch=0.088, step=151, grad_norm=8134.5840][A
-Epoch 1 batches:   9%|▉         | 151/1711 [08:10<2:33:44,  5.91s/it, loss=1698.8368, avg_loss=5210.4164, epoch=0.089, step=152, grad_norm=17546.2285][A
-Epoch 1 batches:   9%|▉         | 152/1711 [08:10<1:49:29,  4.21s/it, loss=1698.8368, avg_loss=5210.4164, epoch=0.089, step=152, grad_norm=17546.2285][A
-Epoch 1 batches:   9%|▉         | 152/1711 [08:10<1:49:29,  4.21s/it, loss=817.6914, avg_loss=5181.7058, epoch=0.089, step=153, grad_norm=30604.4395] [A
-Epoch 1 batches:   9%|▉         | 153/1711 [08:10<1:18:30,  3.02s/it, loss=817.6914, avg_loss=5181.7058, epoch=0.089, step=153, grad_norm=30604.4395][A
-Epoch 1 batches:   9%|▉         | 153/1711 [08:10<1:18:30,  3.02s/it, loss=1106.3105, avg_loss=5155.2422, epoch=0.090, step=154, grad_norm=31940.8379][A
-Epoch 1 batches:   9%|▉         | 154/1711 [08:10<56:53,  2.19s/it, loss=1106.3105, avg_loss=5155.2422, epoch=0.090, step=154, grad_norm=31940.8379]  [A
-Epoch 1 batches:   9%|▉         | 154/1711 [08:11<56:53,  2.19s/it, loss=91.9916, avg_loss=5122.5761, epoch=0.091, step=155, grad_norm=9561.2959]   [A
-Epoch 1 batches:   9%|▉         | 155/1711 [08:11<43:11,  1.67s/it, loss=91.9916, avg_loss=5122.5761, epoch=0.091, step=155, grad_norm=9561.2959][A
-Epoch 1 batches:   9%|▉         | 155/1711 [08:11<43:11,  1.67s/it, loss=12962.3564, avg_loss=5172.8311, epoch=0.091, step=156, grad_norm=21907.1660][A
-Epoch 1 batches:   9%|▉         | 156/1711 [08:11<32:08,  1.24s/it, loss=12962.3564, avg_loss=5172.8311, epoch=0.091, step=156, grad_norm=21907.1660][A
-Epoch 1 batches:   9%|▉         | 156/1711 [08:20<32:08,  1.24s/it, loss=1062.0194, avg_loss=5146.6476, epoch=0.092, step=157, grad_norm=48824.1250] [A
-Epoch 1 batches:   9%|▉         | 157/1711 [08:20<1:33:09,  3.60s/it, loss=1062.0194, avg_loss=5146.6476, epoch=0.092, step=157, grad_norm=48824.1250][A
-Epoch 1 batches:   9%|▉         | 157/1711 [08:20<1:33:09,  3.60s/it, loss=9356.2422, avg_loss=5173.2906, epoch=0.092, step=158, grad_norm=49633.9922][A
-Epoch 1 batches:   9%|▉         | 158/1711 [08:20<1:07:08,  2.59s/it, loss=9356.2422, avg_loss=5173.2906, epoch=0.092, step=158, grad_norm=49633.9922][A
-Epoch 1 batches:   9%|▉         | 158/1711 [08:20<1:07:08,  2.59s/it, loss=1351.4989, avg_loss=5149.2541, epoch=0.093, step=159, grad_norm=19826.5801][A
-Epoch 1 batches:   9%|▉         | 159/1711 [08:20<49:01,  1.90s/it, loss=1351.4989, avg_loss=5149.2541, epoch=0.093, step=159, grad_norm=19826.5801]  [A
-Epoch 1 batches:   9%|▉         | 159/1711 [08:28<49:01,  1.90s/it, loss=66.7935, avg_loss=5117.4888, epoch=0.094, step=160, grad_norm=16968.2715]  [A
-Epoch 1 batches:   9%|▉         | 160/1711 [08:28<1:31:31,  3.54s/it, loss=66.7935, avg_loss=5117.4888, epoch=0.094, step=160, grad_norm=16968.2715][A
-Epoch 1 batches:   9%|▉         | 160/1711 [08:29<1:31:31,  3.54s/it, loss=14381.3193, avg_loss=5175.0281, epoch=0.094, step=161, grad_norm=55700.2188][A
-Epoch 1 batches:   9%|▉         | 161/1711 [08:29<1:13:39,  2.85s/it, loss=14381.3193, avg_loss=5175.0281, epoch=0.094, step=161, grad_norm=55700.2188][A
-Epoch 1 batches:   9%|▉         | 161/1711 [08:29<1:13:39,  2.85s/it, loss=42.9624, avg_loss=5143.3487, epoch=0.095, step=162, grad_norm=11995.9922]   [A
-Epoch 1 batches:   9%|▉         | 162/1711 [08:29<53:29,  2.07s/it, loss=42.9624, avg_loss=5143.3487, epoch=0.095, step=162, grad_norm=11995.9922]  [A
-Epoch 1 batches:   9%|▉         | 162/1711 [08:40<53:29,  2.07s/it, loss=237.9930, avg_loss=5113.2544, epoch=0.095, step=163, grad_norm=20018.2324][A
-Epoch 1 batches:  10%|▉         | 163/1711 [08:40<1:58:39,  4.60s/it, loss=237.9930, avg_loss=5113.2544, epoch=0.095, step=163, grad_norm=20018.2324][A
-Epoch 1 batches:  10%|▉         | 163/1711 [08:40<1:58:39,  4.60s/it, loss=455.6058, avg_loss=5084.8542, epoch=0.096, step=164, grad_norm=52747.6953][A
-Epoch 1 batches:  10%|▉         | 164/1711 [08:40<1:26:16,  3.35s/it, loss=455.6058, avg_loss=5084.8542, epoch=0.096, step=164, grad_norm=52747.6953][A
-Epoch 1 batches:  10%|▉         | 164/1711 [08:40<1:26:16,  3.35s/it, loss=250.3142, avg_loss=5055.5539, epoch=0.096, step=165, grad_norm=17816.2695][A
-Epoch 1 batches:  10%|▉         | 165/1711 [08:40<1:02:15,  2.42s/it, loss=250.3142, avg_loss=5055.5539, epoch=0.096, step=165, grad_norm=17816.2695][A
-Epoch 1 batches:  10%|▉         | 165/1711 [08:52<1:02:15,  2.42s/it, loss=536.4738, avg_loss=5028.3305, epoch=0.097, step=166, grad_norm=27081.8145][A
-Epoch 1 batches:  10%|▉         | 166/1711 [08:52<2:09:20,  5.02s/it, loss=536.4738, avg_loss=5028.3305, epoch=0.097, step=166, grad_norm=27081.8145][A
-Epoch 1 batches:  10%|▉         | 166/1711 [08:52<2:09:20,  5.02s/it, loss=278.2585, avg_loss=4999.8870, epoch=0.098, step=167, grad_norm=25124.1758][A
-Epoch 1 batches:  10%|▉         | 167/1711 [08:52<1:32:26,  3.59s/it, loss=278.2585, avg_loss=4999.8870, epoch=0.098, step=167, grad_norm=25124.1758][A
-Epoch 1 batches:  10%|▉         | 167/1711 [08:52<1:32:26,  3.59s/it, loss=17637.5469, avg_loss=5075.1112, epoch=0.098, step=168, grad_norm=24033.6191][A
-Epoch 1 batches:  10%|▉         | 168/1711 [08:52<1:06:33,  2.59s/it, loss=17637.5469, avg_loss=5075.1112, epoch=0.098, step=168, grad_norm=24033.6191][A
-Epoch 1 batches:  10%|▉         | 168/1711 [09:06<1:06:33,  2.59s/it, loss=5569.3296, avg_loss=5078.0355, epoch=0.099, step=169, grad_norm=54407.6211] [A
-Epoch 1 batches:  10%|▉         | 169/1711 [09:06<2:32:10,  5.92s/it, loss=5569.3296, avg_loss=5078.0355, epoch=0.099, step=169, grad_norm=54407.6211][A
-Epoch 1 batches:  10%|▉         | 169/1711 [09:06<2:32:10,  5.92s/it, loss=1035.6542, avg_loss=5054.2568, epoch=0.099, step=170, grad_norm=32384.1934][A
-Epoch 1 batches:  10%|▉         | 170/1711 [09:06<1:51:56,  4.36s/it, loss=1035.6542, avg_loss=5054.2568, epoch=0.099, step=170, grad_norm=32384.1934][A
-Epoch 1 batches:  10%|▉         | 170/1711 [09:07<1:51:56,  4.36s/it, loss=110.1513, avg_loss=5025.3439, epoch=0.100, step=171, grad_norm=5353.9741]  [A
-Epoch 1 batches:  10%|▉         | 171/1711 [09:07<1:20:09,  3.12s/it, loss=110.1513, avg_loss=5025.3439, epoch=0.100, step=171, grad_norm=5353.9741][A
-Epoch 1 batches:  10%|▉         | 171/1711 [09:14<1:20:09,  3.12s/it, loss=685.8000, avg_loss=5000.1140, epoch=0.101, step=172, grad_norm=62869.8203][A
-Epoch 1 batches:  10%|█         | 172/1711 [09:14<1:49:18,  4.26s/it, loss=685.8000, avg_loss=5000.1140, epoch=0.101, step=172, grad_norm=62869.8203][A
-Epoch 1 batches:  10%|█         | 172/1711 [09:14<1:49:18,  4.26s/it, loss=16496.6895, avg_loss=5066.5682, epoch=0.101, step=173, grad_norm=23357.8184][A
-Epoch 1 batches:  10%|█         | 173/1711 [09:14<1:19:52,  3.12s/it, loss=16496.6895, avg_loss=5066.5682, epoch=0.101, step=173, grad_norm=23357.8184][A
-Epoch 1 batches:  10%|█         | 173/1711 [09:14<1:19:52,  3.12s/it, loss=316.2988, avg_loss=5039.2678, epoch=0.102, step=174, grad_norm=21959.7207]  [A
-Epoch 1 batches:  10%|█         | 174/1711 [09:14<57:53,  2.26s/it, loss=316.2988, avg_loss=5039.2678, epoch=0.102, step=174, grad_norm=21959.7207]  [A
-Epoch 1 batches:  10%|█         | 174/1711 [09:22<57:53,  2.26s/it, loss=1005.8473, avg_loss=5016.2197, epoch=0.102, step=175, grad_norm=32770.0352][A
-Epoch 1 batches:  10%|█         | 175/1711 [09:22<1:38:11,  3.84s/it, loss=1005.8473, avg_loss=5016.2197, epoch=0.102, step=175, grad_norm=32770.0352][A
-Epoch 1 batches:  10%|█         | 175/1711 [09:23<1:38:11,  3.84s/it, loss=66.7726, avg_loss=4988.0978, epoch=0.103, step=176, grad_norm=12707.8184]  [A
-Epoch 1 batches:  10%|█         | 176/1711 [09:23<1:15:12,  2.94s/it, loss=66.7726, avg_loss=4988.0978, epoch=0.103, step=176, grad_norm=12707.8184][A
-Epoch 1 batches:  10%|█         | 176/1711 [09:23<1:15:12,  2.94s/it, loss=1650.9514, avg_loss=4969.2439, epoch=0.103, step=177, grad_norm=28772.1992][A
-Epoch 1 batches:  10%|█         | 177/1711 [09:23<54:31,  2.13s/it, loss=1650.9514, avg_loss=4969.2439, epoch=0.103, step=177, grad_norm=28772.1992]  [A
-Epoch 1 batches:  10%|█         | 177/1711 [09:30<54:31,  2.13s/it, loss=12608.7754, avg_loss=5012.1626, epoch=0.104, step=178, grad_norm=58962.2148][A
-Epoch 1 batches:  10%|█         | 178/1711 [09:30<1:33:31,  3.66s/it, loss=12608.7754, avg_loss=5012.1626, epoch=0.104, step=178, grad_norm=58962.2148][A
-Epoch 1 batches:  10%|█         | 178/1711 [09:31<1:33:31,  3.66s/it, loss=2162.1946, avg_loss=4996.2410, epoch=0.105, step=179, grad_norm=15433.7705] [A
-Epoch 1 batches:  10%|█         | 179/1711 [09:31<1:15:42,  2.97s/it, loss=2162.1946, avg_loss=4996.2410, epoch=0.105, step=179, grad_norm=15433.7705][A
-Epoch 1 batches:  10%|█         | 179/1711 [09:32<1:15:42,  2.97s/it, loss=10289.2109, avg_loss=5025.6464, epoch=0.105, step=180, grad_norm=76255.3672][A
-Epoch 1 batches:  11%|█         | 180/1711 [09:32<54:49,  2.15s/it, loss=10289.2109, avg_loss=5025.6464, epoch=0.105, step=180, grad_norm=76255.3672]  [A
-Epoch 1 batches:  11%|█         | 180/1711 [09:38<54:49,  2.15s/it, loss=18239.3066, avg_loss=5098.6500, epoch=0.106, step=181, grad_norm=36981.6484][A
-Epoch 1 batches:  11%|█         | 181/1711 [09:38<1:27:13,  3.42s/it, loss=18239.3066, avg_loss=5098.6500, epoch=0.106, step=181, grad_norm=36981.6484][A
-Epoch 1 batches:  11%|█         | 181/1711 [09:41<1:27:13,  3.42s/it, loss=93.8380, avg_loss=5071.1511, epoch=0.106, step=182, grad_norm=14114.0566]   [A
-Epoch 1 batches:  11%|█         | 182/1711 [09:41<1:19:57,  3.14s/it, loss=93.8380, avg_loss=5071.1511, epoch=0.106, step=182, grad_norm=14114.0566][A
-Epoch 1 batches:  11%|█         | 182/1711 [09:41<1:19:57,  3.14s/it, loss=2310.4102, avg_loss=5056.0651, epoch=0.107, step=183, grad_norm=55298.2227][A
-Epoch 1 batches:  11%|█         | 183/1711 [09:41<57:50,  2.27s/it, loss=2310.4102, avg_loss=5056.0651, epoch=0.107, step=183, grad_norm=55298.2227]  [A
-Epoch 1 batches:  11%|█         | 183/1711 [09:46<57:50,  2.27s/it, loss=51.7595, avg_loss=5028.8677, epoch=0.108, step=184, grad_norm=13675.4736]  [A
-Epoch 1 batches:  11%|█         | 184/1711 [09:46<1:22:57,  3.26s/it, loss=51.7595, avg_loss=5028.8677, epoch=0.108, step=184, grad_norm=13675.4736][A
-Epoch 1 batches:  11%|█         | 184/1711 [09:48<1:22:57,  3.26s/it, loss=12055.4365, avg_loss=5066.8492, epoch=0.108, step=185, grad_norm=24265.9844][A
-Epoch 1 batches:  11%|█         | 185/1711 [09:48<1:12:18,  2.84s/it, loss=12055.4365, avg_loss=5066.8492, epoch=0.108, step=185, grad_norm=24265.9844][A
-Epoch 1 batches:  11%|█         | 185/1711 [09:49<1:12:18,  2.84s/it, loss=4.8805, avg_loss=5039.6343, epoch=0.109, step=186, grad_norm=982.8995]      [A
-Epoch 1 batches:  11%|█         | 186/1711 [09:49<52:22,  2.06s/it, loss=4.8805, avg_loss=5039.6343, epoch=0.109, step=186, grad_norm=982.8995]  [A
-Epoch 1 batches:  11%|█         | 186/1711 [09:55<52:22,  2.06s/it, loss=21272.1699, avg_loss=5126.4393, epoch=0.109, step=187, grad_norm=26784.7324][A
-Epoch 1 batches:  11%|█         | 187/1711 [09:55<1:22:45,  3.26s/it, loss=21272.1699, avg_loss=5126.4393, epoch=0.109, step=187, grad_norm=26784.7324][A
-Epoch 1 batches:  11%|█         | 187/1711 [09:57<1:22:45,  3.26s/it, loss=150.2096, avg_loss=5099.9700, epoch=0.110, step=188, grad_norm=23123.7754]  [A
-Epoch 1 batches:  11%|█         | 188/1711 [09:57<1:19:50,  3.15s/it, loss=150.2096, avg_loss=5099.9700, epoch=0.110, step=188, grad_norm=23123.7754][A
-Epoch 1 batches:  11%|█         | 188/1711 [09:58<1:19:50,  3.15s/it, loss=46.5535, avg_loss=5073.2324, epoch=0.110, step=189, grad_norm=10334.8818] [A
-Epoch 1 batches:  11%|█         | 189/1711 [09:58<57:46,  2.28s/it, loss=46.5535, avg_loss=5073.2324, epoch=0.110, step=189, grad_norm=10334.8818]  [A
-Epoch 1 batches:  11%|█         | 189/1711 [10:03<57:46,  2.28s/it, loss=10360.1025, avg_loss=5101.0580, epoch=0.111, step=190, grad_norm=28084.2891][A
-Epoch 1 batches:  11%|█         | 190/1711 [10:03<1:20:30,  3.18s/it, loss=10360.1025, avg_loss=5101.0580, epoch=0.111, step=190, grad_norm=28084.2891][A
-Epoch 1 batches:  11%|█         | 190/1711 [10:06<1:20:30,  3.18s/it, loss=13076.1084, avg_loss=5142.8122, epoch=0.112, step=191, grad_norm=28609.3555][A
-Epoch 1 batches:  11%|█         | 191/1711 [10:06<1:16:46,  3.03s/it, loss=13076.1084, avg_loss=5142.8122, epoch=0.112, step=191, grad_norm=28609.3555][A
-Epoch 1 batches:  11%|█         | 191/1711 [10:06<1:16:46,  3.03s/it, loss=15753.1318, avg_loss=5198.0743, epoch=0.112, step=192, grad_norm=24196.4336][A
-Epoch 1 batches:  11%|█         | 192/1711 [10:06<55:42,  2.20s/it, loss=15753.1318, avg_loss=5198.0743, epoch=0.112, step=192, grad_norm=24196.4336]  [A
-Epoch 1 batches:  11%|█         | 192/1711 [10:11<55:42,  2.20s/it, loss=395.1277, avg_loss=5173.1885, epoch=0.113, step=193, grad_norm=28803.8066]  [A
-Epoch 1 batches:  11%|█▏        | 193/1711 [10:11<1:20:39,  3.19s/it, loss=395.1277, avg_loss=5173.1885, epoch=0.113, step=193, grad_norm=28803.8066][A
-Epoch 1 batches:  11%|█▏        | 193/1711 [10:13<1:20:39,  3.19s/it, loss=16.3983, avg_loss=5146.6071, epoch=0.113, step=194, grad_norm=4516.7236]  [A
-Epoch 1 batches:  11%|█▏        | 194/1711 [10:13<1:07:42,  2.68s/it, loss=16.3983, avg_loss=5146.6071, epoch=0.113, step=194, grad_norm=4516.7236][A
-Epoch 1 batches:  11%|█▏        | 194/1711 [10:13<1:07:42,  2.68s/it, loss=5518.3481, avg_loss=5148.5135, epoch=0.114, step=195, grad_norm=70537.2422][A
-Epoch 1 batches:  11%|█▏        | 195/1711 [10:13<49:15,  1.95s/it, loss=5518.3481, avg_loss=5148.5135, epoch=0.114, step=195, grad_norm=70537.2422]  [A
-Epoch 1 batches:  11%|█▏        | 195/1711 [10:20<49:15,  1.95s/it, loss=713.1845, avg_loss=5125.8843, epoch=0.115, step=196, grad_norm=31265.9609] [A
-Epoch 1 batches:  11%|█▏        | 196/1711 [10:20<1:23:55,  3.32s/it, loss=713.1845, avg_loss=5125.8843, epoch=0.115, step=196, grad_norm=31265.9609][A
-Epoch 1 batches:  11%|█▏        | 196/1711 [10:21<1:23:55,  3.32s/it, loss=3139.1584, avg_loss=5115.7994, epoch=0.115, step=197, grad_norm=16693.1016][A
-Epoch 1 batches:  12%|█▏        | 197/1711 [10:21<1:06:36,  2.64s/it, loss=3139.1584, avg_loss=5115.7994, epoch=0.115, step=197, grad_norm=16693.1016][A
-Epoch 1 batches:  12%|█▏        | 197/1711 [10:21<1:06:36,  2.64s/it, loss=102.9933, avg_loss=5090.4822, epoch=0.116, step=198, grad_norm=16342.3037] [A
-Epoch 1 batches:  12%|█▏        | 198/1711 [10:21<48:28,  1.92s/it, loss=102.9933, avg_loss=5090.4822, epoch=0.116, step=198, grad_norm=16342.3037]  [A
-Epoch 1 batches:  12%|█▏        | 198/1711 [10:28<48:28,  1.92s/it, loss=3074.5110, avg_loss=5080.3517, epoch=0.116, step=199, grad_norm=41893.9922][A
-Epoch 1 batches:  12%|█▏        | 199/1711 [10:28<1:29:12,  3.54s/it, loss=3074.5110, avg_loss=5080.3517, epoch=0.116, step=199, grad_norm=41893.9922][A
-Epoch 1 batches:  12%|█▏        | 199/1711 [10:30<1:29:12,  3.54s/it, loss=1015.4020, avg_loss=5060.0269, epoch=0.117, step=200, grad_norm=40632.2969][A
-Validation:   0%|          | 0/20 [00:00<?, ?it/s][A
-Validation:   5%|▌         | 1/20 [00:03<00:58,  3.05s/it][A
-Validation:  10%|█         | 2/20 [00:03<00:24,  1.38s/it][A
-Validation:  15%|█▌        | 3/20 [00:03<00:14,  1.21it/s][A
-Validation:  20%|██        | 4/20 [00:04<00:17,  1.08s/it][A
-Validation:  25%|██▌       | 5/20 [00:05<00:13,  1.13it/s][A
-Validation:  30%|███       | 6/20 [00:06<00:12,  1.16it/s][A
-Validation:  35%|███▌      | 7/20 [00:07<00:13,  1.02s/it][A
-Validation:  40%|████      | 8/20 [00:08<00:10,  1.18it/s][A
-Validation:  45%|████▌     | 9/20 [00:08<00:09,  1.20it/s][A
-Validation:  50%|█████     | 10/20 [00:10<00:09,  1.01it/s][A
-Validation:  55%|█████▌    | 11/20 [00:10<00:07,  1.21it/s][A
-Validation:  60%|██████    | 12/20 [00:11<00:06,  1.26it/s][A
-Validation:  65%|██████▌   | 13/20 [00:12<00:05,  1.17it/s][A
-Validation:  70%|███████   | 14/20 [00:12<00:04,  1.44it/s][A
-Validation:  75%|███████▌  | 15/20 [00:13<00:03,  1.61it/s][A
-Validation:  80%|████████  | 16/20 [00:14<00:02,  1.35it/s][A
-Validation:  85%|████████▌ | 17/20 [00:14<00:01,  1.61it/s][A
-Validation:  90%|█████████ | 18/20 [00:15<00:01,  1.48it/s][A
-Validation:  95%|█████████▌| 19/20 [00:16<00:00,  1.48it/s][A
-Validation: 100%|██████████| 20/20 [00:16<00:00,  1.87it/s][A
-                                                           [A
-Epoch 1 batches:  12%|█▏        | 200/1711 [10:49<3:35:23,  8.55s/it, loss=1015.4020, avg_loss=5060.0269, epoch=0.117, step=200, grad_norm=40632.2969][A
-Epoch 1 batches:  12%|█▏        | 200/1711 [10:49<3:35:23,  8.55s/it, loss=1126.2106, avg_loss=5040.4557, epoch=0.117, step=201, grad_norm=20520.8770][A
-Epoch 1 batches:  12%|█▏        | 201/1711 [10:49<2:32:25,  6.06s/it, loss=1126.2106, avg_loss=5040.4557, epoch=0.117, step=201, grad_norm=20520.8770][A
-Epoch 1 batches:  12%|█▏        | 201/1711 [10:49<2:32:25,  6.06s/it, loss=16322.9131, avg_loss=5096.3094, epoch=0.118, step=202, grad_norm=22987.8926][A
-Epoch 1 batches:  12%|█▏        | 202/1711 [10:49<1:48:29,  4.31s/it, loss=16322.9131, avg_loss=5096.3094, epoch=0.118, step=202, grad_norm=22987.8926][A
-Epoch 1 batches:  12%|█▏        | 202/1711 [10:49<1:48:29,  4.31s/it, loss=279.1792, avg_loss=5072.5797, epoch=0.119, step=203, grad_norm=23810.7852]  [A
-Epoch 1 batches:  12%|█▏        | 203/1711 [10:49<1:17:57,  3.10s/it, loss=279.1792, avg_loss=5072.5797, epoch=0.119, step=203, grad_norm=23810.7852][A
-Epoch 1 batches:  12%|█▏        | 203/1711 [10:50<1:17:57,  3.10s/it, loss=1512.1542, avg_loss=5055.1267, epoch=0.119, step=204, grad_norm=50585.8047][A
-Epoch 1 batches:  12%|█▏        | 204/1711 [10:50<56:29,  2.25s/it, loss=1512.1542, avg_loss=5055.1267, epoch=0.119, step=204, grad_norm=50585.8047]  [A
-Epoch 1 batches:  12%|█▏        | 204/1711 [10:50<56:29,  2.25s/it, loss=15195.9219, avg_loss=5104.5939, epoch=0.120, step=205, grad_norm=9224.7354][A
-Epoch 1 batches:  12%|█▏        | 205/1711 [10:50<41:27,  1.65s/it, loss=15195.9219, avg_loss=5104.5939, epoch=0.120, step=205, grad_norm=9224.7354][A
-Epoch 1 batches:  12%|█▏        | 205/1711 [10:50<41:27,  1.65s/it, loss=635.3430, avg_loss=5082.8986, epoch=0.120, step=206, grad_norm=30588.0645] [A
-Epoch 1 batches:  12%|█▏        | 206/1711 [10:50<30:59,  1.24s/it, loss=635.3430, avg_loss=5082.8986, epoch=0.120, step=206, grad_norm=30588.0645][A
-Epoch 1 batches:  12%|█▏        | 206/1711 [10:58<30:59,  1.24s/it, loss=28740.0137, avg_loss=5197.1841, epoch=0.121, step=207, grad_norm=19189.7695][A
-Epoch 1 batches:  12%|█▏        | 207/1711 [10:58<1:19:33,  3.17s/it, loss=28740.0137, avg_loss=5197.1841, epoch=0.121, step=207, grad_norm=19189.7695][A
-Epoch 1 batches:  12%|█▏        | 207/1711 [10:58<1:19:33,  3.17s/it, loss=431.5323, avg_loss=5174.2723, epoch=0.122, step=208, grad_norm=22394.8320]  [A
-Epoch 1 batches:  12%|█▏        | 208/1711 [10:58<57:33,  2.30s/it, loss=431.5323, avg_loss=5174.2723, epoch=0.122, step=208, grad_norm=22394.8320]  [A
-Epoch 1 batches:  12%|█▏        | 208/1711 [10:58<57:33,  2.30s/it, loss=356.0213, avg_loss=5151.2185, epoch=0.122, step=209, grad_norm=23199.9980][A
-Epoch 1 batches:  12%|█▏        | 209/1711 [10:58<42:07,  1.68s/it, loss=356.0213, avg_loss=5151.2185, epoch=0.122, step=209, grad_norm=23199.9980][A
-Epoch 1 batches:  12%|█▏        | 209/1711 [11:06<42:07,  1.68s/it, loss=755.5348, avg_loss=5130.2867, epoch=0.123, step=210, grad_norm=26249.5449][A
-Epoch 1 batches:  12%|█▏        | 210/1711 [11:06<1:28:48,  3.55s/it, loss=755.5348, avg_loss=5130.2867, epoch=0.123, step=210, grad_norm=26249.5449][A
-Epoch 1 batches:  12%|█▏        | 210/1711 [11:07<1:28:48,  3.55s/it, loss=915.8018, avg_loss=5110.3128, epoch=0.123, step=211, grad_norm=56461.7852][A
-Epoch 1 batches:  12%|█▏        | 211/1711 [11:07<1:07:30,  2.70s/it, loss=915.8018, avg_loss=5110.3128, epoch=0.123, step=211, grad_norm=56461.7852][A
-Epoch 1 batches:  12%|█▏        | 211/1711 [11:07<1:07:30,  2.70s/it, loss=54.3569, avg_loss=5086.4640, epoch=0.124, step=212, grad_norm=9952.3555]  [A
-Epoch 1 batches:  12%|█▏        | 212/1711 [11:07<49:08,  1.97s/it, loss=54.3569, avg_loss=5086.4640, epoch=0.124, step=212, grad_norm=9952.3555]  [A
-Epoch 1 batches:  12%|█▏        | 212/1711 [11:15<49:08,  1.97s/it, loss=214.8960, avg_loss=5063.5928, epoch=0.124, step=213, grad_norm=33516.8906][A
-Epoch 1 batches:  12%|█▏        | 213/1711 [11:15<1:33:02,  3.73s/it, loss=214.8960, avg_loss=5063.5928, epoch=0.124, step=213, grad_norm=33516.8906][A
-Epoch 1 batches:  12%|█▏        | 213/1711 [11:15<1:33:02,  3.73s/it, loss=111.9967, avg_loss=5040.4545, epoch=0.125, step=214, grad_norm=20468.9141][A
-Epoch 1 batches:  13%|█▎        | 214/1711 [11:15<1:07:01,  2.69s/it, loss=111.9967, avg_loss=5040.4545, epoch=0.125, step=214, grad_norm=20468.9141][A
-Epoch 1 batches:  13%|█▎        | 214/1711 [11:16<1:07:01,  2.69s/it, loss=772.4660, avg_loss=5020.6034, epoch=0.126, step=215, grad_norm=44684.1602][A
-Epoch 1 batches:  13%|█▎        | 215/1711 [11:16<49:07,  1.97s/it, loss=772.4660, avg_loss=5020.6034, epoch=0.126, step=215, grad_norm=44684.1602]  [A
-Epoch 1 batches:  13%|█▎        | 215/1711 [11:24<49:07,  1.97s/it, loss=10766.1865, avg_loss=5047.2033, epoch=0.126, step=216, grad_norm=50523.6758][A
-Epoch 1 batches:  13%|█▎        | 216/1711 [11:24<1:37:04,  3.90s/it, loss=10766.1865, avg_loss=5047.2033, epoch=0.126, step=216, grad_norm=50523.6758][A
-Epoch 1 batches:  13%|█▎        | 216/1711 [11:24<1:37:04,  3.90s/it, loss=64.9636, avg_loss=5024.2436, epoch=0.127, step=217, grad_norm=10991.0020]   [A
-Epoch 1 batches:  13%|█▎        | 217/1711 [11:24<1:09:57,  2.81s/it, loss=64.9636, avg_loss=5024.2436, epoch=0.127, step=217, grad_norm=10991.0020][A
-Epoch 1 batches:  13%|█▎        | 217/1711 [11:24<1:09:57,  2.81s/it, loss=27.2856, avg_loss=5001.3218, epoch=0.127, step=218, grad_norm=4996.1587] [A
-Epoch 1 batches:  13%|█▎        | 218/1711 [11:24<50:45,  2.04s/it, loss=27.2856, avg_loss=5001.3218, epoch=0.127, step=218, grad_norm=4996.1587]  [A
-Epoch 1 batches:  13%|█▎        | 218/1711 [11:38<50:45,  2.04s/it, loss=808.8403, avg_loss=4982.1781, epoch=0.128, step=219, grad_norm=24444.1406][A
-Epoch 1 batches:  13%|█▎        | 219/1711 [11:38<2:16:54,  5.51s/it, loss=808.8403, avg_loss=4982.1781, epoch=0.128, step=219, grad_norm=24444.1406][A
-Epoch 1 batches:  13%|█▎        | 219/1711 [11:38<2:16:54,  5.51s/it, loss=353.8637, avg_loss=4961.1403, epoch=0.129, step=220, grad_norm=47024.1445][A
-Epoch 1 batches:  13%|█▎        | 220/1711 [11:38<1:37:39,  3.93s/it, loss=353.8637, avg_loss=4961.1403, epoch=0.129, step=220, grad_norm=47024.1445][A
-Epoch 1 batches:  13%|█▎        | 220/1711 [11:39<1:37:39,  3.93s/it, loss=16742.1621, avg_loss=5014.4481, epoch=0.129, step=221, grad_norm=48700.1484][A
-Epoch 1 batches:  13%|█▎        | 221/1711 [11:39<1:10:10,  2.83s/it, loss=16742.1621, avg_loss=5014.4481, epoch=0.129, step=221, grad_norm=48700.1484][A
-Epoch 1 batches:  13%|█▎        | 221/1711 [11:48<1:10:10,  2.83s/it, loss=122.5540, avg_loss=4992.4125, epoch=0.130, step=222, grad_norm=14450.5420]  [A
-Epoch 1 batches:  13%|█▎        | 222/1711 [11:48<2:00:03,  4.84s/it, loss=122.5540, avg_loss=4992.4125, epoch=0.130, step=222, grad_norm=14450.5420][A
-Epoch 1 batches:  13%|█▎        | 222/1711 [11:48<2:00:03,  4.84s/it, loss=538.6387, avg_loss=4972.4404, epoch=0.130, step=223, grad_norm=44144.9570][A
-Epoch 1 batches:  13%|█▎        | 223/1711 [11:48<1:25:46,  3.46s/it, loss=538.6387, avg_loss=4972.4404, epoch=0.130, step=223, grad_norm=44144.9570][A
-Epoch 1 batches:  13%|█▎        | 223/1711 [11:49<1:25:46,  3.46s/it, loss=24.3806, avg_loss=4950.3509, epoch=0.131, step=224, grad_norm=6628.9106]  [A
-Epoch 1 batches:  13%|█▎        | 224/1711 [11:49<1:01:49,  2.49s/it, loss=24.3806, avg_loss=4950.3509, epoch=0.131, step=224, grad_norm=6628.9106][A
-Epoch 1 batches:  13%|█▎        | 224/1711 [11:57<1:01:49,  2.49s/it, loss=1459.8690, avg_loss=4934.8376, epoch=0.132, step=225, grad_norm=30112.3203][A
-Epoch 1 batches:  13%|█▎        | 225/1711 [11:57<1:45:13,  4.25s/it, loss=1459.8690, avg_loss=4934.8376, epoch=0.132, step=225, grad_norm=30112.3203][A
-Epoch 1 batches:  13%|█▎        | 225/1711 [11:57<1:45:13,  4.25s/it, loss=40.2275, avg_loss=4913.1801, epoch=0.132, step=226, grad_norm=12646.4346]  [A
-Epoch 1 batches:  13%|█▎        | 226/1711 [11:57<1:15:31,  3.05s/it, loss=40.2275, avg_loss=4913.1801, epoch=0.132, step=226, grad_norm=12646.4346][A
-Epoch 1 batches:  13%|█▎        | 226/1711 [11:57<1:15:31,  3.05s/it, loss=15102.0889, avg_loss=4958.0651, epoch=0.133, step=227, grad_norm=41714.4336][A
-Epoch 1 batches:  13%|█▎        | 227/1711 [11:57<54:46,  2.21s/it, loss=15102.0889, avg_loss=4958.0651, epoch=0.133, step=227, grad_norm=41714.4336]  [A
-Epoch 1 batches:  13%|█▎        | 227/1711 [12:06<54:46,  2.21s/it, loss=488.9908, avg_loss=4938.4639, epoch=0.133, step=228, grad_norm=26662.8730]  [A
-Epoch 1 batches:  13%|█▎        | 228/1711 [12:06<1:39:33,  4.03s/it, loss=488.9908, avg_loss=4938.4639, epoch=0.133, step=228, grad_norm=26662.8730][A
-Epoch 1 batches:  13%|█▎        | 228/1711 [12:06<1:39:33,  4.03s/it, loss=74.4990, avg_loss=4917.2239, epoch=0.134, step=229, grad_norm=15136.6426] [A
-Epoch 1 batches:  13%|█▎        | 229/1711 [12:06<1:11:36,  2.90s/it, loss=74.4990, avg_loss=4917.2239, epoch=0.134, step=229, grad_norm=15136.6426][A
-Epoch 1 batches:  13%|█▎        | 229/1711 [12:06<1:11:36,  2.90s/it, loss=109.0371, avg_loss=4896.3187, epoch=0.134, step=230, grad_norm=10584.1377][A
-Epoch 1 batches:  13%|█▎        | 230/1711 [12:06<51:59,  2.11s/it, loss=109.0371, avg_loss=4896.3187, epoch=0.134, step=230, grad_norm=10584.1377]  [A
-Epoch 1 batches:  13%|█▎        | 230/1711 [12:14<51:59,  2.11s/it, loss=17542.9082, avg_loss=4951.0659, epoch=0.135, step=231, grad_norm=21337.8789][A
-Epoch 1 batches:  14%|█▎        | 231/1711 [12:14<1:31:54,  3.73s/it, loss=17542.9082, avg_loss=4951.0659, epoch=0.135, step=231, grad_norm=21337.8789][A
-Epoch 1 batches:  14%|█▎        | 231/1711 [12:14<1:31:54,  3.73s/it, loss=23349.2383, avg_loss=5030.3683, epoch=0.136, step=232, grad_norm=25618.6191][A
-Epoch 1 batches:  14%|█▎        | 232/1711 [12:14<1:06:10,  2.68s/it, loss=23349.2383, avg_loss=5030.3683, epoch=0.136, step=232, grad_norm=25618.6191][A
-Epoch 1 batches:  14%|█▎        | 232/1711 [12:14<1:06:10,  2.68s/it, loss=16597.1230, avg_loss=5080.0111, epoch=0.136, step=233, grad_norm=23171.3555][A
-Epoch 1 batches:  14%|█▎        | 233/1711 [12:14<48:13,  1.96s/it, loss=16597.1230, avg_loss=5080.0111, epoch=0.136, step=233, grad_norm=23171.3555]  [A
-Epoch 1 batches:  14%|█▎        | 233/1711 [12:21<48:13,  1.96s/it, loss=24.5622, avg_loss=5058.4066, epoch=0.137, step=234, grad_norm=9597.7148]    [A
-Epoch 1 batches:  14%|█▎        | 234/1711 [12:21<1:21:53,  3.33s/it, loss=24.5622, avg_loss=5058.4066, epoch=0.137, step=234, grad_norm=9597.7148][A
-Epoch 1 batches:  14%|█▎        | 234/1711 [12:21<1:21:53,  3.33s/it, loss=4546.6636, avg_loss=5056.2290, epoch=0.137, step=235, grad_norm=37014.5586][A
-Epoch 1 batches:  14%|█▎        | 235/1711 [12:21<59:14,  2.41s/it, loss=4546.6636, avg_loss=5056.2290, epoch=0.137, step=235, grad_norm=37014.5586]  [A
-Epoch 1 batches:  14%|█▎        | 235/1711 [12:21<59:14,  2.41s/it, loss=38.3028, avg_loss=5034.9666, epoch=0.138, step=236, grad_norm=11810.8145]  [A
-Epoch 1 batches:  14%|█▍        | 236/1711 [12:21<43:19,  1.76s/it, loss=38.3028, avg_loss=5034.9666, epoch=0.138, step=236, grad_norm=11810.8145][A
-Epoch 1 batches:  14%|█▍        | 236/1711 [12:29<43:19,  1.76s/it, loss=2472.3223, avg_loss=5024.1537, epoch=0.139, step=237, grad_norm=85827.7031][A
-Epoch 1 batches:  14%|█▍        | 237/1711 [12:29<1:28:32,  3.60s/it, loss=2472.3223, avg_loss=5024.1537, epoch=0.139, step=237, grad_norm=85827.7031][A
-Epoch 1 batches:  14%|█▍        | 237/1711 [12:30<1:28:32,  3.60s/it, loss=16888.9863, avg_loss=5074.0059, epoch=0.139, step=238, grad_norm=44577.4805][A
-Epoch 1 batches:  14%|█▍        | 238/1711 [12:30<1:08:40,  2.80s/it, loss=16888.9863, avg_loss=5074.0059, epoch=0.139, step=238, grad_norm=44577.4805][A
-Epoch 1 batches:  14%|█▍        | 238/1711 [12:30<1:08:40,  2.80s/it, loss=535.1375, avg_loss=5055.0149, epoch=0.140, step=239, grad_norm=36394.4648]  [A
-Epoch 1 batches:  14%|█▍        | 239/1711 [12:30<50:06,  2.04s/it, loss=535.1375, avg_loss=5055.0149, epoch=0.140, step=239, grad_norm=36394.4648]  [A
-Epoch 1 batches:  14%|█▍        | 239/1711 [12:37<50:06,  2.04s/it, loss=80.0380, avg_loss=5034.2858, epoch=0.140, step=240, grad_norm=18865.4375] [A
-Epoch 1 batches:  14%|█▍        | 240/1711 [12:37<1:22:43,  3.37s/it, loss=80.0380, avg_loss=5034.2858, epoch=0.140, step=240, grad_norm=18865.4375][A
-Epoch 1 batches:  14%|█▍        | 240/1711 [12:38<1:22:43,  3.37s/it, loss=18352.7324, avg_loss=5089.5491, epoch=0.141, step=241, grad_norm=20612.0117][A
-Epoch 1 batches:  14%|█▍        | 241/1711 [12:38<1:03:39,  2.60s/it, loss=18352.7324, avg_loss=5089.5491, epoch=0.141, step=241, grad_norm=20612.0117][A
-Epoch 1 batches:  14%|█▍        | 241/1711 [12:38<1:03:39,  2.60s/it, loss=1991.4833, avg_loss=5076.7471, epoch=0.141, step=242, grad_norm=61056.3477] [A
-Epoch 1 batches:  14%|█▍        | 242/1711 [12:38<46:27,  1.90s/it, loss=1991.4833, avg_loss=5076.7471, epoch=0.141, step=242, grad_norm=61056.3477]  [A
-Epoch 1 batches:  14%|█▍        | 242/1711 [12:45<46:27,  1.90s/it, loss=18.6876, avg_loss=5055.9321, epoch=0.142, step=243, grad_norm=8838.5234]   [A
-Epoch 1 batches:  14%|█▍        | 243/1711 [12:45<1:27:16,  3.57s/it, loss=18.6876, avg_loss=5055.9321, epoch=0.142, step=243, grad_norm=8838.5234][A
-Epoch 1 batches:  14%|█▍        | 243/1711 [12:47<1:27:16,  3.57s/it, loss=2143.2832, avg_loss=5043.9950, epoch=0.143, step=244, grad_norm=41961.6875][A
-Epoch 1 batches:  14%|█▍        | 244/1711 [12:47<1:13:10,  2.99s/it, loss=2143.2832, avg_loss=5043.9950, epoch=0.143, step=244, grad_norm=41961.6875][A
-Epoch 1 batches:  14%|█▍        | 244/1711 [12:47<1:13:10,  2.99s/it, loss=585.8254, avg_loss=5025.7984, epoch=0.143, step=245, grad_norm=31873.2246] [A
-Epoch 1 batches:  14%|█▍        | 245/1711 [12:47<53:06,  2.17s/it, loss=585.8254, avg_loss=5025.7984, epoch=0.143, step=245, grad_norm=31873.2246]  [A
-Epoch 1 batches:  14%|█▍        | 245/1711 [12:53<53:06,  2.17s/it, loss=7599.7886, avg_loss=5036.2618, epoch=0.144, step=246, grad_norm=25117.2012][A
-Epoch 1 batches:  14%|█▍        | 246/1711 [12:53<1:20:46,  3.31s/it, loss=7599.7886, avg_loss=5036.2618, epoch=0.144, step=246, grad_norm=25117.2012][A
-Epoch 1 batches:  14%|█▍        | 246/1711 [12:55<1:20:46,  3.31s/it, loss=494.9973, avg_loss=5017.8761, epoch=0.144, step=247, grad_norm=22204.9668] [A
-Epoch 1 batches:  14%|█▍        | 247/1711 [12:55<1:08:29,  2.81s/it, loss=494.9973, avg_loss=5017.8761, epoch=0.144, step=247, grad_norm=22204.9668][A
-Epoch 1 batches:  14%|█▍        | 247/1711 [12:55<1:08:29,  2.81s/it, loss=683.2417, avg_loss=5000.3977, epoch=0.145, step=248, grad_norm=29023.1660][A
-Epoch 1 batches:  14%|█▍        | 248/1711 [12:55<49:45,  2.04s/it, loss=683.2417, avg_loss=5000.3977, epoch=0.145, step=248, grad_norm=29023.1660]  [A
-Epoch 1 batches:  14%|█▍        | 248/1711 [13:01<49:45,  2.04s/it, loss=147.1153, avg_loss=4980.9066, epoch=0.146, step=249, grad_norm=22930.1133][A
-Epoch 1 batches:  15%|█▍        | 249/1711 [13:01<1:20:14,  3.29s/it, loss=147.1153, avg_loss=4980.9066, epoch=0.146, step=249, grad_norm=22930.1133][A
-Epoch 1 batches:  15%|█▍        | 249/1711 [13:04<1:20:14,  3.29s/it, loss=29.5849, avg_loss=4961.1013, epoch=0.146, step=250, grad_norm=8317.3867]  [A
-Validation:   0%|          | 0/20 [00:00<?, ?it/s][A
-Validation:   5%|▌         | 1/20 [00:02<00:50,  2.68s/it][A
-Validation:  10%|█         | 2/20 [00:02<00:22,  1.23s/it][A
-Validation:  15%|█▌        | 3/20 [00:03<00:12,  1.33it/s][A
-Validation:  20%|██        | 4/20 [00:04<00:16,  1.06s/it][A
-Validation:  25%|██▌       | 5/20 [00:04<00:11,  1.31it/s][A
-Validation:  30%|███       | 6/20 [00:05<00:10,  1.37it/s][A
-Validation:  35%|███▌      | 7/20 [00:07<00:13,  1.07s/it][A
-Validation:  40%|████      | 8/20 [00:07<00:09,  1.27it/s][A
-Validation:  45%|████▌     | 9/20 [00:08<00:08,  1.35it/s][A
-Validation:  50%|█████     | 10/20 [00:09<00:10,  1.05s/it][A
-Validation:  55%|█████▌    | 11/20 [00:10<00:07,  1.28it/s][A
-Validation:  60%|██████    | 12/20 [00:10<00:05,  1.43it/s][A
-Validation:  65%|██████▌   | 13/20 [00:12<00:06,  1.05it/s][A
-Validation:  70%|███████   | 14/20 [00:12<00:04,  1.41it/s][A
-Validation:  75%|███████▌  | 15/20 [00:12<00:03,  1.51it/s][A
-Validation:  80%|████████  | 16/20 [00:14<00:03,  1.15it/s][A
-Validation:  85%|████████▌ | 17/20 [00:14<00:02,  1.48it/s][A
-Validation:  90%|█████████ | 18/20 [00:14<00:01,  1.60it/s][A
-Validation:  95%|█████████▌| 19/20 [00:15<00:00,  1.41it/s][A
-Validation: 100%|██████████| 20/20 [00:16<00:00,  1.73it/s][A
-                                                           [A
-Epoch 1 batches:  15%|█▍        | 250/1711 [13:22<3:27:12,  8.51s/it, loss=29.5849, avg_loss=4961.1013, epoch=0.146, step=250, grad_norm=8317.3867][A
-Epoch 1 batches:  15%|█▍        | 250/1711 [13:22<3:27:12,  8.51s/it, loss=701.0529, avg_loss=4944.1290, epoch=0.147, step=251, grad_norm=10650.6641][A
-Epoch 1 batches:  15%|█▍        | 251/1711 [13:22<2:26:40,  6.03s/it, loss=701.0529, avg_loss=4944.1290, epoch=0.147, step=251, grad_norm=10650.6641][A
-Epoch 1 batches:  15%|█▍        | 251/1711 [13:23<2:26:40,  6.03s/it, loss=7656.0479, avg_loss=4954.8906, epoch=0.147, step=252, grad_norm=38723.0859][A
-Epoch 1 batches:  15%|█▍        | 252/1711 [13:23<1:44:26,  4.29s/it, loss=7656.0479, avg_loss=4954.8906, epoch=0.147, step=252, grad_norm=38723.0859][A
-Epoch 1 batches:  15%|█▍        | 252/1711 [13:23<1:44:26,  4.29s/it, loss=206.4969, avg_loss=4936.1222, epoch=0.148, step=253, grad_norm=30530.3223] [A
-Epoch 1 batches:  15%|█▍        | 253/1711 [13:23<1:15:00,  3.09s/it, loss=206.4969, avg_loss=4936.1222, epoch=0.148, step=253, grad_norm=30530.3223][A
-Epoch 1 batches:  15%|█▍        | 253/1711 [13:23<1:15:00,  3.09s/it, loss=1451.5934, avg_loss=4922.4036, epoch=0.148, step=254, grad_norm=27404.3145][A
-Epoch 1 batches:  15%|█▍        | 254/1711 [13:23<54:22,  2.24s/it, loss=1451.5934, avg_loss=4922.4036, epoch=0.148, step=254, grad_norm=27404.3145]  [A
-Epoch 1 batches:  15%|█▍        | 254/1711 [13:23<54:22,  2.24s/it, loss=8769.3184, avg_loss=4937.4896, epoch=0.149, step=255, grad_norm=19274.5195][A
-Epoch 1 batches:  15%|█▍        | 255/1711 [13:23<39:50,  1.64s/it, loss=8769.3184, avg_loss=4937.4896, epoch=0.149, step=255, grad_norm=19274.5195][A
-Epoch 1 batches:  15%|█▍        | 255/1711 [13:24<39:50,  1.64s/it, loss=25.4714, avg_loss=4918.3020, epoch=0.150, step=256, grad_norm=5911.8774]   [A
-Epoch 1 batches:  15%|█▍        | 256/1711 [13:24<29:44,  1.23s/it, loss=25.4714, avg_loss=4918.3020, epoch=0.150, step=256, grad_norm=5911.8774][A
-Epoch 1 batches:  15%|█▍        | 256/1711 [13:31<29:44,  1.23s/it, loss=729.1818, avg_loss=4902.0019, epoch=0.150, step=257, grad_norm=23785.9141][A
-Epoch 1 batches:  15%|█▌        | 257/1711 [13:31<1:12:46,  3.00s/it, loss=729.1818, avg_loss=4902.0019, epoch=0.150, step=257, grad_norm=23785.9141][A
-Epoch 1 batches:  15%|█▌        | 257/1711 [13:31<1:12:46,  3.00s/it, loss=1048.1818, avg_loss=4887.0646, epoch=0.151, step=258, grad_norm=36064.2305][A
-Epoch 1 batches:  15%|█▌        | 258/1711 [13:31<52:49,  2.18s/it, loss=1048.1818, avg_loss=4887.0646, epoch=0.151, step=258, grad_norm=36064.2305]  [A
-Epoch 1 batches:  15%|█▌        | 258/1711 [13:31<52:49,  2.18s/it, loss=198.9449, avg_loss=4868.9638, epoch=0.151, step=259, grad_norm=16761.9551] [A
-Epoch 1 batches:  15%|█▌        | 259/1711 [13:31<39:27,  1.63s/it, loss=198.9449, avg_loss=4868.9638, epoch=0.151, step=259, grad_norm=16761.9551][A
-Epoch 1 batches:  15%|█▌        | 259/1711 [13:39<39:27,  1.63s/it, loss=352.4873, avg_loss=4851.5927, epoch=0.152, step=260, grad_norm=26963.0137][A
-Epoch 1 batches:  15%|█▌        | 260/1711 [13:39<1:20:36,  3.33s/it, loss=352.4873, avg_loss=4851.5927, epoch=0.152, step=260, grad_norm=26963.0137][A
-Epoch 1 batches:  15%|█▌        | 260/1711 [13:39<1:20:36,  3.33s/it, loss=98.5236, avg_loss=4833.3817, epoch=0.153, step=261, grad_norm=19431.9902] [A
-Epoch 1 batches:  15%|█▌        | 261/1711 [13:39<58:12,  2.41s/it, loss=98.5236, avg_loss=4833.3817, epoch=0.153, step=261, grad_norm=19431.9902]  [A
-Epoch 1 batches:  15%|█▌        | 261/1711 [13:40<58:12,  2.41s/it, loss=8695.8721, avg_loss=4848.1241, epoch=0.153, step=262, grad_norm=76796.5156][A
-Epoch 1 batches:  15%|█▌        | 262/1711 [13:40<46:03,  1.91s/it, loss=8695.8721, avg_loss=4848.1241, epoch=0.153, step=262, grad_norm=76796.5156][A
-Epoch 1 batches:  15%|█▌        | 262/1711 [13:47<46:03,  1.91s/it, loss=6397.8213, avg_loss=4854.0164, epoch=0.154, step=263, grad_norm=20721.9922][A
-Epoch 1 batches:  15%|█▌        | 263/1711 [13:47<1:24:43,  3.51s/it, loss=6397.8213, avg_loss=4854.0164, epoch=0.154, step=263, grad_norm=20721.9922][A
-Epoch 1 batches:  15%|█▌        | 263/1711 [13:47<1:24:43,  3.51s/it, loss=95.4613, avg_loss=4835.9916, epoch=0.154, step=264, grad_norm=12628.7061]  [A
-Epoch 1 batches:  15%|█▌        | 264/1711 [13:47<1:01:33,  2.55s/it, loss=95.4613, avg_loss=4835.9916, epoch=0.154, step=264, grad_norm=12628.7061][A
-Epoch 1 batches:  15%|█▌        | 264/1711 [13:48<1:01:33,  2.55s/it, loss=11899.7031, avg_loss=4862.6471, epoch=0.155, step=265, grad_norm=20667.2695][A
-Epoch 1 batches:  15%|█▌        | 265/1711 [13:48<50:14,  2.08s/it, loss=11899.7031, avg_loss=4862.6471, epoch=0.155, step=265, grad_norm=20667.2695]  [A
-Epoch 1 batches:  15%|█▌        | 265/1711 [13:56<50:14,  2.08s/it, loss=51.8420, avg_loss=4844.5614, epoch=0.155, step=266, grad_norm=9973.6865]    [A
-Epoch 1 batches:  16%|█▌        | 266/1711 [13:56<1:32:11,  3.83s/it, loss=51.8420, avg_loss=4844.5614, epoch=0.155, step=266, grad_norm=9973.6865][A
-Epoch 1 batches:  16%|█▌        | 266/1711 [13:56<1:32:11,  3.83s/it, loss=12156.1787, avg_loss=4871.9457, epoch=0.156, step=267, grad_norm=31415.7656][A
-Epoch 1 batches:  16%|█▌        | 267/1711 [13:56<1:06:20,  2.76s/it, loss=12156.1787, avg_loss=4871.9457, epoch=0.156, step=267, grad_norm=31415.7656][A
-Epoch 1 batches:  16%|█▌        | 267/1711 [13:57<1:06:20,  2.76s/it, loss=36.6624, avg_loss=4853.9036, epoch=0.157, step=268, grad_norm=11040.6357]   [A
-Epoch 1 batches:  16%|█▌        | 268/1711 [13:57<50:04,  2.08s/it, loss=36.6624, avg_loss=4853.9036, epoch=0.157, step=268, grad_norm=11040.6357]  [A
-Epoch 1 batches:  16%|█▌        | 268/1711 [14:06<50:04,  2.08s/it, loss=883.7061, avg_loss=4839.1445, epoch=0.157, step=269, grad_norm=49646.1211][A
-Epoch 1 batches:  16%|█▌        | 269/1711 [14:06<1:39:58,  4.16s/it, loss=883.7061, avg_loss=4839.1445, epoch=0.157, step=269, grad_norm=49646.1211][A
-Epoch 1 batches:  16%|█▌        | 269/1711 [14:06<1:39:58,  4.16s/it, loss=12044.7754, avg_loss=4865.8321, epoch=0.158, step=270, grad_norm=22945.8730][A
-Epoch 1 batches:  16%|█▌        | 270/1711 [14:06<1:11:36,  2.98s/it, loss=12044.7754, avg_loss=4865.8321, epoch=0.158, step=270, grad_norm=22945.8730][A
-Epoch 1 batches:  16%|█▌        | 270/1711 [14:06<1:11:36,  2.98s/it, loss=362.1883, avg_loss=4849.2134, epoch=0.158, step=271, grad_norm=35652.5039]  [A
-Epoch 1 batches:  16%|█▌        | 271/1711 [14:06<51:58,  2.17s/it, loss=362.1883, avg_loss=4849.2134, epoch=0.158, step=271, grad_norm=35652.5039]  [A
-Epoch 1 batches:  16%|█▌        | 271/1711 [14:18<51:58,  2.17s/it, loss=271.8306, avg_loss=4832.3848, epoch=0.159, step=272, grad_norm=19091.3848][A
-Epoch 1 batches:  16%|█▌        | 272/1711 [14:18<1:58:20,  4.93s/it, loss=271.8306, avg_loss=4832.3848, epoch=0.159, step=272, grad_norm=19091.3848][A
-Epoch 1 batches:  16%|█▌        | 272/1711 [14:20<1:58:20,  4.93s/it, loss=76.1823, avg_loss=4814.9628, epoch=0.160, step=273, grad_norm=10831.8047] [A
-Epoch 1 batches:  16%|█▌        | 273/1711 [14:20<1:38:08,  4.09s/it, loss=76.1823, avg_loss=4814.9628, epoch=0.160, step=273, grad_norm=10831.8047][A
-Epoch 1 batches:  16%|█▌        | 273/1711 [14:20<1:38:08,  4.09s/it, loss=22394.2871, avg_loss=4879.1210, epoch=0.160, step=274, grad_norm=74851.6016][A
-Epoch 1 batches:  16%|█▌        | 274/1711 [14:20<1:10:33,  2.95s/it, loss=22394.2871, avg_loss=4879.1210, epoch=0.160, step=274, grad_norm=74851.6016][A
-Epoch 1 batches:  16%|█▌        | 274/1711 [14:27<1:10:33,  2.95s/it, loss=570.2328, avg_loss=4863.4523, epoch=0.161, step=275, grad_norm=32164.9570]  [A
-Epoch 1 batches:  16%|█▌        | 275/1711 [14:27<1:42:02,  4.26s/it, loss=570.2328, avg_loss=4863.4523, epoch=0.161, step=275, grad_norm=32164.9570][A
-Epoch 1 batches:  16%|█▌        | 275/1711 [14:28<1:42:02,  4.26s/it, loss=213.3822, avg_loss=4846.6042, epoch=0.161, step=276, grad_norm=25994.3848][A
-Epoch 1 batches:  16%|█▌        | 276/1711 [14:28<1:13:09,  3.06s/it, loss=213.3822, avg_loss=4846.6042, epoch=0.161, step=276, grad_norm=25994.3848][A
-Epoch 1 batches:  16%|█▌        | 276/1711 [14:28<1:13:09,  3.06s/it, loss=191.4472, avg_loss=4829.7986, epoch=0.162, step=277, grad_norm=30274.6055][A
-Epoch 1 batches:  16%|█▌        | 277/1711 [14:28<53:02,  2.22s/it, loss=191.4472, avg_loss=4829.7986, epoch=0.162, step=277, grad_norm=30274.6055]  [A
-Epoch 1 batches:  16%|█▌        | 277/1711 [14:36<53:02,  2.22s/it, loss=7164.2783, avg_loss=4838.1960, epoch=0.162, step=278, grad_norm=69744.3672][A
-Epoch 1 batches:  16%|█▌        | 278/1711 [14:36<1:32:05,  3.86s/it, loss=7164.2783, avg_loss=4838.1960, epoch=0.162, step=278, grad_norm=69744.3672][A
-Epoch 1 batches:  16%|█▌        | 278/1711 [14:36<1:32:05,  3.86s/it, loss=4893.4731, avg_loss=4838.3941, epoch=0.163, step=279, grad_norm=55717.6758][A
-Epoch 1 batches:  16%|█▋        | 279/1711 [14:36<1:06:17,  2.78s/it, loss=4893.4731, avg_loss=4838.3941, epoch=0.163, step=279, grad_norm=55717.6758][A
-Epoch 1 batches:  16%|█▋        | 279/1711 [14:36<1:06:17,  2.78s/it, loss=814.2830, avg_loss=4824.0223, epoch=0.164, step=280, grad_norm=43789.5742] [A
-Epoch 1 batches:  16%|█▋        | 280/1711 [14:36<48:16,  2.02s/it, loss=814.2830, avg_loss=4824.0223, epoch=0.164, step=280, grad_norm=43789.5742]  [A
-Epoch 1 batches:  16%|█▋        | 280/1711 [14:42<48:16,  2.02s/it, loss=81.4638, avg_loss=4807.1448, epoch=0.164, step=281, grad_norm=19635.5605] [A
-Epoch 1 batches:  16%|█▋        | 281/1711 [14:42<1:18:39,  3.30s/it, loss=81.4638, avg_loss=4807.1448, epoch=0.164, step=281, grad_norm=19635.5605][A
-Epoch 1 batches:  16%|█▋        | 281/1711 [14:43<1:18:39,  3.30s/it, loss=114.6843, avg_loss=4790.5049, epoch=0.165, step=282, grad_norm=21666.0254][A
-Epoch 1 batches:  16%|█▋        | 282/1711 [14:43<1:01:11,  2.57s/it, loss=114.6843, avg_loss=4790.5049, epoch=0.165, step=282, grad_norm=21666.0254][A
-Epoch 1 batches:  16%|█▋        | 282/1711 [14:44<1:01:11,  2.57s/it, loss=8367.3936, avg_loss=4803.1441, epoch=0.165, step=283, grad_norm=23667.7773][A
-Epoch 1 batches:  17%|█▋        | 283/1711 [14:44<44:35,  1.87s/it, loss=8367.3936, avg_loss=4803.1441, epoch=0.165, step=283, grad_norm=23667.7773]  [A
-Epoch 1 batches:  17%|█▋        | 283/1711 [14:52<44:35,  1.87s/it, loss=53.5877, avg_loss=4786.4203, epoch=0.166, step=284, grad_norm=10014.7842]  [A
-Epoch 1 batches:  17%|█▋        | 284/1711 [14:52<1:30:03,  3.79s/it, loss=53.5877, avg_loss=4786.4203, epoch=0.166, step=284, grad_norm=10014.7842][A
-Epoch 1 batches:  17%|█▋        | 284/1711 [14:52<1:30:03,  3.79s/it, loss=10812.8857, avg_loss=4807.5658, epoch=0.167, step=285, grad_norm=24311.7578][A
-Epoch 1 batches:  17%|█▋        | 285/1711 [14:52<1:04:57,  2.73s/it, loss=10812.8857, avg_loss=4807.5658, epoch=0.167, step=285, grad_norm=24311.7578][A
-Epoch 1 batches:  17%|█▋        | 285/1711 [14:52<1:04:57,  2.73s/it, loss=7333.2378, avg_loss=4816.3968, epoch=0.167, step=286, grad_norm=36371.9062] [A
-Epoch 1 batches:  17%|█▋        | 286/1711 [14:52<47:10,  1.99s/it, loss=7333.2378, avg_loss=4816.3968, epoch=0.167, step=286, grad_norm=36371.9062]  [A
-Epoch 1 batches:  17%|█▋        | 286/1711 [14:59<47:10,  1.99s/it, loss=270.7922, avg_loss=4800.5585, epoch=0.168, step=287, grad_norm=24564.3418] [A
-Epoch 1 batches:  17%|█▋        | 287/1711 [14:59<1:20:02,  3.37s/it, loss=270.7922, avg_loss=4800.5585, epoch=0.168, step=287, grad_norm=24564.3418][A
-Epoch 1 batches:  17%|█▋        | 287/1711 [14:59<1:20:02,  3.37s/it, loss=2780.7798, avg_loss=4793.5454, epoch=0.168, step=288, grad_norm=22089.2773][A
-Epoch 1 batches:  17%|█▋        | 288/1711 [14:59<57:44,  2.43s/it, loss=2780.7798, avg_loss=4793.5454, epoch=0.168, step=288, grad_norm=22089.2773]  [A
-Epoch 1 batches:  17%|█▋        | 288/1711 [14:59<57:44,  2.43s/it, loss=155.4735, avg_loss=4777.4967, epoch=0.169, step=289, grad_norm=14352.8447] [A
-Epoch 1 batches:  17%|█▋        | 289/1711 [14:59<42:11,  1.78s/it, loss=155.4735, avg_loss=4777.4967, epoch=0.169, step=289, grad_norm=14352.8447][A
-Epoch 1 batches:  17%|█▋        | 289/1711 [15:09<42:11,  1.78s/it, loss=1886.9866, avg_loss=4767.5294, epoch=0.169, step=290, grad_norm=29866.2891][A
-Epoch 1 batches:  17%|█▋        | 290/1711 [15:09<1:37:39,  4.12s/it, loss=1886.9866, avg_loss=4767.5294, epoch=0.169, step=290, grad_norm=29866.2891][A
-Epoch 1 batches:  17%|█▋        | 290/1711 [15:09<1:37:39,  4.12s/it, loss=9130.9404, avg_loss=4782.5239, epoch=0.170, step=291, grad_norm=53206.2539][A
-Epoch 1 batches:  17%|█▋        | 291/1711 [15:09<1:10:04,  2.96s/it, loss=9130.9404, avg_loss=4782.5239, epoch=0.170, step=291, grad_norm=53206.2539][A
-Epoch 1 batches:  17%|█▋        | 291/1711 [15:10<1:10:04,  2.96s/it, loss=135.5116, avg_loss=4766.6095, epoch=0.171, step=292, grad_norm=26981.9141] [A
-Epoch 1 batches:  17%|█▋        | 292/1711 [15:10<50:48,  2.15s/it, loss=135.5116, avg_loss=4766.6095, epoch=0.171, step=292, grad_norm=26981.9141]  [A
-Epoch 1 batches:  17%|█▋        | 292/1711 [15:17<50:48,  2.15s/it, loss=12960.2568, avg_loss=4794.5742, epoch=0.171, step=293, grad_norm=19842.8730][A
-Epoch 1 batches:  17%|█▋        | 293/1711 [15:17<1:24:58,  3.60s/it, loss=12960.2568, avg_loss=4794.5742, epoch=0.171, step=293, grad_norm=19842.8730][A
-Epoch 1 batches:  17%|█▋        | 293/1711 [15:17<1:24:58,  3.60s/it, loss=105.6663, avg_loss=4778.6255, epoch=0.172, step=294, grad_norm=15518.6904]  [A
-Epoch 1 batches:  17%|█▋        | 294/1711 [15:17<1:01:11,  2.59s/it, loss=105.6663, avg_loss=4778.6255, epoch=0.172, step=294, grad_norm=15518.6904][A
-Epoch 1 batches:  17%|█▋        | 294/1711 [15:17<1:01:11,  2.59s/it, loss=869.6406, avg_loss=4765.3747, epoch=0.172, step=295, grad_norm=69765.5469][A
-Epoch 1 batches:  17%|█▋        | 295/1711 [15:17<44:27,  1.88s/it, loss=869.6406, avg_loss=4765.3747, epoch=0.172, step=295, grad_norm=69765.5469]  [A
-Epoch 1 batches:  17%|█▋        | 295/1711 [15:24<44:27,  1.88s/it, loss=410.2718, avg_loss=4750.6615, epoch=0.173, step=296, grad_norm=53276.2578][A
-Epoch 1 batches:  17%|█▋        | 296/1711 [15:24<1:23:16,  3.53s/it, loss=410.2718, avg_loss=4750.6615, epoch=0.173, step=296, grad_norm=53276.2578][A
-Epoch 1 batches:  17%|█▋        | 296/1711 [15:25<1:23:16,  3.53s/it, loss=1722.9393, avg_loss=4740.4672, epoch=0.174, step=297, grad_norm=13800.5615][A
-Epoch 1 batches:  17%|█▋        | 297/1711 [15:25<1:00:00,  2.55s/it, loss=1722.9393, avg_loss=4740.4672, epoch=0.174, step=297, grad_norm=13800.5615][A
-Epoch 1 batches:  17%|█▋        | 297/1711 [15:25<1:00:00,  2.55s/it, loss=32.0970, avg_loss=4724.6673, epoch=0.174, step=298, grad_norm=6799.2559]   [A
-Epoch 1 batches:  17%|█▋        | 298/1711 [15:25<43:43,  1.86s/it, loss=32.0970, avg_loss=4724.6673, epoch=0.174, step=298, grad_norm=6799.2559]  [A
-Epoch 1 batches:  17%|█▋        | 298/1711 [15:32<43:43,  1.86s/it, loss=279.2654, avg_loss=4709.7997, epoch=0.175, step=299, grad_norm=19633.7109][A
-Epoch 1 batches:  17%|█▋        | 299/1711 [15:32<1:18:02,  3.32s/it, loss=279.2654, avg_loss=4709.7997, epoch=0.175, step=299, grad_norm=19633.7109][A
-Epoch 1 batches:  17%|█▋        | 299/1711 [15:32<1:18:02,  3.32s/it, loss=13.3355, avg_loss=4694.1448, epoch=0.175, step=300, grad_norm=4777.1875]  [A
-Validation:   0%|          | 0/20 [00:00<?, ?it/s][A
-Validation:   5%|▌         | 1/20 [00:02<00:48,  2.54s/it][A
-Validation:  10%|█         | 2/20 [00:02<00:20,  1.15s/it][A
-Validation:  15%|█▌        | 3/20 [00:02<00:12,  1.41it/s][A
-Validation:  20%|██        | 4/20 [00:04<00:18,  1.13s/it][A
-Validation:  25%|██▌       | 5/20 [00:04<00:12,  1.20it/s][A
-Validation:  30%|███       | 6/20 [00:06<00:12,  1.11it/s][A
-Validation:  35%|███▌      | 7/20 [00:07<00:13,  1.07s/it][A
-Validation:  40%|████      | 8/20 [00:07<00:09,  1.26it/s][A
-Validation:  45%|████▌     | 9/20 [00:08<00:08,  1.25it/s][A
-Validation:  50%|█████     | 10/20 [00:09<00:10,  1.02s/it][A
-Validation:  55%|█████▌    | 11/20 [00:10<00:07,  1.23it/s][A
-Validation:  60%|██████    | 12/20 [00:11<00:06,  1.22it/s][A
-Validation:  65%|██████▌   | 13/20 [00:12<00:05,  1.19it/s][A
-Validation:  70%|███████   | 14/20 [00:12<00:04,  1.49it/s][A
-Validation:  75%|███████▌  | 15/20 [00:13<00:03,  1.37it/s][A
-Validation:  80%|████████  | 16/20 [00:14<00:03,  1.24it/s][A
-Validation:  85%|████████▌ | 17/20 [00:14<00:01,  1.59it/s][A
-Validation:  90%|█████████ | 18/20 [00:15<00:01,  1.53it/s][A
-Validation:  95%|█████████▌| 19/20 [00:15<00:00,  1.43it/s][A
-Validation: 100%|██████████| 20/20 [00:16<00:00,  1.89it/s][A
-                                                           [A
-Epoch 1 batches:  18%|█▊        | 300/1711 [15:50<3:01:46,  7.73s/it, loss=13.3355, avg_loss=4694.1448, epoch=0.175, step=300, grad_norm=4777.1875][A
-Epoch 1 batches:  18%|█▊        | 300/1711 [15:50<3:01:46,  7.73s/it, loss=7.1585, avg_loss=4678.5734, epoch=0.176, step=301, grad_norm=3190.5754] [A
-Epoch 1 batches:  18%|█▊        | 301/1711 [15:50<2:08:46,  5.48s/it, loss=7.1585, avg_loss=4678.5734, epoch=0.176, step=301, grad_norm=3190.5754][A
-Epoch 1 batches:  18%|█▊        | 301/1711 [15:50<2:08:46,  5.48s/it, loss=1643.1399, avg_loss=4668.5223, epoch=0.177, step=302, grad_norm=19845.3750][A
-Epoch 1 batches:  18%|█▊        | 302/1711 [15:50<1:31:49,  3.91s/it, loss=1643.1399, avg_loss=4668.5223, epoch=0.177, step=302, grad_norm=19845.3750][A
-Epoch 1 batches:  18%|█▊        | 302/1711 [15:50<1:31:49,  3.91s/it, loss=1308.4640, avg_loss=4657.4330, epoch=0.177, step=303, grad_norm=43006.6797][A
-Epoch 1 batches:  18%|█▊        | 303/1711 [15:50<1:05:56,  2.81s/it, loss=1308.4640, avg_loss=4657.4330, epoch=0.177, step=303, grad_norm=43006.6797][A
-Epoch 1 batches:  18%|█▊        | 303/1711 [15:51<1:05:56,  2.81s/it, loss=14627.7334, avg_loss=4690.2301, epoch=0.178, step=304, grad_norm=58886.6875][A
-Epoch 1 batches:  18%|█▊        | 304/1711 [15:51<47:52,  2.04s/it, loss=14627.7334, avg_loss=4690.2301, epoch=0.178, step=304, grad_norm=58886.6875]  [A
-Epoch 1 batches:  18%|█▊        | 304/1711 [15:51<47:52,  2.04s/it, loss=2407.7898, avg_loss=4682.7467, epoch=0.178, step=305, grad_norm=63640.0625] [A
-Epoch 1 batches:  18%|█▊        | 305/1711 [15:51<35:15,  1.50s/it, loss=2407.7898, avg_loss=4682.7467, epoch=0.178, step=305, grad_norm=63640.0625][A
-Epoch 1 batches:  18%|█▊        | 305/1711 [15:51<35:15,  1.50s/it, loss=198.9633, avg_loss=4668.0938, epoch=0.179, step=306, grad_norm=32076.7422] [A
-Epoch 1 batches:  18%|█▊        | 306/1711 [15:51<26:28,  1.13s/it, loss=198.9633, avg_loss=4668.0938, epoch=0.179, step=306, grad_norm=32076.7422][A
-Epoch 1 batches:  18%|█▊        | 306/1711 [15:59<26:28,  1.13s/it, loss=1266.1676, avg_loss=4657.0126, epoch=0.179, step=307, grad_norm=27773.8418][A
-Epoch 1 batches:  18%|█▊        | 307/1711 [15:59<1:16:53,  3.29s/it, loss=1266.1676, avg_loss=4657.0126, epoch=0.179, step=307, grad_norm=27773.8418][A
-Epoch 1 batches:  18%|█▊        | 307/1711 [16:00<1:16:53,  3.29s/it, loss=45.0527, avg_loss=4642.0387, epoch=0.180, step=308, grad_norm=7575.5308]   [A
-Epoch 1 batches:  18%|█▊        | 308/1711 [16:00<55:46,  2.39s/it, loss=45.0527, avg_loss=4642.0387, epoch=0.180, step=308, grad_norm=7575.5308]  [A
-Epoch 1 batches:  18%|█▊        | 308/1711 [16:00<55:46,  2.39s/it, loss=13310.3818, avg_loss=4670.0916, epoch=0.181, step=309, grad_norm=86129.2812][A
-Epoch 1 batches:  18%|█▊        | 309/1711 [16:00<40:47,  1.75s/it, loss=13310.3818, avg_loss=4670.0916, epoch=0.181, step=309, grad_norm=86129.2812][A
-Epoch 1 batches:  18%|█▊        | 309/1711 [16:07<40:47,  1.75s/it, loss=1304.3815, avg_loss=4659.2345, epoch=0.181, step=310, grad_norm=35091.6484] [A
-Epoch 1 batches:  18%|█▊        | 310/1711 [16:07<1:17:50,  3.33s/it, loss=1304.3815, avg_loss=4659.2345, epoch=0.181, step=310, grad_norm=35091.6484][A
-Epoch 1 batches:  18%|█▊        | 310/1711 [16:07<1:17:50,  3.33s/it, loss=429.0173, avg_loss=4645.6325, epoch=0.182, step=311, grad_norm=25271.0586] [A
-Epoch 1 batches:  18%|█▊        | 311/1711 [16:07<56:14,  2.41s/it, loss=429.0173, avg_loss=4645.6325, epoch=0.182, step=311, grad_norm=25271.0586]  [A
-Epoch 1 batches:  18%|█▊        | 311/1711 [16:07<56:14,  2.41s/it, loss=14623.1357, avg_loss=4677.6116, epoch=0.182, step=312, grad_norm=30699.6816][A
-Epoch 1 batches:  18%|█▊        | 312/1711 [16:07<41:06,  1.76s/it, loss=14623.1357, avg_loss=4677.6116, epoch=0.182, step=312, grad_norm=30699.6816][A
-Epoch 1 batches:  18%|█▊        | 312/1711 [16:16<41:06,  1.76s/it, loss=27.0491, avg_loss=4662.7536, epoch=0.183, step=313, grad_norm=10701.6641]   [A
-Epoch 1 batches:  18%|█▊        | 313/1711 [16:16<1:31:26,  3.92s/it, loss=27.0491, avg_loss=4662.7536, epoch=0.183, step=313, grad_norm=10701.6641][A
-Epoch 1 batches:  18%|█▊        | 313/1711 [16:17<1:31:26,  3.92s/it, loss=227.9656, avg_loss=4648.6301, epoch=0.184, step=314, grad_norm=30898.4395][A
-Epoch 1 batches:  18%|█▊        | 314/1711 [16:17<1:05:51,  2.83s/it, loss=227.9656, avg_loss=4648.6301, epoch=0.184, step=314, grad_norm=30898.4395][A
-Epoch 1 batches:  18%|█▊        | 314/1711 [16:17<1:05:51,  2.83s/it, loss=23039.7227, avg_loss=4707.0145, epoch=0.184, step=315, grad_norm=69337.9453][A
-Epoch 1 batches:  18%|█▊        | 315/1711 [16:17<47:48,  2.05s/it, loss=23039.7227, avg_loss=4707.0145, epoch=0.184, step=315, grad_norm=69337.9453]  [A
-Epoch 1 batches:  18%|█▊        | 315/1711 [16:25<47:48,  2.05s/it, loss=41.0714, avg_loss=4692.2489, epoch=0.185, step=316, grad_norm=11776.0811]   [A
-Epoch 1 batches:  18%|█▊        | 316/1711 [16:25<1:32:44,  3.99s/it, loss=41.0714, avg_loss=4692.2489, epoch=0.185, step=316, grad_norm=11776.0811][A
-Epoch 1 batches:  18%|█▊        | 316/1711 [16:26<1:32:44,  3.99s/it, loss=1721.4647, avg_loss=4682.8773, epoch=0.185, step=317, grad_norm=50142.8320][A
-Epoch 1 batches:  19%|█▊        | 317/1711 [16:26<1:06:33,  2.86s/it, loss=1721.4647, avg_loss=4682.8773, epoch=0.185, step=317, grad_norm=50142.8320][A
-Epoch 1 batches:  19%|█▊        | 317/1711 [16:26<1:06:33,  2.86s/it, loss=12590.8506, avg_loss=4707.7452, epoch=0.186, step=318, grad_norm=47747.0117][A
-Epoch 1 batches:  19%|█▊        | 318/1711 [16:26<48:19,  2.08s/it, loss=12590.8506, avg_loss=4707.7452, epoch=0.186, step=318, grad_norm=47747.0117]  [A
-Epoch 1 batches:  19%|█▊        | 318/1711 [16:33<48:19,  2.08s/it, loss=16379.5459, avg_loss=4744.3339, epoch=0.186, step=319, grad_norm=54475.8047][A
-Epoch 1 batches:  19%|█▊        | 319/1711 [16:33<1:25:15,  3.67s/it, loss=16379.5459, avg_loss=4744.3339, epoch=0.186, step=319, grad_norm=54475.8047][A
-Epoch 1 batches:  19%|█▊        | 319/1711 [16:34<1:25:15,  3.67s/it, loss=11826.4062, avg_loss=4766.4653, epoch=0.187, step=320, grad_norm=44214.3672][A
-Epoch 1 batches:  19%|█▊        | 320/1711 [16:34<1:01:29,  2.65s/it, loss=11826.4062, avg_loss=4766.4653, epoch=0.187, step=320, grad_norm=44214.3672][A
-Epoch 1 batches:  19%|█▊        | 320/1711 [16:34<1:01:29,  2.65s/it, loss=6444.6797, avg_loss=4771.6934, epoch=0.188, step=321, grad_norm=39762.2891] [A
-Epoch 1 batches:  19%|█▉        | 321/1711 [16:34<44:47,  1.93s/it, loss=6444.6797, avg_loss=4771.6934, epoch=0.188, step=321, grad_norm=39762.2891]  [A
-Epoch 1 batches:  19%|█▉        | 321/1711 [16:41<44:47,  1.93s/it, loss=579.7354, avg_loss=4758.6749, epoch=0.188, step=322, grad_norm=52170.2305] [A
-Epoch 1 batches:  19%|█▉        | 322/1711 [16:41<1:20:02,  3.46s/it, loss=579.7354, avg_loss=4758.6749, epoch=0.188, step=322, grad_norm=52170.2305][A
-Epoch 1 batches:  19%|█▉        | 322/1711 [16:41<1:20:02,  3.46s/it, loss=118.6752, avg_loss=4744.3096, epoch=0.189, step=323, grad_norm=14520.5078][A
-Epoch 1 batches:  19%|█▉        | 323/1711 [16:41<57:42,  2.49s/it, loss=118.6752, avg_loss=4744.3096, epoch=0.189, step=323, grad_norm=14520.5078]  [A
-Epoch 1 batches:  19%|█▉        | 323/1711 [16:41<57:42,  2.49s/it, loss=7219.6909, avg_loss=4751.9497, epoch=0.189, step=324, grad_norm=51148.8828][A
-Epoch 1 batches:  19%|█▉        | 324/1711 [16:41<42:02,  1.82s/it, loss=7219.6909, avg_loss=4751.9497, epoch=0.189, step=324, grad_norm=51148.8828][A
-Epoch 1 batches:  19%|█▉        | 324/1711 [16:54<42:02,  1.82s/it, loss=7.4768, avg_loss=4737.3513, epoch=0.190, step=325, grad_norm=6677.8691]    [A
-Epoch 1 batches:  19%|█▉        | 325/1711 [16:54<1:57:05,  5.07s/it, loss=7.4768, avg_loss=4737.3513, epoch=0.190, step=325, grad_norm=6677.8691][A
-Epoch 1 batches:  19%|█▉        | 325/1711 [16:54<1:57:05,  5.07s/it, loss=241.7325, avg_loss=4723.5610, epoch=0.191, step=326, grad_norm=26149.9238][A
-Epoch 1 batches:  19%|█▉        | 326/1711 [16:54<1:23:39,  3.62s/it, loss=241.7325, avg_loss=4723.5610, epoch=0.191, step=326, grad_norm=26149.9238][A
-Epoch 1 batches:  19%|█▉        | 326/1711 [16:55<1:23:39,  3.62s/it, loss=27.0646, avg_loss=4709.1987, epoch=0.191, step=327, grad_norm=5690.4761]  [A
-Epoch 1 batches:  19%|█▉        | 327/1711 [16:55<1:00:15,  2.61s/it, loss=27.0646, avg_loss=4709.1987, epoch=0.191, step=327, grad_norm=5690.4761][A
-Epoch 1 batches:  19%|█▉        | 327/1711 [17:03<1:00:15,  2.61s/it, loss=25.4268, avg_loss=4694.9189, epoch=0.192, step=328, grad_norm=10336.3398][A
-Epoch 1 batches:  19%|█▉        | 328/1711 [17:03<1:43:21,  4.48s/it, loss=25.4268, avg_loss=4694.9189, epoch=0.192, step=328, grad_norm=10336.3398][A
-Epoch 1 batches:  19%|█▉        | 328/1711 [17:04<1:43:21,  4.48s/it, loss=6445.1753, avg_loss=4700.2388, epoch=0.192, step=329, grad_norm=37950.7266][A
-Epoch 1 batches:  19%|█▉        | 329/1711 [17:04<1:14:05,  3.22s/it, loss=6445.1753, avg_loss=4700.2388, epoch=0.192, step=329, grad_norm=37950.7266][A
-Epoch 1 batches:  19%|█▉        | 329/1711 [17:04<1:14:05,  3.22s/it, loss=30674.8574, avg_loss=4778.9498, epoch=0.193, step=330, grad_norm=63402.3281][A
-Epoch 1 batches:  19%|█▉        | 330/1711 [17:04<53:33,  2.33s/it, loss=30674.8574, avg_loss=4778.9498, epoch=0.193, step=330, grad_norm=63402.3281]  [A
-Epoch 1 batches:  19%|█▉        | 330/1711 [17:13<53:33,  2.33s/it, loss=11.2413, avg_loss=4764.5458, epoch=0.193, step=331, grad_norm=4446.0752]    [A
-Epoch 1 batches:  19%|█▉        | 331/1711 [17:13<1:39:36,  4.33s/it, loss=11.2413, avg_loss=4764.5458, epoch=0.193, step=331, grad_norm=4446.0752][A
-Epoch 1 batches:  19%|█▉        | 331/1711 [17:13<1:39:36,  4.33s/it, loss=873.5861, avg_loss=4752.8261, epoch=0.194, step=332, grad_norm=34655.8672][A
-Epoch 1 batches:  19%|█▉        | 332/1711 [17:13<1:11:25,  3.11s/it, loss=873.5861, avg_loss=4752.8261, epoch=0.194, step=332, grad_norm=34655.8672][A
-Epoch 1 batches:  19%|█▉        | 332/1711 [17:13<1:11:25,  3.11s/it, loss=9386.9209, avg_loss=4766.7423, epoch=0.195, step=333, grad_norm=43565.9570][A
-Epoch 1 batches:  19%|█▉        | 333/1711 [17:13<51:46,  2.25s/it, loss=9386.9209, avg_loss=4766.7423, epoch=0.195, step=333, grad_norm=43565.9570]  [A
-Epoch 1 batches:  19%|█▉        | 333/1711 [17:21<51:46,  2.25s/it, loss=1031.1356, avg_loss=4755.5578, epoch=0.195, step=334, grad_norm=46258.4609][A
-Epoch 1 batches:  20%|█▉        | 334/1711 [17:21<1:31:38,  3.99s/it, loss=1031.1356, avg_loss=4755.5578, epoch=0.195, step=334, grad_norm=46258.4609][A
-Epoch 1 batches:  20%|█▉        | 334/1711 [17:22<1:31:38,  3.99s/it, loss=10719.0029, avg_loss=4773.3591, epoch=0.196, step=335, grad_norm=62630.0234][A
-Epoch 1 batches:  20%|█▉        | 335/1711 [17:22<1:05:44,  2.87s/it, loss=10719.0029, avg_loss=4773.3591, epoch=0.196, step=335, grad_norm=62630.0234][A
-Epoch 1 batches:  20%|█▉        | 335/1711 [17:22<1:05:44,  2.87s/it, loss=9801.8877, avg_loss=4788.3250, epoch=0.196, step=336, grad_norm=14677.1475] [A
-Epoch 1 batches:  20%|█▉        | 336/1711 [17:22<47:42,  2.08s/it, loss=9801.8877, avg_loss=4788.3250, epoch=0.196, step=336, grad_norm=14677.1475]  [A
-Epoch 1 batches:  20%|█▉        | 336/1711 [17:31<47:42,  2.08s/it, loss=14149.6787, avg_loss=4816.1035, epoch=0.197, step=337, grad_norm=64691.9375][A
-Epoch 1 batches:  20%|█▉        | 337/1711 [17:31<1:35:54,  4.19s/it, loss=14149.6787, avg_loss=4816.1035, epoch=0.197, step=337, grad_norm=64691.9375][A
-Epoch 1 batches:  20%|█▉        | 337/1711 [17:31<1:35:54,  4.19s/it, loss=1128.5172, avg_loss=4805.1935, epoch=0.198, step=338, grad_norm=53663.3086] [A
-Epoch 1 batches:  20%|█▉        | 338/1711 [17:31<1:08:48,  3.01s/it, loss=1128.5172, avg_loss=4805.1935, epoch=0.198, step=338, grad_norm=53663.3086][A
-Epoch 1 batches:  20%|█▉        | 338/1711 [17:32<1:08:48,  3.01s/it, loss=13154.6426, avg_loss=4829.8231, epoch=0.198, step=339, grad_norm=28917.2871][A
-Epoch 1 batches:  20%|█▉        | 339/1711 [17:32<49:42,  2.17s/it, loss=13154.6426, avg_loss=4829.8231, epoch=0.198, step=339, grad_norm=28917.2871]  [A
-Epoch 1 batches:  20%|█▉        | 339/1711 [17:39<49:42,  2.17s/it, loss=206.9425, avg_loss=4816.2264, epoch=0.199, step=340, grad_norm=29530.8867]  [A
-Epoch 1 batches:  20%|█▉        | 340/1711 [17:39<1:27:43,  3.84s/it, loss=206.9425, avg_loss=4816.2264, epoch=0.199, step=340, grad_norm=29530.8867][A
-Epoch 1 batches:  20%|█▉        | 340/1711 [17:40<1:27:43,  3.84s/it, loss=11556.3506, avg_loss=4835.9922, epoch=0.199, step=341, grad_norm=54489.9102][A
-Epoch 1 batches:  20%|█▉        | 341/1711 [17:40<1:03:07,  2.76s/it, loss=11556.3506, avg_loss=4835.9922, epoch=0.199, step=341, grad_norm=54489.9102][A
-Epoch 1 batches:  20%|█▉        | 341/1711 [17:40<1:03:07,  2.76s/it, loss=337.1276, avg_loss=4822.8376, epoch=0.200, step=342, grad_norm=27744.0488]  [A
-Epoch 1 batches:  20%|█▉        | 342/1711 [17:40<45:53,  2.01s/it, loss=337.1276, avg_loss=4822.8376, epoch=0.200, step=342, grad_norm=27744.0488]  [A
-Epoch 1 batches:  20%|█▉        | 342/1711 [17:47<45:53,  2.01s/it, loss=38.4034, avg_loss=4808.8888, epoch=0.200, step=343, grad_norm=12834.8945] [A
-Epoch 1 batches:  20%|██        | 343/1711 [17:47<1:20:53,  3.55s/it, loss=38.4034, avg_loss=4808.8888, epoch=0.200, step=343, grad_norm=12834.8945][A
-Epoch 1 batches:  20%|██        | 343/1711 [17:47<1:20:53,  3.55s/it, loss=9901.3057, avg_loss=4823.6923, epoch=0.201, step=344, grad_norm=61051.8047][A
-Epoch 1 batches:  20%|██        | 344/1711 [17:47<58:21,  2.56s/it, loss=9901.3057, avg_loss=4823.6923, epoch=0.201, step=344, grad_norm=61051.8047]  [A
-Epoch 1 batches:  20%|██        | 344/1711 [17:47<58:21,  2.56s/it, loss=1254.3422, avg_loss=4813.3464, epoch=0.202, step=345, grad_norm=42955.3008][A
-Epoch 1 batches:  20%|██        | 345/1711 [17:47<42:31,  1.87s/it, loss=1254.3422, avg_loss=4813.3464, epoch=0.202, step=345, grad_norm=42955.3008][A
-Epoch 1 batches:  20%|██        | 345/1711 [17:54<42:31,  1.87s/it, loss=354.9526, avg_loss=4800.4609, epoch=0.202, step=346, grad_norm=28209.6055] [A
-Epoch 1 batches:  20%|██        | 346/1711 [17:54<1:13:07,  3.21s/it, loss=354.9526, avg_loss=4800.4609, epoch=0.202, step=346, grad_norm=28209.6055][A
-Epoch 1 batches:  20%|██        | 346/1711 [17:54<1:13:07,  3.21s/it, loss=23.2231, avg_loss=4786.6936, epoch=0.203, step=347, grad_norm=10972.1309] [A
-Epoch 1 batches:  20%|██        | 347/1711 [17:54<52:40,  2.32s/it, loss=23.2231, avg_loss=4786.6936, epoch=0.203, step=347, grad_norm=10972.1309]  [A
-Epoch 1 batches:  20%|██        | 347/1711 [17:54<52:40,  2.32s/it, loss=24.4449, avg_loss=4773.0090, epoch=0.203, step=348, grad_norm=8865.0869] [A
-Epoch 1 batches:  20%|██        | 348/1711 [17:54<38:33,  1.70s/it, loss=24.4449, avg_loss=4773.0090, epoch=0.203, step=348, grad_norm=8865.0869][A
-Epoch 1 batches:  20%|██        | 348/1711 [18:02<38:33,  1.70s/it, loss=174.2501, avg_loss=4759.8320, epoch=0.204, step=349, grad_norm=24884.8574][A
-Epoch 1 batches:  20%|██        | 349/1711 [18:02<1:19:21,  3.50s/it, loss=174.2501, avg_loss=4759.8320, epoch=0.204, step=349, grad_norm=24884.8574][A
-Epoch 1 batches:  20%|██        | 349/1711 [18:02<1:19:21,  3.50s/it, loss=10170.9150, avg_loss=4775.2923, epoch=0.205, step=350, grad_norm=52342.6992][A
-Validation:   0%|          | 0/20 [00:00<?, ?it/s][A
-Validation:   5%|▌         | 1/20 [00:02<00:46,  2.45s/it][A
-Validation:  10%|█         | 2/20 [00:02<00:20,  1.15s/it][A
-Validation:  15%|█▌        | 3/20 [00:02<00:12,  1.41it/s][A
-Validation:  20%|██        | 4/20 [00:04<00:15,  1.06it/s][A
-Validation:  25%|██▌       | 5/20 [00:04<00:11,  1.25it/s][A
-Validation:  30%|███       | 6/20 [00:05<00:10,  1.29it/s][A
-Validation:  35%|███▌      | 7/20 [00:07<00:13,  1.06s/it][A
-Validation:  40%|████      | 8/20 [00:07<00:10,  1.15it/s][A
-Validation:  45%|████▌     | 9/20 [00:08<00:09,  1.14it/s][A
-Validation:  50%|█████     | 10/20 [00:09<00:09,  1.06it/s][A
-Validation:  55%|█████▌    | 11/20 [00:10<00:07,  1.20it/s][A
-Validation:  60%|██████    | 12/20 [00:10<00:06,  1.30it/s][A
-Validation:  65%|██████▌   | 13/20 [00:11<00:05,  1.28it/s][A
-Validation:  70%|███████   | 14/20 [00:11<00:03,  1.55it/s][A
-Validation:  75%|███████▌  | 15/20 [00:12<00:03,  1.50it/s][A
-Validation:  80%|████████  | 16/20 [00:13<00:02,  1.41it/s][A
-Validation:  85%|████████▌ | 17/20 [00:13<00:01,  1.70it/s][A
-Validation:  90%|█████████ | 18/20 [00:14<00:01,  1.54it/s][A
-Validation:  95%|█████████▌| 19/20 [00:15<00:00,  1.59it/s][A
-Validation: 100%|██████████| 20/20 [00:15<00:00,  1.85it/s][A
-                                                           [A
-Epoch 1 batches:  20%|██        | 350/1711 [18:19<2:53:51,  7.66s/it, loss=10170.9150, avg_loss=4775.2923, epoch=0.205, step=350, grad_norm=52342.6992][A
-Epoch 1 batches:  20%|██        | 350/1711 [18:20<2:53:51,  7.66s/it, loss=568.8438, avg_loss=4763.3081, epoch=0.205, step=351, grad_norm=30578.0039]  [A
-Epoch 1 batches:  21%|██        | 351/1711 [18:20<2:03:15,  5.44s/it, loss=568.8438, avg_loss=4763.3081, epoch=0.205, step=351, grad_norm=30578.0039][A
-Epoch 1 batches:  21%|██        | 351/1711 [18:20<2:03:15,  5.44s/it, loss=7619.9150, avg_loss=4771.4234, epoch=0.206, step=352, grad_norm=66019.9766][A
-Epoch 1 batches:  21%|██        | 352/1711 [18:20<1:27:52,  3.88s/it, loss=7619.9150, avg_loss=4771.4234, epoch=0.206, step=352, grad_norm=66019.9766][A
-Epoch 1 batches:  21%|██        | 352/1711 [18:20<1:27:52,  3.88s/it, loss=8352.4922, avg_loss=4781.5681, epoch=0.206, step=353, grad_norm=73409.8672][A
-Epoch 1 batches:  21%|██        | 353/1711 [18:20<1:03:11,  2.79s/it, loss=8352.4922, avg_loss=4781.5681, epoch=0.206, step=353, grad_norm=73409.8672][A
-Epoch 1 batches:  21%|██        | 353/1711 [18:20<1:03:11,  2.79s/it, loss=12.4124, avg_loss=4768.0959, epoch=0.207, step=354, grad_norm=7103.7451]   [A
-Epoch 1 batches:  21%|██        | 354/1711 [18:20<45:53,  2.03s/it, loss=12.4124, avg_loss=4768.0959, epoch=0.207, step=354, grad_norm=7103.7451]  [A
-Epoch 1 batches:  21%|██        | 354/1711 [18:21<45:53,  2.03s/it, loss=29.1215, avg_loss=4754.7467, epoch=0.207, step=355, grad_norm=16575.0371][A
-Epoch 1 batches:  21%|██        | 355/1711 [18:21<33:52,  1.50s/it, loss=29.1215, avg_loss=4754.7467, epoch=0.207, step=355, grad_norm=16575.0371][A
-Epoch 1 batches:  21%|██        | 355/1711 [18:21<33:52,  1.50s/it, loss=10820.1963, avg_loss=4771.7845, epoch=0.208, step=356, grad_norm=53592.5625][A
-Epoch 1 batches:  21%|██        | 356/1711 [18:21<25:18,  1.12s/it, loss=10820.1963, avg_loss=4771.7845, epoch=0.208, step=356, grad_norm=53592.5625][A
-Epoch 1 batches:  21%|██        | 356/1711 [18:29<25:18,  1.12s/it, loss=12603.2197, avg_loss=4793.7213, epoch=0.209, step=357, grad_norm=50746.8125][A
-Epoch 1 batches:  21%|██        | 357/1711 [18:29<1:13:00,  3.24s/it, loss=12603.2197, avg_loss=4793.7213, epoch=0.209, step=357, grad_norm=50746.8125][A
-Epoch 1 batches:  21%|██        | 357/1711 [18:29<1:13:00,  3.24s/it, loss=14591.5254, avg_loss=4821.0894, epoch=0.209, step=358, grad_norm=48010.3203][A
-Epoch 1 batches:  21%|██        | 358/1711 [18:29<52:46,  2.34s/it, loss=14591.5254, avg_loss=4821.0894, epoch=0.209, step=358, grad_norm=48010.3203]  [A
-Epoch 1 batches:  21%|██        | 358/1711 [18:30<52:46,  2.34s/it, loss=163.4158, avg_loss=4808.1154, epoch=0.210, step=359, grad_norm=20773.9590]  [A
-Epoch 1 batches:  21%|██        | 359/1711 [18:30<38:39,  1.72s/it, loss=163.4158, avg_loss=4808.1154, epoch=0.210, step=359, grad_norm=20773.9590][A
-Epoch 1 batches:  21%|██        | 359/1711 [18:37<38:39,  1.72s/it, loss=414.2556, avg_loss=4795.9103, epoch=0.210, step=360, grad_norm=32610.0273][A
-Epoch 1 batches:  21%|██        | 360/1711 [18:37<1:17:55,  3.46s/it, loss=414.2556, avg_loss=4795.9103, epoch=0.210, step=360, grad_norm=32610.0273][A
-Epoch 1 batches:  21%|██        | 360/1711 [18:37<1:17:55,  3.46s/it, loss=7.5940, avg_loss=4782.6462, epoch=0.211, step=361, grad_norm=6371.5137]   [A
-Epoch 1 batches:  21%|██        | 361/1711 [18:37<56:13,  2.50s/it, loss=7.5940, avg_loss=4782.6462, epoch=0.211, step=361, grad_norm=6371.5137]  [A
-Epoch 1 batches:  21%|██        | 361/1711 [18:38<56:13,  2.50s/it, loss=488.6904, avg_loss=4770.7845, epoch=0.212, step=362, grad_norm=57525.3555][A
-Epoch 1 batches:  21%|██        | 362/1711 [18:38<41:01,  1.82s/it, loss=488.6904, avg_loss=4770.7845, epoch=0.212, step=362, grad_norm=57525.3555][A
-Epoch 1 batches:  21%|██        | 362/1711 [18:46<41:01,  1.82s/it, loss=914.7061, avg_loss=4760.1617, epoch=0.212, step=363, grad_norm=31207.4805][A
-Epoch 1 batches:  21%|██        | 363/1711 [18:47<1:28:53,  3.96s/it, loss=914.7061, avg_loss=4760.1617, epoch=0.212, step=363, grad_norm=31207.4805][A
-Epoch 1 batches:  21%|██        | 363/1711 [18:47<1:28:53,  3.96s/it, loss=5.9176, avg_loss=4747.1006, epoch=0.213, step=364, grad_norm=5677.8711]   [A
-Epoch 1 batches:  21%|██▏       | 364/1711 [18:47<1:03:52,  2.85s/it, loss=5.9176, avg_loss=4747.1006, epoch=0.213, step=364, grad_norm=5677.8711][A
-Epoch 1 batches:  21%|██▏       | 364/1711 [18:47<1:03:52,  2.85s/it, loss=9857.9092, avg_loss=4761.1028, epoch=0.213, step=365, grad_norm=55340.2734][A
-Epoch 1 batches:  21%|██▏       | 365/1711 [18:47<46:22,  2.07s/it, loss=9857.9092, avg_loss=4761.1028, epoch=0.213, step=365, grad_norm=55340.2734]  [A
-Epoch 1 batches:  21%|██▏       | 365/1711 [18:55<46:22,  2.07s/it, loss=2930.1194, avg_loss=4756.1001, epoch=0.214, step=366, grad_norm=41137.2930][A
-Epoch 1 batches:  21%|██▏       | 366/1711 [18:55<1:23:39,  3.73s/it, loss=2930.1194, avg_loss=4756.1001, epoch=0.214, step=366, grad_norm=41137.2930][A
-Epoch 1 batches:  21%|██▏       | 366/1711 [18:55<1:23:39,  3.73s/it, loss=743.3674, avg_loss=4745.1662, epoch=0.214, step=367, grad_norm=39454.5039] [A
-Epoch 1 batches:  21%|██▏       | 367/1711 [18:55<1:00:16,  2.69s/it, loss=743.3674, avg_loss=4745.1662, epoch=0.214, step=367, grad_norm=39454.5039][A
-Epoch 1 batches:  21%|██▏       | 367/1711 [18:55<1:00:16,  2.69s/it, loss=538.0803, avg_loss=4733.7339, epoch=0.215, step=368, grad_norm=50658.8281][A
-Epoch 1 batches:  22%|██▏       | 368/1711 [18:55<44:01,  1.97s/it, loss=538.0803, avg_loss=4733.7339, epoch=0.215, step=368, grad_norm=50658.8281]  [A
-Epoch 1 batches:  22%|██▏       | 368/1711 [19:03<44:01,  1.97s/it, loss=670.3194, avg_loss=4722.7219, epoch=0.216, step=369, grad_norm=26629.6094][A
-Epoch 1 batches:  22%|██▏       | 369/1711 [19:03<1:21:02,  3.62s/it, loss=670.3194, avg_loss=4722.7219, epoch=0.216, step=369, grad_norm=26629.6094][A
-Epoch 1 batches:  22%|██▏       | 369/1711 [19:03<1:21:02,  3.62s/it, loss=387.1894, avg_loss=4711.0043, epoch=0.216, step=370, grad_norm=23074.2715][A
-Epoch 1 batches:  22%|██▏       | 370/1711 [19:03<58:18,  2.61s/it, loss=387.1894, avg_loss=4711.0043, epoch=0.216, step=370, grad_norm=23074.2715]  [A
-Epoch 1 batches:  22%|██▏       | 370/1711 [19:03<58:18,  2.61s/it, loss=8958.5146, avg_loss=4722.4531, epoch=0.217, step=371, grad_norm=27413.9648][A
-Epoch 1 batches:  22%|██▏       | 371/1711 [19:03<42:27,  1.90s/it, loss=8958.5146, avg_loss=4722.4531, epoch=0.217, step=371, grad_norm=27413.9648][A
-Epoch 1 batches:  22%|██▏       | 371/1711 [19:11<42:27,  1.90s/it, loss=463.9266, avg_loss=4711.0055, epoch=0.217, step=372, grad_norm=42280.6484] [A
-Epoch 1 batches:  22%|██▏       | 372/1711 [19:11<1:25:30,  3.83s/it, loss=463.9266, avg_loss=4711.0055, epoch=0.217, step=372, grad_norm=42280.6484][A
-Epoch 1 batches:  22%|██▏       | 372/1711 [19:12<1:25:30,  3.83s/it, loss=4901.8345, avg_loss=4711.5171, epoch=0.218, step=373, grad_norm=20050.8223][A
-Epoch 1 batches:  22%|██▏       | 373/1711 [19:12<1:01:33,  2.76s/it, loss=4901.8345, avg_loss=4711.5171, epoch=0.218, step=373, grad_norm=20050.8223][A
-Epoch 1 batches:  22%|██▏       | 373/1711 [19:12<1:01:33,  2.76s/it, loss=3584.6169, avg_loss=4708.5040, epoch=0.219, step=374, grad_norm=78937.0312][A
-Epoch 1 batches:  22%|██▏       | 374/1711 [19:12<44:45,  2.01s/it, loss=3584.6169, avg_loss=4708.5040, epoch=0.219, step=374, grad_norm=78937.0312]  [A
-Epoch 1 batches:  22%|██▏       | 374/1711 [19:24<44:45,  2.01s/it, loss=43.0643, avg_loss=4696.0628, epoch=0.219, step=375, grad_norm=14632.7529]  [A
-Epoch 1 batches:  22%|██▏       | 375/1711 [19:24<1:52:05,  5.03s/it, loss=43.0643, avg_loss=4696.0628, epoch=0.219, step=375, grad_norm=14632.7529][A
-Epoch 1 batches:  22%|██▏       | 375/1711 [19:24<1:52:05,  5.03s/it, loss=7733.1328, avg_loss=4704.1401, epoch=0.220, step=376, grad_norm=56907.8086][A
-Epoch 1 batches:  22%|██▏       | 376/1711 [19:24<1:20:07,  3.60s/it, loss=7733.1328, avg_loss=4704.1401, epoch=0.220, step=376, grad_norm=56907.8086][A
-Epoch 1 batches:  22%|██▏       | 376/1711 [19:25<1:20:07,  3.60s/it, loss=518.3530, avg_loss=4693.0372, epoch=0.220, step=377, grad_norm=40573.3828] [A
-Epoch 1 batches:  22%|██▏       | 377/1711 [19:25<57:36,  2.59s/it, loss=518.3530, avg_loss=4693.0372, epoch=0.220, step=377, grad_norm=40573.3828]  [A
-Epoch 1 batches:  22%|██▏       | 377/1711 [19:33<57:36,  2.59s/it, loss=197.3039, avg_loss=4681.1437, epoch=0.221, step=378, grad_norm=19112.1328][A
-Epoch 1 batches:  22%|██▏       | 378/1711 [19:33<1:39:13,  4.47s/it, loss=197.3039, avg_loss=4681.1437, epoch=0.221, step=378, grad_norm=19112.1328][A
-Epoch 1 batches:  22%|██▏       | 378/1711 [19:34<1:39:13,  4.47s/it, loss=58.3854, avg_loss=4668.9465, epoch=0.222, step=379, grad_norm=12794.3008] [A
-Epoch 1 batches:  22%|██▏       | 379/1711 [19:34<1:11:12,  3.21s/it, loss=58.3854, avg_loss=4668.9465, epoch=0.222, step=379, grad_norm=12794.3008][A
-Epoch 1 batches:  22%|██▏       | 379/1711 [19:34<1:11:12,  3.21s/it, loss=12.5790, avg_loss=4656.6929, epoch=0.222, step=380, grad_norm=8914.6895] [A
-Epoch 1 batches:  22%|██▏       | 380/1711 [19:34<51:30,  2.32s/it, loss=12.5790, avg_loss=4656.6929, epoch=0.222, step=380, grad_norm=8914.6895]  [A
-Epoch 1 batches:  22%|██▏       | 380/1711 [19:41<51:30,  2.32s/it, loss=1132.2129, avg_loss=4647.4423, epoch=0.223, step=381, grad_norm=43219.2578][A
-Epoch 1 batches:  22%|██▏       | 381/1711 [19:41<1:25:09,  3.84s/it, loss=1132.2129, avg_loss=4647.4423, epoch=0.223, step=381, grad_norm=43219.2578][A
-Epoch 1 batches:  22%|██▏       | 381/1711 [19:42<1:25:09,  3.84s/it, loss=1691.7542, avg_loss=4639.7049, epoch=0.223, step=382, grad_norm=36434.4609][A
-Epoch 1 batches:  22%|██▏       | 382/1711 [19:42<1:01:12,  2.76s/it, loss=1691.7542, avg_loss=4639.7049, epoch=0.223, step=382, grad_norm=36434.4609][A
-Epoch 1 batches:  22%|██▏       | 382/1711 [19:42<1:01:12,  2.76s/it, loss=224.0157, avg_loss=4628.1757, epoch=0.224, step=383, grad_norm=34643.9492] [A
-Epoch 1 batches:  22%|██▏       | 383/1711 [19:42<44:29,  2.01s/it, loss=224.0157, avg_loss=4628.1757, epoch=0.224, step=383, grad_norm=34643.9492]  [A
-Epoch 1 batches:  22%|██▏       | 383/1711 [19:49<44:29,  2.01s/it, loss=10659.9385, avg_loss=4643.8834, epoch=0.224, step=384, grad_norm=54137.1406][A
-Epoch 1 batches:  22%|██▏       | 384/1711 [19:49<1:15:50,  3.43s/it, loss=10659.9385, avg_loss=4643.8834, epoch=0.224, step=384, grad_norm=54137.1406][A
-Epoch 1 batches:  22%|██▏       | 384/1711 [19:49<1:15:50,  3.43s/it, loss=15046.5723, avg_loss=4670.9034, epoch=0.225, step=385, grad_norm=51733.2422][A
-Epoch 1 batches:  23%|██▎       | 385/1711 [19:49<54:44,  2.48s/it, loss=15046.5723, avg_loss=4670.9034, epoch=0.225, step=385, grad_norm=51733.2422]  [A
-Epoch 1 batches:  23%|██▎       | 385/1711 [19:49<54:44,  2.48s/it, loss=148.5685, avg_loss=4659.1875, epoch=0.226, step=386, grad_norm=28585.6348]  [A
-Epoch 1 batches:  23%|██▎       | 386/1711 [19:49<39:58,  1.81s/it, loss=148.5685, avg_loss=4659.1875, epoch=0.226, step=386, grad_norm=28585.6348][A
-Epoch 1 batches:  23%|██▎       | 386/1711 [19:57<39:58,  1.81s/it, loss=740.0566, avg_loss=4649.0605, epoch=0.226, step=387, grad_norm=38600.4648][A
-Epoch 1 batches:  23%|██▎       | 387/1711 [19:57<1:22:59,  3.76s/it, loss=740.0566, avg_loss=4649.0605, epoch=0.226, step=387, grad_norm=38600.4648][A
-Epoch 1 batches:  23%|██▎       | 387/1711 [19:58<1:22:59,  3.76s/it, loss=191.3689, avg_loss=4637.5716, epoch=0.227, step=388, grad_norm=32387.8691][A
-Epoch 1 batches:  23%|██▎       | 388/1711 [19:58<59:42,  2.71s/it, loss=191.3689, avg_loss=4637.5716, epoch=0.227, step=388, grad_norm=32387.8691]  [A
-Epoch 1 batches:  23%|██▎       | 388/1711 [19:58<59:42,  2.71s/it, loss=422.0947, avg_loss=4626.7349, epoch=0.227, step=389, grad_norm=36390.5664][A
-Epoch 1 batches:  23%|██▎       | 389/1711 [19:58<43:22,  1.97s/it, loss=422.0947, avg_loss=4626.7349, epoch=0.227, step=389, grad_norm=36390.5664][A
-Epoch 1 batches:  23%|██▎       | 389/1711 [20:05<43:22,  1.97s/it, loss=2201.0056, avg_loss=4620.5151, epoch=0.228, step=390, grad_norm=46303.7148][A
-Epoch 1 batches:  23%|██▎       | 390/1711 [20:05<1:19:06,  3.59s/it, loss=2201.0056, avg_loss=4620.5151, epoch=0.228, step=390, grad_norm=46303.7148][A
-Epoch 1 batches:  23%|██▎       | 390/1711 [20:06<1:19:06,  3.59s/it, loss=188.9729, avg_loss=4609.1812, epoch=0.229, step=391, grad_norm=17219.6523] [A
-Epoch 1 batches:  23%|██▎       | 391/1711 [20:06<56:59,  2.59s/it, loss=188.9729, avg_loss=4609.1812, epoch=0.229, step=391, grad_norm=17219.6523]  [A
-Epoch 1 batches:  23%|██▎       | 391/1711 [20:06<56:59,  2.59s/it, loss=1158.6465, avg_loss=4600.3788, epoch=0.229, step=392, grad_norm=34353.0664][A
-Epoch 1 batches:  23%|██▎       | 392/1711 [20:06<41:30,  1.89s/it, loss=1158.6465, avg_loss=4600.3788, epoch=0.229, step=392, grad_norm=34353.0664][A
-Epoch 1 batches:  23%|██▎       | 392/1711 [20:15<41:30,  1.89s/it, loss=21046.9355, avg_loss=4642.2276, epoch=0.230, step=393, grad_norm=12668.7812][A
-Epoch 1 batches:  23%|██▎       | 393/1711 [20:15<1:26:34,  3.94s/it, loss=21046.9355, avg_loss=4642.2276, epoch=0.230, step=393, grad_norm=12668.7812][A
-Epoch 1 batches:  23%|██▎       | 393/1711 [20:15<1:26:34,  3.94s/it, loss=1036.2028, avg_loss=4633.0752, epoch=0.230, step=394, grad_norm=53223.0820] [A
-Epoch 1 batches:  23%|██▎       | 394/1711 [20:15<1:02:09,  2.83s/it, loss=1036.2028, avg_loss=4633.0752, epoch=0.230, step=394, grad_norm=53223.0820][A
-Epoch 1 batches:  23%|██▎       | 394/1711 [20:15<1:02:09,  2.83s/it, loss=796.1144, avg_loss=4623.3614, epoch=0.231, step=395, grad_norm=54229.7930] [A
-Epoch 1 batches:  23%|██▎       | 395/1711 [20:15<45:05,  2.06s/it, loss=796.1144, avg_loss=4623.3614, epoch=0.231, step=395, grad_norm=54229.7930]  [A
-Epoch 1 batches:  23%|██▎       | 395/1711 [20:22<45:05,  2.06s/it, loss=13724.5312, avg_loss=4646.3442, epoch=0.231, step=396, grad_norm=37240.6094][A
-Epoch 1 batches:  23%|██▎       | 396/1711 [20:22<1:17:18,  3.53s/it, loss=13724.5312, avg_loss=4646.3442, epoch=0.231, step=396, grad_norm=37240.6094][A
-Epoch 1 batches:  23%|██▎       | 396/1711 [20:23<1:17:18,  3.53s/it, loss=807.3076, avg_loss=4636.6740, epoch=0.232, step=397, grad_norm=31892.4199]  [A
-Epoch 1 batches:  23%|██▎       | 397/1711 [20:23<1:00:37,  2.77s/it, loss=807.3076, avg_loss=4636.6740, epoch=0.232, step=397, grad_norm=31892.4199][A
-Epoch 1 batches:  23%|██▎       | 397/1711 [20:23<1:00:37,  2.77s/it, loss=731.8776, avg_loss=4626.8630, epoch=0.233, step=398, grad_norm=23079.0664][A
-Epoch 1 batches:  23%|██▎       | 398/1711 [20:23<44:02,  2.01s/it, loss=731.8776, avg_loss=4626.8630, epoch=0.233, step=398, grad_norm=23079.0664]  [A
-Epoch 1 batches:  23%|██▎       | 398/1711 [20:29<44:02,  2.01s/it, loss=1713.2313, avg_loss=4619.5607, epoch=0.233, step=399, grad_norm=44616.8984][A
-Epoch 1 batches:  23%|██▎       | 399/1711 [20:29<1:11:41,  3.28s/it, loss=1713.2313, avg_loss=4619.5607, epoch=0.233, step=399, grad_norm=44616.8984][A
-Epoch 1 batches:  23%|██▎       | 399/1711 [20:31<1:11:41,  3.28s/it, loss=15156.5537, avg_loss=4645.9031, epoch=0.234, step=400, grad_norm=57817.9453][A
-Validation:   0%|          | 0/20 [00:00<?, ?it/s][A
-Validation:   5%|▌         | 1/20 [00:02<00:53,  2.83s/it][A
-Validation:  10%|█         | 2/20 [00:03<00:22,  1.27s/it][A
-Validation:  15%|█▌        | 3/20 [00:03<00:12,  1.31it/s][A
-Validation:  20%|██        | 4/20 [00:04<00:16,  1.05s/it][A
-Validation:  25%|██▌       | 5/20 [00:04<00:11,  1.31it/s][A
-Validation:  30%|███       | 6/20 [00:05<00:11,  1.20it/s][A
-Validation:  35%|███▌      | 7/20 [00:07<00:13,  1.03s/it][A
-Validation:  40%|████      | 8/20 [00:07<00:09,  1.31it/s][A
-Validation:  45%|████▌     | 9/20 [00:08<00:09,  1.21it/s][A
-Validation:  50%|█████     | 10/20 [00:09<00:10,  1.01s/it][A
-Validation:  55%|█████▌    | 11/20 [00:10<00:06,  1.33it/s][A
-Validation:  60%|██████    | 12/20 [00:10<00:06,  1.30it/s][A
-Validation:  65%|██████▌   | 13/20 [00:11<00:06,  1.16it/s][A
-Validation:  70%|███████   | 14/20 [00:12<00:04,  1.43it/s][A
-Validation:  75%|███████▌  | 15/20 [00:13<00:04,  1.21it/s][A
-Validation:  80%|████████  | 16/20 [00:14<00:03,  1.15it/s][A
-Validation:  85%|████████▌ | 17/20 [00:15<00:02,  1.08it/s][A
-Validation:  90%|█████████ | 18/20 [00:16<00:01,  1.21it/s][A
-Validation:  95%|█████████▌| 19/20 [00:16<00:00,  1.28it/s][A
-Validation: 100%|██████████| 20/20 [00:17<00:00,  1.41it/s][A
-                                                           [A
-Epoch 1 batches:  23%|██▎       | 400/1711 [20:50<3:03:23,  8.39s/it, loss=15156.5537, avg_loss=4645.9031, epoch=0.234, step=400, grad_norm=57817.9453][A
-Epoch 1 batches:  23%|██▎       | 400/1711 [20:50<3:03:23,  8.39s/it, loss=15150.5693, avg_loss=4672.0993, epoch=0.234, step=401, grad_norm=51559.4102][A
-Epoch 1 batches:  23%|██▎       | 401/1711 [20:50<2:09:49,  5.95s/it, loss=15150.5693, avg_loss=4672.0993, epoch=0.234, step=401, grad_norm=51559.4102][A
-Epoch 1 batches:  23%|██▎       | 401/1711 [20:50<2:09:49,  5.95s/it, loss=105.5760, avg_loss=4660.7398, epoch=0.235, step=402, grad_norm=18292.8887]  [A
-Epoch 1 batches:  23%|██▎       | 402/1711 [20:50<1:32:25,  4.24s/it, loss=105.5760, avg_loss=4660.7398, epoch=0.235, step=402, grad_norm=18292.8887][A
-Epoch 1 batches:  23%|██▎       | 402/1711 [20:51<1:32:25,  4.24s/it, loss=248.8066, avg_loss=4649.7921, epoch=0.236, step=403, grad_norm=42075.2070][A
-Epoch 1 batches:  24%|██▎       | 403/1711 [20:51<1:06:25,  3.05s/it, loss=248.8066, avg_loss=4649.7921, epoch=0.236, step=403, grad_norm=42075.2070][A
-Epoch 1 batches:  24%|██▎       | 403/1711 [20:51<1:06:25,  3.05s/it, loss=78.1918, avg_loss=4638.4762, epoch=0.236, step=404, grad_norm=28432.2422] [A
-Epoch 1 batches:  24%|██▎       | 404/1711 [20:51<48:07,  2.21s/it, loss=78.1918, avg_loss=4638.4762, epoch=0.236, step=404, grad_norm=28432.2422]  [A
-Epoch 1 batches:  24%|██▎       | 404/1711 [20:51<48:07,  2.21s/it, loss=273.1234, avg_loss=4627.6976, epoch=0.237, step=405, grad_norm=30308.8711][A
-Epoch 1 batches:  24%|██▎       | 405/1711 [20:51<35:18,  1.62s/it, loss=273.1234, avg_loss=4627.6976, epoch=0.237, step=405, grad_norm=30308.8711][A
-Epoch 1 batches:  24%|██▎       | 405/1711 [20:51<35:18,  1.62s/it, loss=3564.1060, avg_loss=4625.0779, epoch=0.237, step=406, grad_norm=27443.2930][A
-Epoch 1 batches:  24%|██▎       | 406/1711 [20:51<26:20,  1.21s/it, loss=3564.1060, avg_loss=4625.0779, epoch=0.237, step=406, grad_norm=27443.2930][A
-Epoch 1 batches:  24%|██▎       | 406/1711 [20:57<26:20,  1.21s/it, loss=1126.4990, avg_loss=4616.4819, epoch=0.238, step=407, grad_norm=34377.9453][A
-Epoch 1 batches:  24%|██▍       | 407/1711 [20:57<54:39,  2.52s/it, loss=1126.4990, avg_loss=4616.4819, epoch=0.238, step=407, grad_norm=34377.9453][A
-Epoch 1 batches:  24%|██▍       | 407/1711 [20:57<54:39,  2.52s/it, loss=19881.1113, avg_loss=4653.8952, epoch=0.238, step=408, grad_norm=22514.3359][A
-Epoch 1 batches:  24%|██▍       | 408/1711 [20:57<41:30,  1.91s/it, loss=19881.1113, avg_loss=4653.8952, epoch=0.238, step=408, grad_norm=22514.3359][A
-Epoch 1 batches:  24%|██▍       | 408/1711 [20:58<41:30,  1.91s/it, loss=919.0938, avg_loss=4644.7637, epoch=0.239, step=409, grad_norm=49033.6641]  [A
-Epoch 1 batches:  24%|██▍       | 409/1711 [20:58<32:04,  1.48s/it, loss=919.0938, avg_loss=4644.7637, epoch=0.239, step=409, grad_norm=49033.6641][A
-Epoch 1 batches:  24%|██▍       | 409/1711 [21:06<32:04,  1.48s/it, loss=588.5301, avg_loss=4634.8704, epoch=0.240, step=410, grad_norm=29947.9551][A
-Epoch 1 batches:  24%|██▍       | 410/1711 [21:06<1:16:29,  3.53s/it, loss=588.5301, avg_loss=4634.8704, epoch=0.240, step=410, grad_norm=29947.9551][A
-Epoch 1 batches:  24%|██▍       | 410/1711 [21:06<1:16:29,  3.53s/it, loss=8830.6279, avg_loss=4645.0791, epoch=0.240, step=411, grad_norm=53805.8984][A
-Epoch 1 batches:  24%|██▍       | 411/1711 [21:06<55:09,  2.55s/it, loss=8830.6279, avg_loss=4645.0791, epoch=0.240, step=411, grad_norm=53805.8984]  [A
-Epoch 1 batches:  24%|██▍       | 411/1711 [21:07<55:09,  2.55s/it, loss=140.8691, avg_loss=4634.1465, epoch=0.241, step=412, grad_norm=25745.1641] [A
-Epoch 1 batches:  24%|██▍       | 412/1711 [21:07<40:14,  1.86s/it, loss=140.8691, avg_loss=4634.1465, epoch=0.241, step=412, grad_norm=25745.1641][A
-Epoch 1 batches:  24%|██▍       | 412/1711 [21:14<40:14,  1.86s/it, loss=3425.8633, avg_loss=4631.2209, epoch=0.241, step=413, grad_norm=43809.6680][A
-Epoch 1 batches:  24%|██▍       | 413/1711 [21:14<1:19:00,  3.65s/it, loss=3425.8633, avg_loss=4631.2209, epoch=0.241, step=413, grad_norm=43809.6680][A
-Epoch 1 batches:  24%|██▍       | 413/1711 [21:15<1:19:00,  3.65s/it, loss=13969.2129, avg_loss=4653.7764, epoch=0.242, step=414, grad_norm=37150.7891][A
-Epoch 1 batches:  24%|██▍       | 414/1711 [21:15<57:14,  2.65s/it, loss=13969.2129, avg_loss=4653.7764, epoch=0.242, step=414, grad_norm=37150.7891]  [A
-Epoch 1 batches:  24%|██▍       | 414/1711 [21:15<57:14,  2.65s/it, loss=6673.6089, avg_loss=4658.6435, epoch=0.243, step=415, grad_norm=89599.0469] [A
-Epoch 1 batches:  24%|██▍       | 415/1711 [21:15<41:46,  1.93s/it, loss=6673.6089, avg_loss=4658.6435, epoch=0.243, step=415, grad_norm=89599.0469][A
-Epoch 1 batches:  24%|██▍       | 415/1711 [21:22<41:46,  1.93s/it, loss=308.8283, avg_loss=4648.1872, epoch=0.243, step=416, grad_norm=38693.1445] [A
-Epoch 1 batches:  24%|██▍       | 416/1711 [21:22<1:14:17,  3.44s/it, loss=308.8283, avg_loss=4648.1872, epoch=0.243, step=416, grad_norm=38693.1445][A
-Epoch 1 batches:  24%|██▍       | 416/1711 [21:23<1:14:17,  3.44s/it, loss=481.5425, avg_loss=4638.1952, epoch=0.244, step=417, grad_norm=31398.5391][A
-Epoch 1 batches:  24%|██▍       | 417/1711 [21:23<57:40,  2.67s/it, loss=481.5425, avg_loss=4638.1952, epoch=0.244, step=417, grad_norm=31398.5391]  [A
-Epoch 1 batches:  24%|██▍       | 417/1711 [21:23<57:40,  2.67s/it, loss=7176.0400, avg_loss=4644.2666, epoch=0.244, step=418, grad_norm=72298.5703][A
-Epoch 1 batches:  24%|██▍       | 418/1711 [21:23<41:59,  1.95s/it, loss=7176.0400, avg_loss=4644.2666, epoch=0.244, step=418, grad_norm=72298.5703][A
-Epoch 1 batches:  24%|██▍       | 418/1711 [21:30<41:59,  1.95s/it, loss=591.3638, avg_loss=4634.5938, epoch=0.245, step=419, grad_norm=52503.7266] [A
-Epoch 1 batches:  24%|██▍       | 419/1711 [21:30<1:15:59,  3.53s/it, loss=591.3638, avg_loss=4634.5938, epoch=0.245, step=419, grad_norm=52503.7266][A
-Epoch 1 batches:  24%|██▍       | 419/1711 [21:34<1:15:59,  3.53s/it, loss=6820.4956, avg_loss=4639.7984, epoch=0.245, step=420, grad_norm=36683.6016][A
-Epoch 1 batches:  25%|██▍       | 420/1711 [21:34<1:13:41,  3.43s/it, loss=6820.4956, avg_loss=4639.7984, epoch=0.245, step=420, grad_norm=36683.6016][A
-Epoch 1 batches:  25%|██▍       | 420/1711 [21:34<1:13:41,  3.43s/it, loss=1005.1220, avg_loss=4631.1649, epoch=0.246, step=421, grad_norm=45397.6445][A
-Epoch 1 batches:  25%|██▍       | 421/1711 [21:34<53:09,  2.47s/it, loss=1005.1220, avg_loss=4631.1649, epoch=0.246, step=421, grad_norm=45397.6445]  [A
-Epoch 1 batches:  25%|██▍       | 421/1711 [21:38<53:09,  2.47s/it, loss=10522.9531, avg_loss=4645.1265, epoch=0.247, step=422, grad_norm=36873.1992][A
-Epoch 1 batches:  25%|██▍       | 422/1711 [21:38<1:04:06,  2.98s/it, loss=10522.9531, avg_loss=4645.1265, epoch=0.247, step=422, grad_norm=36873.1992][A
-Epoch 1 batches:  25%|██▍       | 422/1711 [21:41<1:04:06,  2.98s/it, loss=37.0923, avg_loss=4634.2328, epoch=0.247, step=423, grad_norm=13935.7490]   [A
-Epoch 1 batches:  25%|██▍       | 423/1711 [21:41<1:04:12,  2.99s/it, loss=37.0923, avg_loss=4634.2328, epoch=0.247, step=423, grad_norm=13935.7490][A
-Epoch 1 batches:  25%|██▍       | 423/1711 [21:41<1:04:12,  2.99s/it, loss=800.8800, avg_loss=4625.1919, epoch=0.248, step=424, grad_norm=37804.7070][A
-Epoch 1 batches:  25%|██▍       | 424/1711 [21:41<46:37,  2.17s/it, loss=800.8800, avg_loss=4625.1919, epoch=0.248, step=424, grad_norm=37804.7070]  [A
-Epoch 1 batches:  25%|██▍       | 424/1711 [21:45<46:37,  2.17s/it, loss=115.4612, avg_loss=4614.5808, epoch=0.248, step=425, grad_norm=23612.9082][A
-Epoch 1 batches:  25%|██▍       | 425/1711 [21:45<59:57,  2.80s/it, loss=115.4612, avg_loss=4614.5808, epoch=0.248, step=425, grad_norm=23612.9082][A
-Epoch 1 batches:  25%|██▍       | 425/1711 [21:51<59:57,  2.80s/it, loss=937.6232, avg_loss=4605.9494, epoch=0.249, step=426, grad_norm=31970.0684][A
-Epoch 1 batches:  25%|██▍       | 426/1711 [21:51<1:19:39,  3.72s/it, loss=937.6232, avg_loss=4605.9494, epoch=0.249, step=426, grad_norm=31970.0684][A
-Epoch 1 batches:  25%|██▍       | 426/1711 [21:52<1:19:39,  3.72s/it, loss=9424.3057, avg_loss=4617.2336, epoch=0.250, step=427, grad_norm=44673.1484][A
-Epoch 1 batches:  25%|██▍       | 427/1711 [21:52<57:46,  2.70s/it, loss=9424.3057, avg_loss=4617.2336, epoch=0.250, step=427, grad_norm=44673.1484]  [A
-Epoch 1 batches:  25%|██▍       | 427/1711 [21:57<57:46,  2.70s/it, loss=13210.9395, avg_loss=4637.3124, epoch=0.250, step=428, grad_norm=72255.0156][A
-Epoch 1 batches:  25%|██▌       | 428/1711 [21:57<1:15:44,  3.54s/it, loss=13210.9395, avg_loss=4637.3124, epoch=0.250, step=428, grad_norm=72255.0156][A
-Epoch 1 batches:  25%|██▌       | 428/1711 [22:00<1:15:44,  3.54s/it, loss=421.2407, avg_loss=4627.4847, epoch=0.251, step=429, grad_norm=31821.5625]  [A
-Epoch 1 batches:  25%|██▌       | 429/1711 [22:00<1:09:40,  3.26s/it, loss=421.2407, avg_loss=4627.4847, epoch=0.251, step=429, grad_norm=31821.5625][A
-Epoch 1 batches:  25%|██▌       | 429/1711 [22:00<1:09:40,  3.26s/it, loss=80.6923, avg_loss=4616.9108, epoch=0.251, step=430, grad_norm=21951.7910] [A
-Epoch 1 batches:  25%|██▌       | 430/1711 [22:00<50:21,  2.36s/it, loss=80.6923, avg_loss=4616.9108, epoch=0.251, step=430, grad_norm=21951.7910]  [A
-Epoch 1 batches:  25%|██▌       | 430/1711 [22:05<50:21,  2.36s/it, loss=6.3823, avg_loss=4606.2135, epoch=0.252, step=431, grad_norm=1839.5276]  [A
-Epoch 1 batches:  25%|██▌       | 431/1711 [22:05<1:06:38,  3.12s/it, loss=6.3823, avg_loss=4606.2135, epoch=0.252, step=431, grad_norm=1839.5276][A
-Epoch 1 batches:  25%|██▌       | 431/1711 [22:07<1:06:38,  3.12s/it, loss=530.0850, avg_loss=4596.7780, epoch=0.252, step=432, grad_norm=46392.2656][A
-Epoch 1 batches:  25%|██▌       | 432/1711 [22:07<1:02:49,  2.95s/it, loss=530.0850, avg_loss=4596.7780, epoch=0.252, step=432, grad_norm=46392.2656][A
-Epoch 1 batches:  25%|██▌       | 432/1711 [22:08<1:02:49,  2.95s/it, loss=32326.9980, avg_loss=4660.8201, epoch=0.253, step=433, grad_norm=13454.0059][A
-Epoch 1 batches:  25%|██▌       | 433/1711 [22:08<45:35,  2.14s/it, loss=32326.9980, avg_loss=4660.8201, epoch=0.253, step=433, grad_norm=13454.0059]  [A
-Epoch 1 batches:  25%|██▌       | 433/1711 [22:14<45:35,  2.14s/it, loss=341.2260, avg_loss=4650.8671, epoch=0.254, step=434, grad_norm=32779.1641]  [A
-Epoch 1 batches:  25%|██▌       | 434/1711 [22:14<1:13:29,  3.45s/it, loss=341.2260, avg_loss=4650.8671, epoch=0.254, step=434, grad_norm=32779.1641][A
-Epoch 1 batches:  25%|██▌       | 434/1711 [22:16<1:13:29,  3.45s/it, loss=54.3608, avg_loss=4640.3004, epoch=0.254, step=435, grad_norm=16948.4023] [A
-Epoch 1 batches:  25%|██▌       | 435/1711 [22:16<1:02:09,  2.92s/it, loss=54.3608, avg_loss=4640.3004, epoch=0.254, step=435, grad_norm=16948.4023][A
-Epoch 1 batches:  25%|██▌       | 435/1711 [22:16<1:02:09,  2.92s/it, loss=16675.3906, avg_loss=4667.9038, epoch=0.255, step=436, grad_norm=48001.6602][A
-Epoch 1 batches:  25%|██▌       | 436/1711 [22:16<44:59,  2.12s/it, loss=16675.3906, avg_loss=4667.9038, epoch=0.255, step=436, grad_norm=48001.6602]  [A
-Epoch 1 batches:  25%|██▌       | 436/1711 [22:23<44:59,  2.12s/it, loss=347.0760, avg_loss=4658.0164, epoch=0.255, step=437, grad_norm=25544.9590]  [A
-Epoch 1 batches:  26%|██▌       | 437/1711 [22:23<1:17:59,  3.67s/it, loss=347.0760, avg_loss=4658.0164, epoch=0.255, step=437, grad_norm=25544.9590][A
-Epoch 1 batches:  26%|██▌       | 437/1711 [22:24<1:17:59,  3.67s/it, loss=218.9078, avg_loss=4647.8814, epoch=0.256, step=438, grad_norm=38008.1094][A
-Epoch 1 batches:  26%|██▌       | 438/1711 [22:24<56:08,  2.65s/it, loss=218.9078, avg_loss=4647.8814, epoch=0.256, step=438, grad_norm=38008.1094]  [A
-Epoch 1 batches:  26%|██▌       | 438/1711 [22:25<56:08,  2.65s/it, loss=364.6697, avg_loss=4638.1247, epoch=0.257, step=439, grad_norm=45230.9180][A
-Epoch 1 batches:  26%|██▌       | 439/1711 [22:25<46:05,  2.17s/it, loss=364.6697, avg_loss=4638.1247, epoch=0.257, step=439, grad_norm=45230.9180][A
-Epoch 1 batches:  26%|██▌       | 439/1711 [22:32<46:05,  2.17s/it, loss=16.7529, avg_loss=4627.6215, epoch=0.257, step=440, grad_norm=6614.8867]  [A
-Epoch 1 batches:  26%|██▌       | 440/1711 [22:32<1:15:32,  3.57s/it, loss=16.7529, avg_loss=4627.6215, epoch=0.257, step=440, grad_norm=6614.8867][A
-Epoch 1 batches:  26%|██▌       | 440/1711 [22:32<1:15:32,  3.57s/it, loss=134.2633, avg_loss=4617.4325, epoch=0.258, step=441, grad_norm=23358.0781][A
-Epoch 1 batches:  26%|██▌       | 441/1711 [22:32<56:07,  2.65s/it, loss=134.2633, avg_loss=4617.4325, epoch=0.258, step=441, grad_norm=23358.0781]  [A
-Epoch 1 batches:  26%|██▌       | 441/1711 [22:33<56:07,  2.65s/it, loss=771.8267, avg_loss=4608.7321, epoch=0.258, step=442, grad_norm=40436.9922][A
-Epoch 1 batches:  26%|██▌       | 442/1711 [22:33<42:53,  2.03s/it, loss=771.8267, avg_loss=4608.7321, epoch=0.258, step=442, grad_norm=40436.9922][A
-Epoch 1 batches:  26%|██▌       | 442/1711 [22:43<42:53,  2.03s/it, loss=97.6673, avg_loss=4598.5491, epoch=0.259, step=443, grad_norm=25896.6094] [A
-Epoch 1 batches:  26%|██▌       | 443/1711 [22:43<1:35:28,  4.52s/it, loss=97.6673, avg_loss=4598.5491, epoch=0.259, step=443, grad_norm=25896.6094][A
-Epoch 1 batches:  26%|██▌       | 443/1711 [22:43<1:35:28,  4.52s/it, loss=96.9318, avg_loss=4588.4103, epoch=0.259, step=444, grad_norm=23303.5000][A
-Epoch 1 batches:  26%|██▌       | 444/1711 [22:43<1:08:27,  3.24s/it, loss=96.9318, avg_loss=4588.4103, epoch=0.259, step=444, grad_norm=23303.5000][A
-Epoch 1 batches:  26%|██▌       | 444/1711 [22:45<1:08:27,  3.24s/it, loss=19.7882, avg_loss=4578.1437, epoch=0.260, step=445, grad_norm=9367.6250] [A
-Epoch 1 batches:  26%|██▌       | 445/1711 [22:45<58:42,  2.78s/it, loss=19.7882, avg_loss=4578.1437, epoch=0.260, step=445, grad_norm=9367.6250]  [A
-Epoch 1 batches:  26%|██▌       | 445/1711 [22:53<58:42,  2.78s/it, loss=6047.5229, avg_loss=4581.4383, epoch=0.261, step=446, grad_norm=41866.4648][A
-Epoch 1 batches:  26%|██▌       | 446/1711 [22:53<1:28:49,  4.21s/it, loss=6047.5229, avg_loss=4581.4383, epoch=0.261, step=446, grad_norm=41866.4648][A
-Epoch 1 batches:  26%|██▌       | 446/1711 [22:53<1:28:49,  4.21s/it, loss=11055.3389, avg_loss=4595.9213, epoch=0.261, step=447, grad_norm=65843.5078][A
-Epoch 1 batches:  26%|██▌       | 447/1711 [22:53<1:03:43,  3.02s/it, loss=11055.3389, avg_loss=4595.9213, epoch=0.261, step=447, grad_norm=65843.5078][A
-Epoch 1 batches:  26%|██▌       | 447/1711 [22:55<1:03:43,  3.02s/it, loss=181.9324, avg_loss=4586.0686, epoch=0.262, step=448, grad_norm=38540.3867]  [A
-Epoch 1 batches:  26%|██▌       | 448/1711 [22:55<1:00:31,  2.88s/it, loss=181.9324, avg_loss=4586.0686, epoch=0.262, step=448, grad_norm=38540.3867][A
-Epoch 1 batches:  26%|██▌       | 448/1711 [23:00<1:00:31,  2.88s/it, loss=4.9357, avg_loss=4575.8657, epoch=0.262, step=449, grad_norm=3274.0737]   [A
-Epoch 1 batches:  26%|██▌       | 449/1711 [23:00<1:10:29,  3.35s/it, loss=4.9357, avg_loss=4575.8657, epoch=0.262, step=449, grad_norm=3274.0737][A
-Epoch 1 batches:  26%|██▌       | 449/1711 [23:00<1:10:29,  3.35s/it, loss=201.1947, avg_loss=4566.1442, epoch=0.263, step=450, grad_norm=35731.6992][A
-Validation:   0%|          | 0/20 [00:00<?, ?it/s][A
-Validation:   5%|▌         | 1/20 [00:02<00:51,  2.69s/it][A
-Validation:  10%|█         | 2/20 [00:02<00:21,  1.20s/it][A
-Validation:  15%|█▌        | 3/20 [00:03<00:12,  1.33it/s][A
-Validation:  20%|██        | 4/20 [00:04<00:16,  1.03s/it][A
-Validation:  25%|██▌       | 5/20 [00:05<00:13,  1.14it/s][A
-Validation:  30%|███       | 6/20 [00:05<00:10,  1.34it/s][A
-Validation:  35%|███▌      | 7/20 [00:07<00:13,  1.01s/it][A
-Validation:  40%|████      | 8/20 [00:07<00:10,  1.12it/s][A
-Validation:  45%|████▌     | 9/20 [00:08<00:08,  1.33it/s][A
-Validation:  50%|█████     | 10/20 [00:09<00:09,  1.02it/s][A
-Validation:  55%|█████▌    | 11/20 [00:10<00:07,  1.14it/s][A
-Validation:  60%|██████    | 12/20 [00:11<00:06,  1.17it/s][A
-Validation:  65%|██████▌   | 13/20 [00:12<00:05,  1.17it/s][A
-Validation:  70%|███████   | 14/20 [00:12<00:03,  1.50it/s][A
-Validation:  75%|███████▌  | 15/20 [00:13<00:03,  1.39it/s][A
-Validation:  80%|████████  | 16/20 [00:14<00:03,  1.26it/s][A
-Validation:  85%|████████▌ | 17/20 [00:14<00:02,  1.30it/s][A
-Validation:  90%|█████████ | 18/20 [00:15<00:01,  1.19it/s][A
-Validation:  95%|█████████▌| 19/20 [00:16<00:00,  1.40it/s][A
-Validation: 100%|██████████| 20/20 [00:16<00:00,  1.48it/s][A
-                                                           [A
-Epoch 1 batches:  26%|██▋       | 450/1711 [23:19<2:48:22,  8.01s/it, loss=201.1947, avg_loss=4566.1442, epoch=0.263, step=450, grad_norm=35731.6992][A
-Epoch 1 batches:  26%|██▋       | 450/1711 [23:19<2:48:22,  8.01s/it, loss=14274.1943, avg_loss=4587.6698, epoch=0.264, step=451, grad_norm=51084.9648][A
-Epoch 1 batches:  26%|██▋       | 451/1711 [23:19<1:59:17,  5.68s/it, loss=14274.1943, avg_loss=4587.6698, epoch=0.264, step=451, grad_norm=51084.9648][A
-Epoch 1 batches:  26%|██▋       | 451/1711 [23:19<1:59:17,  5.68s/it, loss=10463.5615, avg_loss=4600.6695, epoch=0.264, step=452, grad_norm=31719.9668][A
-Epoch 1 batches:  26%|██▋       | 452/1711 [23:19<1:25:00,  4.05s/it, loss=10463.5615, avg_loss=4600.6695, epoch=0.264, step=452, grad_norm=31719.9668][A
-Epoch 1 batches:  26%|██▋       | 452/1711 [23:19<1:25:00,  4.05s/it, loss=13905.5303, avg_loss=4621.2101, epoch=0.265, step=453, grad_norm=22239.1035][A
-Epoch 1 batches:  26%|██▋       | 453/1711 [23:19<1:01:04,  2.91s/it, loss=13905.5303, avg_loss=4621.2101, epoch=0.265, step=453, grad_norm=22239.1035][A
-Epoch 1 batches:  26%|██▋       | 453/1711 [23:20<1:01:04,  2.91s/it, loss=7564.0542, avg_loss=4627.6921, epoch=0.265, step=454, grad_norm=39020.2617] [A
-Epoch 1 batches:  27%|██▋       | 454/1711 [23:20<44:26,  2.12s/it, loss=7564.0542, avg_loss=4627.6921, epoch=0.265, step=454, grad_norm=39020.2617]  [A
-Epoch 1 batches:  27%|██▋       | 454/1711 [23:20<44:26,  2.12s/it, loss=22428.4512, avg_loss=4666.8147, epoch=0.266, step=455, grad_norm=13802.0762][A
-Epoch 1 batches:  27%|██▋       | 455/1711 [23:20<32:38,  1.56s/it, loss=22428.4512, avg_loss=4666.8147, epoch=0.266, step=455, grad_norm=13802.0762][A
-Epoch 1 batches:  27%|██▋       | 455/1711 [23:20<32:38,  1.56s/it, loss=44.4003, avg_loss=4656.6778, epoch=0.267, step=456, grad_norm=12106.8691]   [A
-Epoch 1 batches:  27%|██▋       | 456/1711 [23:20<24:26,  1.17s/it, loss=44.4003, avg_loss=4656.6778, epoch=0.267, step=456, grad_norm=12106.8691][A
-Epoch 1 batches:  27%|██▋       | 456/1711 [23:28<24:26,  1.17s/it, loss=45.6055, avg_loss=4646.5879, epoch=0.267, step=457, grad_norm=5294.7451] [A
-Epoch 1 batches:  27%|██▋       | 457/1711 [23:28<1:08:24,  3.27s/it, loss=45.6055, avg_loss=4646.5879, epoch=0.267, step=457, grad_norm=5294.7451][A
-Epoch 1 batches:  27%|██▋       | 457/1711 [23:29<1:08:24,  3.27s/it, loss=210.0548, avg_loss=4636.9012, epoch=0.268, step=458, grad_norm=32873.4297][A
-Epoch 1 batches:  27%|██▋       | 458/1711 [23:29<49:22,  2.36s/it, loss=210.0548, avg_loss=4636.9012, epoch=0.268, step=458, grad_norm=32873.4297]  [A
-Epoch 1 batches:  27%|██▋       | 458/1711 [23:29<49:22,  2.36s/it, loss=12291.2832, avg_loss=4653.5774, epoch=0.268, step=459, grad_norm=73257.7812][A
-Epoch 1 batches:  27%|██▋       | 459/1711 [23:29<36:08,  1.73s/it, loss=12291.2832, avg_loss=4653.5774, epoch=0.268, step=459, grad_norm=73257.7812][A
-Epoch 1 batches:  27%|██▋       | 459/1711 [23:37<36:08,  1.73s/it, loss=1689.6659, avg_loss=4647.1341, epoch=0.269, step=460, grad_norm=59060.8359] [A
-Epoch 1 batches:  27%|██▋       | 460/1711 [23:37<1:13:30,  3.53s/it, loss=1689.6659, avg_loss=4647.1341, epoch=0.269, step=460, grad_norm=59060.8359][A
-Epoch 1 batches:  27%|██▋       | 460/1711 [23:37<1:13:30,  3.53s/it, loss=11136.2266, avg_loss=4661.2102, epoch=0.269, step=461, grad_norm=34046.8750][A
-Epoch 1 batches:  27%|██▋       | 461/1711 [23:37<52:51,  2.54s/it, loss=11136.2266, avg_loss=4661.2102, epoch=0.269, step=461, grad_norm=34046.8750]  [A
-Epoch 1 batches:  27%|██▋       | 461/1711 [23:37<52:51,  2.54s/it, loss=28.2019, avg_loss=4651.1821, epoch=0.270, step=462, grad_norm=10677.5869]   [A
-Epoch 1 batches:  27%|██▋       | 462/1711 [23:37<38:31,  1.85s/it, loss=28.2019, avg_loss=4651.1821, epoch=0.270, step=462, grad_norm=10677.5869][A
-Epoch 1 batches:  27%|██▋       | 462/1711 [23:44<38:31,  1.85s/it, loss=556.1192, avg_loss=4642.3374, epoch=0.271, step=463, grad_norm=23701.3555][A
-Epoch 1 batches:  27%|██▋       | 463/1711 [23:44<1:10:54,  3.41s/it, loss=556.1192, avg_loss=4642.3374, epoch=0.271, step=463, grad_norm=23701.3555][A
-Epoch 1 batches:  27%|██▋       | 463/1711 [23:44<1:10:54,  3.41s/it, loss=585.3215, avg_loss=4633.5939, epoch=0.271, step=464, grad_norm=37045.7227][A
-Epoch 1 batches:  27%|██▋       | 464/1711 [23:44<51:16,  2.47s/it, loss=585.3215, avg_loss=4633.5939, epoch=0.271, step=464, grad_norm=37045.7227]  [A
-Epoch 1 batches:  27%|██▋       | 464/1711 [23:45<51:16,  2.47s/it, loss=1931.9550, avg_loss=4627.7839, epoch=0.272, step=465, grad_norm=44542.0352][A
-Epoch 1 batches:  27%|██▋       | 465/1711 [23:45<37:25,  1.80s/it, loss=1931.9550, avg_loss=4627.7839, epoch=0.272, step=465, grad_norm=44542.0352][A
-Epoch 1 batches:  27%|██▋       | 465/1711 [23:53<37:25,  1.80s/it, loss=183.8671, avg_loss=4618.2476, epoch=0.272, step=466, grad_norm=28188.3672] [A
-Epoch 1 batches:  27%|██▋       | 466/1711 [23:53<1:19:13,  3.82s/it, loss=183.8671, avg_loss=4618.2476, epoch=0.272, step=466, grad_norm=28188.3672][A
-Epoch 1 batches:  27%|██▋       | 466/1711 [23:53<1:19:13,  3.82s/it, loss=62.8705, avg_loss=4608.4930, epoch=0.273, step=467, grad_norm=22260.6875] [A
-Epoch 1 batches:  27%|██▋       | 467/1711 [23:53<56:59,  2.75s/it, loss=62.8705, avg_loss=4608.4930, epoch=0.273, step=467, grad_norm=22260.6875]  [A
-Epoch 1 batches:  27%|██▋       | 467/1711 [23:54<56:59,  2.75s/it, loss=159.8156, avg_loss=4598.9873, epoch=0.274, step=468, grad_norm=37600.3320][A
-Epoch 1 batches:  27%|██▋       | 468/1711 [23:54<41:27,  2.00s/it, loss=159.8156, avg_loss=4598.9873, epoch=0.274, step=468, grad_norm=37600.3320][A
-Epoch 1 batches:  27%|██▋       | 468/1711 [24:03<41:27,  2.00s/it, loss=10068.7002, avg_loss=4610.6498, epoch=0.274, step=469, grad_norm=45196.8359][A
-Epoch 1 batches:  27%|██▋       | 469/1711 [24:03<1:28:50,  4.29s/it, loss=10068.7002, avg_loss=4610.6498, epoch=0.274, step=469, grad_norm=45196.8359][A
-Epoch 1 batches:  27%|██▋       | 469/1711 [24:04<1:28:50,  4.29s/it, loss=123.5752, avg_loss=4601.1028, epoch=0.275, step=470, grad_norm=20687.3828]  [A
-Epoch 1 batches:  27%|██▋       | 470/1711 [24:04<1:03:39,  3.08s/it, loss=123.5752, avg_loss=4601.1028, epoch=0.275, step=470, grad_norm=20687.3828][A
-Epoch 1 batches:  27%|██▋       | 470/1711 [24:04<1:03:39,  3.08s/it, loss=679.3664, avg_loss=4592.7764, epoch=0.275, step=471, grad_norm=30595.7090][A
-Epoch 1 batches:  28%|██▊       | 471/1711 [24:04<46:03,  2.23s/it, loss=679.3664, avg_loss=4592.7764, epoch=0.275, step=471, grad_norm=30595.7090]  [A
-Epoch 1 batches:  28%|██▊       | 471/1711 [24:12<46:03,  2.23s/it, loss=172.4270, avg_loss=4583.4113, epoch=0.276, step=472, grad_norm=24180.8418][A
-Epoch 1 batches:  28%|██▊       | 472/1711 [24:12<1:25:21,  4.13s/it, loss=172.4270, avg_loss=4583.4113, epoch=0.276, step=472, grad_norm=24180.8418][A
-Epoch 1 batches:  28%|██▊       | 472/1711 [24:13<1:25:21,  4.13s/it, loss=260.0747, avg_loss=4574.2710, epoch=0.276, step=473, grad_norm=17793.4648][A
-Epoch 1 batches:  28%|██▊       | 473/1711 [24:13<1:01:17,  2.97s/it, loss=260.0747, avg_loss=4574.2710, epoch=0.276, step=473, grad_norm=17793.4648][A
-Epoch 1 batches:  28%|██▊       | 473/1711 [24:13<1:01:17,  2.97s/it, loss=7645.9409, avg_loss=4580.7514, epoch=0.277, step=474, grad_norm=35839.2734][A
-Epoch 1 batches:  28%|██▊       | 474/1711 [24:13<44:25,  2.16s/it, loss=7645.9409, avg_loss=4580.7514, epoch=0.277, step=474, grad_norm=35839.2734]  [A
-Epoch 1 batches:  28%|██▊       | 474/1711 [24:26<44:25,  2.16s/it, loss=4507.5474, avg_loss=4580.5972, epoch=0.278, step=475, grad_norm=15094.3184][A
-Epoch 1 batches:  28%|██▊       | 475/1711 [24:26<1:49:39,  5.32s/it, loss=4507.5474, avg_loss=4580.5972, epoch=0.278, step=475, grad_norm=15094.3184][A
-Epoch 1 batches:  28%|██▊       | 475/1711 [24:26<1:49:39,  5.32s/it, loss=323.7148, avg_loss=4571.6542, epoch=0.278, step=476, grad_norm=19733.3984] [A
-Epoch 1 batches:  28%|██▊       | 476/1711 [24:26<1:18:18,  3.80s/it, loss=323.7148, avg_loss=4571.6542, epoch=0.278, step=476, grad_norm=19733.3984][A
-Epoch 1 batches:  28%|██▊       | 476/1711 [24:26<1:18:18,  3.80s/it, loss=968.9289, avg_loss=4564.1013, epoch=0.279, step=477, grad_norm=37608.0039][A
-Epoch 1 batches:  28%|██▊       | 477/1711 [24:26<56:23,  2.74s/it, loss=968.9289, avg_loss=4564.1013, epoch=0.279, step=477, grad_norm=37608.0039]  [A
-Epoch 1 batches:  28%|██▊       | 477/1711 [24:35<56:23,  2.74s/it, loss=55.9529, avg_loss=4554.6701, epoch=0.279, step=478, grad_norm=23746.6152] [A
-Epoch 1 batches:  28%|██▊       | 478/1711 [24:35<1:33:03,  4.53s/it, loss=55.9529, avg_loss=4554.6701, epoch=0.279, step=478, grad_norm=23746.6152][A
-Epoch 1 batches:  28%|██▊       | 478/1711 [24:35<1:33:03,  4.53s/it, loss=14535.8896, avg_loss=4575.5077, epoch=0.280, step=479, grad_norm=52251.5508][A
-Epoch 1 batches:  28%|██▊       | 479/1711 [24:35<1:06:41,  3.25s/it, loss=14535.8896, avg_loss=4575.5077, epoch=0.280, step=479, grad_norm=52251.5508][A
-Epoch 1 batches:  28%|██▊       | 479/1711 [24:35<1:06:41,  3.25s/it, loss=24157.4258, avg_loss=4616.3033, epoch=0.281, step=480, grad_norm=37617.7500][A
-Epoch 1 batches:  28%|██▊       | 480/1711 [24:35<48:16,  2.35s/it, loss=24157.4258, avg_loss=4616.3033, epoch=0.281, step=480, grad_norm=37617.7500]  [A
-Epoch 1 batches:  28%|██▊       | 480/1711 [24:42<48:16,  2.35s/it, loss=123.6517, avg_loss=4606.9631, epoch=0.281, step=481, grad_norm=24538.1113]  [A
-Epoch 1 batches:  28%|██▊       | 481/1711 [24:42<1:15:45,  3.70s/it, loss=123.6517, avg_loss=4606.9631, epoch=0.281, step=481, grad_norm=24538.1113][A
-Epoch 1 batches:  28%|██▊       | 481/1711 [24:42<1:15:45,  3.70s/it, loss=17192.3184, avg_loss=4633.0738, epoch=0.282, step=482, grad_norm=18937.9121][A
-Epoch 1 batches:  28%|██▊       | 482/1711 [24:42<54:31,  2.66s/it, loss=17192.3184, avg_loss=4633.0738, epoch=0.282, step=482, grad_norm=18937.9121]  [A
-Epoch 1 batches:  28%|██▊       | 482/1711 [24:43<54:31,  2.66s/it, loss=1770.7395, avg_loss=4627.1476, epoch=0.282, step=483, grad_norm=74310.9219] [A
-Epoch 1 batches:  28%|██▊       | 483/1711 [24:43<39:44,  1.94s/it, loss=1770.7395, avg_loss=4627.1476, epoch=0.282, step=483, grad_norm=74310.9219][A
-Epoch 1 batches:  28%|██▊       | 483/1711 [24:50<39:44,  1.94s/it, loss=6134.6831, avg_loss=4630.2624, epoch=0.283, step=484, grad_norm=62660.8516][A
-Epoch 1 batches:  28%|██▊       | 484/1711 [24:50<1:13:24,  3.59s/it, loss=6134.6831, avg_loss=4630.2624, epoch=0.283, step=484, grad_norm=62660.8516][A
-Epoch 1 batches:  28%|██▊       | 484/1711 [24:50<1:13:24,  3.59s/it, loss=2150.4592, avg_loss=4625.1494, epoch=0.283, step=485, grad_norm=20419.6738][A
-Epoch 1 batches:  28%|██▊       | 485/1711 [24:50<52:53,  2.59s/it, loss=2150.4592, avg_loss=4625.1494, epoch=0.283, step=485, grad_norm=20419.6738]  [A
-Epoch 1 batches:  28%|██▊       | 485/1711 [24:51<52:53,  2.59s/it, loss=116.1691, avg_loss=4615.8717, epoch=0.284, step=486, grad_norm=24756.6348] [A
-Epoch 1 batches:  28%|██▊       | 486/1711 [24:51<38:43,  1.90s/it, loss=116.1691, avg_loss=4615.8717, epoch=0.284, step=486, grad_norm=24756.6348][A
-Epoch 1 batches:  28%|██▊       | 486/1711 [24:59<38:43,  1.90s/it, loss=177.5589, avg_loss=4606.7581, epoch=0.285, step=487, grad_norm=35821.4805][A
-Epoch 1 batches:  28%|██▊       | 487/1711 [24:59<1:19:05,  3.88s/it, loss=177.5589, avg_loss=4606.7581, epoch=0.285, step=487, grad_norm=35821.4805][A
-Epoch 1 batches:  28%|██▊       | 487/1711 [24:59<1:19:05,  3.88s/it, loss=69.9644, avg_loss=4597.4614, epoch=0.285, step=488, grad_norm=16595.6270] [A
-Epoch 1 batches:  29%|██▊       | 488/1711 [24:59<56:45,  2.78s/it, loss=69.9644, avg_loss=4597.4614, epoch=0.285, step=488, grad_norm=16595.6270]  [A
-Epoch 1 batches:  29%|██▊       | 488/1711 [25:00<56:45,  2.78s/it, loss=2342.4724, avg_loss=4592.8499, epoch=0.286, step=489, grad_norm=61457.0469][A
-Epoch 1 batches:  29%|██▊       | 489/1711 [25:00<41:15,  2.03s/it, loss=2342.4724, avg_loss=4592.8499, epoch=0.286, step=489, grad_norm=61457.0469][A
-Epoch 1 batches:  29%|██▊       | 489/1711 [25:09<41:15,  2.03s/it, loss=507.5892, avg_loss=4584.5127, epoch=0.286, step=490, grad_norm=30314.5234] [A
-Epoch 1 batches:  29%|██▊       | 490/1711 [25:09<1:26:16,  4.24s/it, loss=507.5892, avg_loss=4584.5127, epoch=0.286, step=490, grad_norm=30314.5234][A
-Epoch 1 batches:  29%|██▊       | 490/1711 [25:09<1:26:16,  4.24s/it, loss=572.4496, avg_loss=4576.3415, epoch=0.287, step=491, grad_norm=44461.0312][A
-Epoch 1 batches:  29%|██▊       | 491/1711 [25:09<1:01:50,  3.04s/it, loss=572.4496, avg_loss=4576.3415, epoch=0.287, step=491, grad_norm=44461.0312][A
-Epoch 1 batches:  29%|██▊       | 491/1711 [25:10<1:01:50,  3.04s/it, loss=46.7557, avg_loss=4567.1350, epoch=0.288, step=492, grad_norm=11514.1328] [A
-Epoch 1 batches:  29%|██▉       | 492/1711 [25:10<44:52,  2.21s/it, loss=46.7557, avg_loss=4567.1350, epoch=0.288, step=492, grad_norm=11514.1328]  [A
-Epoch 1 batches:  29%|██▉       | 492/1711 [25:16<44:52,  2.21s/it, loss=7998.6064, avg_loss=4574.0954, epoch=0.288, step=493, grad_norm=26996.0918][A
-Epoch 1 batches:  29%|██▉       | 493/1711 [25:16<1:09:13,  3.41s/it, loss=7998.6064, avg_loss=4574.0954, epoch=0.288, step=493, grad_norm=26996.0918][A
-Epoch 1 batches:  29%|██▉       | 493/1711 [25:16<1:09:13,  3.41s/it, loss=9790.4229, avg_loss=4584.6547, epoch=0.289, step=494, grad_norm=51255.9336][A
-Epoch 1 batches:  29%|██▉       | 494/1711 [25:16<49:57,  2.46s/it, loss=9790.4229, avg_loss=4584.6547, epoch=0.289, step=494, grad_norm=51255.9336]  [A
-Epoch 1 batches:  29%|██▉       | 494/1711 [25:16<49:57,  2.46s/it, loss=547.2000, avg_loss=4576.4983, epoch=0.289, step=495, grad_norm=32300.7031] [A
-Epoch 1 batches:  29%|██▉       | 495/1711 [25:16<37:24,  1.85s/it, loss=547.2000, avg_loss=4576.4983, epoch=0.289, step=495, grad_norm=32300.7031][A
-Epoch 1 batches:  29%|██▉       | 495/1711 [25:24<37:24,  1.85s/it, loss=9965.2510, avg_loss=4587.3627, epoch=0.290, step=496, grad_norm=56891.8477][A
-Epoch 1 batches:  29%|██▉       | 496/1711 [25:24<1:12:44,  3.59s/it, loss=9965.2510, avg_loss=4587.3627, epoch=0.290, step=496, grad_norm=56891.8477][A
-Epoch 1 batches:  29%|██▉       | 496/1711 [25:24<1:12:44,  3.59s/it, loss=804.2778, avg_loss=4579.7508, epoch=0.290, step=497, grad_norm=31013.2227] [A
-Epoch 1 batches:  29%|██▉       | 497/1711 [25:24<52:23,  2.59s/it, loss=804.2778, avg_loss=4579.7508, epoch=0.290, step=497, grad_norm=31013.2227]  [A
-Epoch 1 batches:  29%|██▉       | 497/1711 [25:25<52:23,  2.59s/it, loss=53.7267, avg_loss=4570.6624, epoch=0.291, step=498, grad_norm=17218.7344] [A
-Epoch 1 batches:  29%|██▉       | 498/1711 [25:25<38:12,  1.89s/it, loss=53.7267, avg_loss=4570.6624, epoch=0.291, step=498, grad_norm=17218.7344][A
-Epoch 1 batches:  29%|██▉       | 498/1711 [25:33<38:12,  1.89s/it, loss=6419.6367, avg_loss=4574.3678, epoch=0.292, step=499, grad_norm=61454.0703][A
-Epoch 1 batches:  29%|██▉       | 499/1711 [25:33<1:14:27,  3.69s/it, loss=6419.6367, avg_loss=4574.3678, epoch=0.292, step=499, grad_norm=61454.0703][A
-Epoch 1 batches:  29%|██▉       | 499/1711 [25:33<1:14:27,  3.69s/it, loss=16275.6318, avg_loss=4597.7703, epoch=0.292, step=500, grad_norm=29830.4590][A
-Validation:   0%|          | 0/20 [00:00<?, ?it/s][A
-Validation:   5%|▌         | 1/20 [00:02<00:51,  2.71s/it][A
-Validation:  10%|█         | 2/20 [00:02<00:22,  1.24s/it][A
-Validation:  15%|█▌        | 3/20 [00:03<00:12,  1.35it/s][A
-Validation:  20%|██        | 4/20 [00:04<00:16,  1.02s/it][A
-Validation:  25%|██▌       | 5/20 [00:05<00:13,  1.14it/s][A
-Validation:  30%|███       | 6/20 [00:05<00:11,  1.22it/s][A
-Validation:  35%|███▌      | 7/20 [00:07<00:13,  1.03s/it][A
-Validation:  40%|████      | 8/20 [00:07<00:10,  1.19it/s][A
-Validation:  45%|████▌     | 9/20 [00:08<00:09,  1.22it/s][A
-Validation:  50%|█████     | 10/20 [00:09<00:09,  1.04it/s][A
-Validation:  55%|█████▌    | 11/20 [00:10<00:07,  1.23it/s][A
-Validation:  60%|██████    | 12/20 [00:10<00:05,  1.34it/s][A
-Validation:  65%|██████▌   | 13/20 [00:12<00:07,  1.07s/it][A
-Validation:  70%|███████   | 14/20 [00:12<00:05,  1.19it/s][A
-Validation:  75%|███████▌  | 15/20 [00:13<00:04,  1.14it/s][A
-Validation:  80%|████████  | 16/20 [00:14<00:03,  1.12it/s][A
-Validation:  85%|████████▌ | 17/20 [00:15<00:02,  1.22it/s][A
-Validation:  90%|█████████ | 18/20 [00:16<00:01,  1.20it/s][A
-Validation:  95%|█████████▌| 19/20 [00:17<00:00,  1.30it/s][A
-Validation: 100%|██████████| 20/20 [00:17<00:00,  1.59it/s][A
-                                                           [A
-Epoch 1 batches:  29%|██▉       | 500/1711 [25:52<2:51:08,  8.48s/it, loss=16275.6318, avg_loss=4597.7703, epoch=0.292, step=500, grad_norm=29830.4590][A
-Epoch 1 batches:  29%|██▉       | 500/1711 [25:52<2:51:08,  8.48s/it, loss=17586.3496, avg_loss=4623.6956, epoch=0.293, step=501, grad_norm=30371.7930][A
-Epoch 1 batches:  29%|██▉       | 501/1711 [25:52<2:01:05,  6.00s/it, loss=17586.3496, avg_loss=4623.6956, epoch=0.293, step=501, grad_norm=30371.7930][A
-Epoch 1 batches:  29%|██▉       | 501/1711 [25:53<2:01:05,  6.00s/it, loss=1452.4105, avg_loss=4617.3783, epoch=0.293, step=502, grad_norm=73787.9766] [A
-Epoch 1 batches:  29%|██▉       | 502/1711 [25:53<1:26:09,  4.28s/it, loss=1452.4105, avg_loss=4617.3783, epoch=0.293, step=502, grad_norm=73787.9766][A
-Epoch 1 batches:  29%|██▉       | 502/1711 [25:53<1:26:09,  4.28s/it, loss=3609.4297, avg_loss=4615.3745, epoch=0.294, step=503, grad_norm=52391.3828][A
-Epoch 1 batches:  29%|██▉       | 503/1711 [25:53<1:01:46,  3.07s/it, loss=3609.4297, avg_loss=4615.3745, epoch=0.294, step=503, grad_norm=52391.3828][A
-Epoch 1 batches:  29%|██▉       | 503/1711 [25:53<1:01:46,  3.07s/it, loss=2259.2693, avg_loss=4610.6997, epoch=0.295, step=504, grad_norm=41506.1602][A
-Epoch 1 batches:  29%|██▉       | 504/1711 [25:53<44:43,  2.22s/it, loss=2259.2693, avg_loss=4610.6997, epoch=0.295, step=504, grad_norm=41506.1602]  [A
-Epoch 1 batches:  29%|██▉       | 504/1711 [25:53<44:43,  2.22s/it, loss=25904.9199, avg_loss=4652.8664, epoch=0.295, step=505, grad_norm=76095.9062][A
-Epoch 1 batches:  30%|██▉       | 505/1711 [25:53<32:49,  1.63s/it, loss=25904.9199, avg_loss=4652.8664, epoch=0.295, step=505, grad_norm=76095.9062][A
-Epoch 1 batches:  30%|██▉       | 505/1711 [25:54<32:49,  1.63s/it, loss=1255.9340, avg_loss=4646.1531, epoch=0.296, step=506, grad_norm=19848.0020] [A
-Epoch 1 batches:  30%|██▉       | 506/1711 [25:54<25:03,  1.25s/it, loss=1255.9340, avg_loss=4646.1531, epoch=0.296, step=506, grad_norm=19848.0020][A
-Epoch 1 batches:  30%|██▉       | 506/1711 [25:59<25:03,  1.25s/it, loss=25976.8887, avg_loss=4688.2256, epoch=0.296, step=507, grad_norm=59280.4805][A
-Epoch 1 batches:  30%|██▉       | 507/1711 [25:59<51:36,  2.57s/it, loss=25976.8887, avg_loss=4688.2256, epoch=0.296, step=507, grad_norm=59280.4805][A
-Epoch 1 batches:  30%|██▉       | 507/1711 [26:00<51:36,  2.57s/it, loss=1545.4941, avg_loss=4682.0391, epoch=0.297, step=508, grad_norm=20344.1621] [A
-Epoch 1 batches:  30%|██▉       | 508/1711 [26:00<40:22,  2.01s/it, loss=1545.4941, avg_loss=4682.0391, epoch=0.297, step=508, grad_norm=20344.1621][A
-Epoch 1 batches:  30%|██▉       | 508/1711 [26:00<40:22,  2.01s/it, loss=12.5951, avg_loss=4672.8653, epoch=0.297, step=509, grad_norm=3382.8496]   [A
-Epoch 1 batches:  30%|██▉       | 509/1711 [26:00<29:45,  1.49s/it, loss=12.5951, avg_loss=4672.8653, epoch=0.297, step=509, grad_norm=3382.8496][A
-Epoch 1 batches:  30%|██▉       | 509/1711 [26:07<29:45,  1.49s/it, loss=10572.6729, avg_loss=4684.4336, epoch=0.298, step=510, grad_norm=34384.3945][A
-Epoch 1 batches:  30%|██▉       | 510/1711 [26:07<1:00:53,  3.04s/it, loss=10572.6729, avg_loss=4684.4336, epoch=0.298, step=510, grad_norm=34384.3945][A
-Epoch 1 batches:  30%|██▉       | 510/1711 [26:08<1:00:53,  3.04s/it, loss=618.1646, avg_loss=4676.4761, epoch=0.299, step=511, grad_norm=37838.5469]  [A
-Epoch 1 batches:  30%|██▉       | 511/1711 [26:08<48:20,  2.42s/it, loss=618.1646, avg_loss=4676.4761, epoch=0.299, step=511, grad_norm=37838.5469]  [A
-Epoch 1 batches:  30%|██▉       | 511/1711 [26:08<48:20,  2.42s/it, loss=92.1384, avg_loss=4667.5223, epoch=0.299, step=512, grad_norm=17572.3145] [A
-Epoch 1 batches:  30%|██▉       | 512/1711 [26:08<35:20,  1.77s/it, loss=92.1384, avg_loss=4667.5223, epoch=0.299, step=512, grad_norm=17572.3145][A
-Epoch 1 batches:  30%|██▉       | 512/1711 [26:15<35:20,  1.77s/it, loss=394.3135, avg_loss=4659.1925, epoch=0.300, step=513, grad_norm=19091.4805][A
-Epoch 1 batches:  30%|██▉       | 513/1711 [26:15<1:07:42,  3.39s/it, loss=394.3135, avg_loss=4659.1925, epoch=0.300, step=513, grad_norm=19091.4805][A
-Epoch 1 batches:  30%|██▉       | 513/1711 [26:16<1:07:42,  3.39s/it, loss=72.9349, avg_loss=4650.2698, epoch=0.300, step=514, grad_norm=10235.6465] [A
-Epoch 1 batches:  30%|███       | 514/1711 [26:16<51:27,  2.58s/it, loss=72.9349, avg_loss=4650.2698, epoch=0.300, step=514, grad_norm=10235.6465]  [A
-Epoch 1 batches:  30%|███       | 514/1711 [26:18<51:27,  2.58s/it, loss=16407.7168, avg_loss=4673.0998, epoch=0.301, step=515, grad_norm=31644.8301][A
-Epoch 1 batches:  30%|███       | 515/1711 [26:18<45:57,  2.31s/it, loss=16407.7168, avg_loss=4673.0998, epoch=0.301, step=515, grad_norm=31644.8301][A
-Epoch 1 batches:  30%|███       | 515/1711 [26:24<45:57,  2.31s/it, loss=53.2370, avg_loss=4664.1466, epoch=0.302, step=516, grad_norm=14426.4736]   [A
-Epoch 1 batches:  30%|███       | 516/1711 [26:24<1:12:02,  3.62s/it, loss=53.2370, avg_loss=4664.1466, epoch=0.302, step=516, grad_norm=14426.4736][A
-Epoch 1 batches:  30%|███       | 516/1711 [26:25<1:12:02,  3.62s/it, loss=11938.5439, avg_loss=4678.2170, epoch=0.302, step=517, grad_norm=58315.1016][A
-Epoch 1 batches:  30%|███       | 517/1711 [26:25<51:56,  2.61s/it, loss=11938.5439, avg_loss=4678.2170, epoch=0.302, step=517, grad_norm=58315.1016]  [A
-Epoch 1 batches:  30%|███       | 517/1711 [26:27<51:56,  2.61s/it, loss=34.8973, avg_loss=4669.2530, epoch=0.303, step=518, grad_norm=9559.3047]    [A
-Epoch 1 batches:  30%|███       | 518/1711 [26:27<51:58,  2.61s/it, loss=34.8973, avg_loss=4669.2530, epoch=0.303, step=518, grad_norm=9559.3047][A
-Epoch 1 batches:  30%|███       | 518/1711 [26:32<51:58,  2.61s/it, loss=283.7129, avg_loss=4660.8031, epoch=0.303, step=519, grad_norm=19673.8574][A
-Epoch 1 batches:  30%|███       | 519/1711 [26:33<1:07:02,  3.37s/it, loss=283.7129, avg_loss=4660.8031, epoch=0.303, step=519, grad_norm=19673.8574][A
-Epoch 1 batches:  30%|███       | 519/1711 [26:33<1:07:02,  3.37s/it, loss=5842.1001, avg_loss=4663.0748, epoch=0.304, step=520, grad_norm=13024.7900][A
-Epoch 1 batches:  30%|███       | 520/1711 [26:33<48:22,  2.44s/it, loss=5842.1001, avg_loss=4663.0748, epoch=0.304, step=520, grad_norm=13024.7900]  [A
-Epoch 1 batches:  30%|███       | 520/1711 [26:37<48:22,  2.44s/it, loss=17.0858, avg_loss=4654.1573, epoch=0.305, step=521, grad_norm=2570.6707]   [A
-Epoch 1 batches:  30%|███       | 521/1711 [26:37<56:27,  2.85s/it, loss=17.0858, avg_loss=4654.1573, epoch=0.305, step=521, grad_norm=2570.6707][A
-Epoch 1 batches:  30%|███       | 521/1711 [26:42<56:27,  2.85s/it, loss=889.4625, avg_loss=4646.9453, epoch=0.305, step=522, grad_norm=40395.1797][A
-Epoch 1 batches:  31%|███       | 522/1711 [26:42<1:11:44,  3.62s/it, loss=889.4625, avg_loss=4646.9453, epoch=0.305, step=522, grad_norm=40395.1797][A
-Epoch 1 batches:  31%|███       | 522/1711 [26:42<1:11:44,  3.62s/it, loss=18.4261, avg_loss=4638.0953, epoch=0.306, step=523, grad_norm=7310.2148]  [A
-Epoch 1 batches:  31%|███       | 523/1711 [26:42<51:45,  2.61s/it, loss=18.4261, avg_loss=4638.0953, epoch=0.306, step=523, grad_norm=7310.2148]  [A
-Epoch 1 batches:  31%|███       | 523/1711 [26:47<51:45,  2.61s/it, loss=13955.8379, avg_loss=4655.8773, epoch=0.306, step=524, grad_norm=27063.2910][A
-Epoch 1 batches:  31%|███       | 524/1711 [26:47<1:05:26,  3.31s/it, loss=13955.8379, avg_loss=4655.8773, epoch=0.306, step=524, grad_norm=27063.2910][A
-Epoch 1 batches:  31%|███       | 524/1711 [26:52<1:05:26,  3.31s/it, loss=12412.2959, avg_loss=4670.6514, epoch=0.307, step=525, grad_norm=30563.3613][A
-Epoch 1 batches:  31%|███       | 525/1711 [26:52<1:14:37,  3.78s/it, loss=12412.2959, avg_loss=4670.6514, epoch=0.307, step=525, grad_norm=30563.3613][A
-Epoch 1 batches:  31%|███       | 525/1711 [26:52<1:14:37,  3.78s/it, loss=7412.0312, avg_loss=4675.8632, epoch=0.307, step=526, grad_norm=39851.1641] [A
-Epoch 1 batches:  31%|███       | 526/1711 [26:52<53:43,  2.72s/it, loss=7412.0312, avg_loss=4675.8632, epoch=0.307, step=526, grad_norm=39851.1641]  [A
-Epoch 1 batches:  31%|███       | 526/1711 [26:56<53:43,  2.72s/it, loss=13.9940, avg_loss=4667.0171, epoch=0.308, step=527, grad_norm=4481.0322]   [A
-Epoch 1 batches:  31%|███       | 527/1711 [26:56<1:02:18,  3.16s/it, loss=13.9940, avg_loss=4667.0171, epoch=0.308, step=527, grad_norm=4481.0322][A
-Epoch 1 batches:  31%|███       | 527/1711 [27:04<1:02:18,  3.16s/it, loss=46.7062, avg_loss=4658.2665, epoch=0.309, step=528, grad_norm=10285.4541][A
-Epoch 1 batches:  31%|███       | 528/1711 [27:04<1:30:34,  4.59s/it, loss=46.7062, avg_loss=4658.2665, epoch=0.309, step=528, grad_norm=10285.4541][A
-Epoch 1 batches:  31%|███       | 528/1711 [27:05<1:30:34,  4.59s/it, loss=444.9083, avg_loss=4650.3018, epoch=0.309, step=529, grad_norm=48389.8242][A
-Epoch 1 batches:  31%|███       | 529/1711 [27:05<1:04:38,  3.28s/it, loss=444.9083, avg_loss=4650.3018, epoch=0.309, step=529, grad_norm=48389.8242][A
-Epoch 1 batches:  31%|███       | 529/1711 [27:09<1:04:38,  3.28s/it, loss=425.4388, avg_loss=4642.3303, epoch=0.310, step=530, grad_norm=23511.8320][A
-Epoch 1 batches:  31%|███       | 530/1711 [27:09<1:11:07,  3.61s/it, loss=425.4388, avg_loss=4642.3303, epoch=0.310, step=530, grad_norm=23511.8320][A
-Epoch 1 batches:  31%|███       | 530/1711 [27:14<1:11:07,  3.61s/it, loss=1558.1202, avg_loss=4636.5220, epoch=0.310, step=531, grad_norm=64423.2852][A
-Epoch 1 batches:  31%|███       | 531/1711 [27:14<1:19:04,  4.02s/it, loss=1558.1202, avg_loss=4636.5220, epoch=0.310, step=531, grad_norm=64423.2852][A
-Epoch 1 batches:  31%|███       | 531/1711 [27:14<1:19:04,  4.02s/it, loss=13444.2988, avg_loss=4653.0780, epoch=0.311, step=532, grad_norm=32280.2598][A
-Epoch 1 batches:  31%|███       | 532/1711 [27:14<56:50,  2.89s/it, loss=13444.2988, avg_loss=4653.0780, epoch=0.311, step=532, grad_norm=32280.2598]  [A
-Epoch 1 batches:  31%|███       | 532/1711 [27:16<56:50,  2.89s/it, loss=10615.1016, avg_loss=4664.2638, epoch=0.312, step=533, grad_norm=34822.9805][A
-Epoch 1 batches:  31%|███       | 533/1711 [27:16<51:32,  2.63s/it, loss=10615.1016, avg_loss=4664.2638, epoch=0.312, step=533, grad_norm=34822.9805][A
-Epoch 1 batches:  31%|███       | 533/1711 [27:22<51:32,  2.63s/it, loss=465.8387, avg_loss=4656.4016, epoch=0.312, step=534, grad_norm=27832.0547]  [A
-Epoch 1 batches:  31%|███       | 534/1711 [27:22<1:08:19,  3.48s/it, loss=465.8387, avg_loss=4656.4016, epoch=0.312, step=534, grad_norm=27832.0547][A
-Epoch 1 batches:  31%|███       | 534/1711 [27:22<1:08:19,  3.48s/it, loss=10.3448, avg_loss=4647.7173, epoch=0.313, step=535, grad_norm=5989.0293]  [A
-Epoch 1 batches:  31%|███▏      | 535/1711 [27:22<49:18,  2.52s/it, loss=10.3448, avg_loss=4647.7173, epoch=0.313, step=535, grad_norm=5989.0293]  [A
-Epoch 1 batches:  31%|███▏      | 535/1711 [27:24<49:18,  2.52s/it, loss=1529.9652, avg_loss=4641.9006, epoch=0.313, step=536, grad_norm=57962.3047][A
-Epoch 1 batches:  31%|███▏      | 536/1711 [27:24<45:33,  2.33s/it, loss=1529.9652, avg_loss=4641.9006, epoch=0.313, step=536, grad_norm=57962.3047][A
-Epoch 1 batches:  31%|███▏      | 536/1711 [27:30<45:33,  2.33s/it, loss=185.5816, avg_loss=4633.6021, epoch=0.314, step=537, grad_norm=18107.7871] [A
-Epoch 1 batches:  31%|███▏      | 537/1711 [27:30<1:05:49,  3.36s/it, loss=185.5816, avg_loss=4633.6021, epoch=0.314, step=537, grad_norm=18107.7871][A
-Epoch 1 batches:  31%|███▏      | 537/1711 [27:30<1:05:49,  3.36s/it, loss=630.9606, avg_loss=4626.1622, epoch=0.314, step=538, grad_norm=53600.3555][A
-Epoch 1 batches:  31%|███▏      | 538/1711 [27:30<47:31,  2.43s/it, loss=630.9606, avg_loss=4626.1622, epoch=0.314, step=538, grad_norm=53600.3555]  [A
-Epoch 1 batches:  31%|███▏      | 538/1711 [27:31<47:31,  2.43s/it, loss=17634.5918, avg_loss=4650.2966, epoch=0.315, step=539, grad_norm=30631.2500][A
-Epoch 1 batches:  32%|███▏      | 539/1711 [27:31<42:20,  2.17s/it, loss=17634.5918, avg_loss=4650.2966, epoch=0.315, step=539, grad_norm=30631.2500][A
-Epoch 1 batches:  32%|███▏      | 539/1711 [27:38<42:20,  2.17s/it, loss=333.2285, avg_loss=4642.3021, epoch=0.316, step=540, grad_norm=36579.8711]  [A
-Epoch 1 batches:  32%|███▏      | 540/1711 [27:38<1:04:53,  3.33s/it, loss=333.2285, avg_loss=4642.3021, epoch=0.316, step=540, grad_norm=36579.8711][A
-Epoch 1 batches:  32%|███▏      | 540/1711 [27:38<1:04:53,  3.33s/it, loss=407.9711, avg_loss=4634.4752, epoch=0.316, step=541, grad_norm=31927.9648][A
-Epoch 1 batches:  32%|███▏      | 541/1711 [27:38<46:51,  2.40s/it, loss=407.9711, avg_loss=4634.4752, epoch=0.316, step=541, grad_norm=31927.9648]  [A
-Epoch 1 batches:  32%|███▏      | 541/1711 [27:40<46:51,  2.40s/it, loss=50.3518, avg_loss=4626.0174, epoch=0.317, step=542, grad_norm=18958.0605] [A
-Epoch 1 batches:  32%|███▏      | 542/1711 [27:40<44:55,  2.31s/it, loss=50.3518, avg_loss=4626.0174, epoch=0.317, step=542, grad_norm=18958.0605][A
-Epoch 1 batches:  32%|███▏      | 542/1711 [27:45<44:55,  2.31s/it, loss=1287.0164, avg_loss=4619.8682, epoch=0.317, step=543, grad_norm=63532.1875][A
-Epoch 1 batches:  32%|███▏      | 543/1711 [27:45<59:42,  3.07s/it, loss=1287.0164, avg_loss=4619.8682, epoch=0.317, step=543, grad_norm=63532.1875][A
-Epoch 1 batches:  32%|███▏      | 543/1711 [27:45<59:42,  3.07s/it, loss=7056.5947, avg_loss=4624.3475, epoch=0.318, step=544, grad_norm=56329.0039][A
-Epoch 1 batches:  32%|███▏      | 544/1711 [27:45<43:14,  2.22s/it, loss=7056.5947, avg_loss=4624.3475, epoch=0.318, step=544, grad_norm=56329.0039][A
-Epoch 1 batches:  32%|███▏      | 544/1711 [27:47<43:14,  2.22s/it, loss=1249.4949, avg_loss=4618.1551, epoch=0.319, step=545, grad_norm=55728.3164][A
-Epoch 1 batches:  32%|███▏      | 545/1711 [27:47<41:33,  2.14s/it, loss=1249.4949, avg_loss=4618.1551, epoch=0.319, step=545, grad_norm=55728.3164][A
-Epoch 1 batches:  32%|███▏      | 545/1711 [27:53<41:33,  2.14s/it, loss=22.5516, avg_loss=4609.7383, epoch=0.319, step=546, grad_norm=9611.5420]   [A
-Epoch 1 batches:  32%|███▏      | 546/1711 [27:53<1:04:21,  3.31s/it, loss=22.5516, avg_loss=4609.7383, epoch=0.319, step=546, grad_norm=9611.5420][A
-Epoch 1 batches:  32%|███▏      | 546/1711 [27:53<1:04:21,  3.31s/it, loss=1048.8837, avg_loss=4603.2285, epoch=0.320, step=547, grad_norm=53699.8242][A
-Epoch 1 batches:  32%|███▏      | 547/1711 [27:53<46:33,  2.40s/it, loss=1048.8837, avg_loss=4603.2285, epoch=0.320, step=547, grad_norm=53699.8242]  [A
-Epoch 1 batches:  32%|███▏      | 547/1711 [27:55<46:33,  2.40s/it, loss=9.3879, avg_loss=4594.8455, epoch=0.320, step=548, grad_norm=6060.5981]    [A
-Epoch 1 batches:  32%|███▏      | 548/1711 [27:55<42:44,  2.20s/it, loss=9.3879, avg_loss=4594.8455, epoch=0.320, step=548, grad_norm=6060.5981][A
-Epoch 1 batches:  32%|███▏      | 548/1711 [28:02<42:44,  2.20s/it, loss=182.9030, avg_loss=4586.8092, epoch=0.321, step=549, grad_norm=13540.9648][A
-Epoch 1 batches:  32%|███▏      | 549/1711 [28:02<1:08:28,  3.54s/it, loss=182.9030, avg_loss=4586.8092, epoch=0.321, step=549, grad_norm=13540.9648][A
-Epoch 1 batches:  32%|███▏      | 549/1711 [28:02<1:08:28,  3.54s/it, loss=10826.9404, avg_loss=4598.1549, epoch=0.321, step=550, grad_norm=45438.8945][A
-Validation:   0%|          | 0/20 [00:00<?, ?it/s][A
-Validation:   5%|▌         | 1/20 [00:03<00:59,  3.13s/it][A
-Validation:  10%|█         | 2/20 [00:03<00:25,  1.40s/it][A
-Validation:  15%|█▌        | 3/20 [00:03<00:14,  1.18it/s][A
-Validation:  20%|██        | 4/20 [00:05<00:17,  1.11s/it][A
-Validation:  25%|██▌       | 5/20 [00:05<00:12,  1.20it/s][A
-Validation:  30%|███       | 6/20 [00:06<00:12,  1.16it/s][A
-Validation:  35%|███▌      | 7/20 [00:07<00:13,  1.06s/it][A
-Validation:  40%|████      | 8/20 [00:08<00:09,  1.22it/s][A
-Validation:  45%|████▌     | 9/20 [00:09<00:09,  1.11it/s][A
-Validation:  50%|█████     | 10/20 [00:10<00:10,  1.03s/it][A
-Validation:  55%|█████▌    | 11/20 [00:10<00:07,  1.21it/s][A
-Validation:  60%|██████    | 12/20 [00:11<00:06,  1.28it/s][A
-Validation:  65%|██████▌   | 13/20 [00:12<00:05,  1.22it/s][A
-Validation:  70%|███████   | 14/20 [00:12<00:04,  1.50it/s][A
-Validation:  75%|███████▌  | 15/20 [00:13<00:03,  1.57it/s][A
-Validation:  80%|████████  | 16/20 [00:14<00:02,  1.42it/s][A
-Validation:  85%|████████▌ | 17/20 [00:14<00:02,  1.50it/s][A
-Validation:  90%|█████████ | 18/20 [00:15<00:01,  1.42it/s][A
-Validation:  95%|█████████▌| 19/20 [00:16<00:00,  1.45it/s][A
-Validation: 100%|██████████| 20/20 [00:16<00:00,  1.82it/s][A
-                                                           [A
-Epoch 1 batches:  32%|███▏      | 550/1711 [28:20<2:36:00,  8.06s/it, loss=10826.9404, avg_loss=4598.1549, epoch=0.321, step=550, grad_norm=45438.8945][A
-Epoch 1 batches:  32%|███▏      | 550/1711 [28:20<2:36:00,  8.06s/it, loss=334.6092, avg_loss=4590.4171, epoch=0.322, step=551, grad_norm=45573.7422]  [A
-Epoch 1 batches:  32%|███▏      | 551/1711 [28:20<1:50:26,  5.71s/it, loss=334.6092, avg_loss=4590.4171, epoch=0.322, step=551, grad_norm=45573.7422][A
-Epoch 1 batches:  32%|███▏      | 551/1711 [28:21<1:50:26,  5.71s/it, loss=2129.6328, avg_loss=4585.9591, epoch=0.323, step=552, grad_norm=30541.8242][A
-Epoch 1 batches:  32%|███▏      | 552/1711 [28:21<1:18:42,  4.07s/it, loss=2129.6328, avg_loss=4585.9591, epoch=0.323, step=552, grad_norm=30541.8242][A
-Epoch 1 batches:  32%|███▏      | 552/1711 [28:21<1:18:42,  4.07s/it, loss=11279.7051, avg_loss=4598.0636, epoch=0.323, step=553, grad_norm=95684.7734][A
-Epoch 1 batches:  32%|███▏      | 553/1711 [28:21<56:28,  2.93s/it, loss=11279.7051, avg_loss=4598.0636, epoch=0.323, step=553, grad_norm=95684.7734]  [A
-Epoch 1 batches:  32%|███▏      | 553/1711 [28:21<56:28,  2.93s/it, loss=256.8069, avg_loss=4590.2274, epoch=0.324, step=554, grad_norm=27113.8770]  [A
-Epoch 1 batches:  32%|███▏      | 554/1711 [28:21<40:58,  2.12s/it, loss=256.8069, avg_loss=4590.2274, epoch=0.324, step=554, grad_norm=27113.8770][A
-Epoch 1 batches:  32%|███▏      | 554/1711 [28:21<40:58,  2.12s/it, loss=15432.6982, avg_loss=4609.7633, epoch=0.324, step=555, grad_norm=34451.9570][A
-Epoch 1 batches:  32%|███▏      | 555/1711 [28:21<30:06,  1.56s/it, loss=15432.6982, avg_loss=4609.7633, epoch=0.324, step=555, grad_norm=34451.9570][A
-Epoch 1 batches:  32%|███▏      | 555/1711 [28:22<30:06,  1.56s/it, loss=140.1755, avg_loss=4601.7245, epoch=0.325, step=556, grad_norm=24062.1172]  [A
-Epoch 1 batches:  32%|███▏      | 556/1711 [28:22<22:33,  1.17s/it, loss=140.1755, avg_loss=4601.7245, epoch=0.325, step=556, grad_norm=24062.1172][A
-Epoch 1 batches:  32%|███▏      | 556/1711 [28:29<22:33,  1.17s/it, loss=1102.6388, avg_loss=4595.4425, epoch=0.326, step=557, grad_norm=61650.9805][A
-Epoch 1 batches:  33%|███▎      | 557/1711 [28:29<56:56,  2.96s/it, loss=1102.6388, avg_loss=4595.4425, epoch=0.326, step=557, grad_norm=61650.9805][A
-Epoch 1 batches:  33%|███▎      | 557/1711 [28:29<56:56,  2.96s/it, loss=5.6833, avg_loss=4587.2171, epoch=0.326, step=558, grad_norm=4192.1846]    [A
-Epoch 1 batches:  33%|███▎      | 558/1711 [28:29<42:57,  2.24s/it, loss=5.6833, avg_loss=4587.2171, epoch=0.326, step=558, grad_norm=4192.1846][A
-Epoch 1 batches:  33%|███▎      | 558/1711 [28:30<42:57,  2.24s/it, loss=289.6656, avg_loss=4579.5292, epoch=0.327, step=559, grad_norm=32716.1133][A
-Epoch 1 batches:  33%|███▎      | 559/1711 [28:30<31:28,  1.64s/it, loss=289.6656, avg_loss=4579.5292, epoch=0.327, step=559, grad_norm=32716.1133][A
-Epoch 1 batches:  33%|███▎      | 559/1711 [28:37<31:28,  1.64s/it, loss=16796.4277, avg_loss=4601.3451, epoch=0.327, step=560, grad_norm=31973.4062][A
-Epoch 1 batches:  33%|███▎      | 560/1711 [28:37<1:02:55,  3.28s/it, loss=16796.4277, avg_loss=4601.3451, epoch=0.327, step=560, grad_norm=31973.4062][A
-Epoch 1 batches:  33%|███▎      | 560/1711 [28:37<1:02:55,  3.28s/it, loss=13.6782, avg_loss=4593.1674, epoch=0.328, step=561, grad_norm=10771.1416]   [A
-Epoch 1 batches:  33%|███▎      | 561/1711 [28:37<45:27,  2.37s/it, loss=13.6782, avg_loss=4593.1674, epoch=0.328, step=561, grad_norm=10771.1416]  [A
-Epoch 1 batches:  33%|███▎      | 561/1711 [28:37<45:27,  2.37s/it, loss=7077.7280, avg_loss=4597.5883, epoch=0.328, step=562, grad_norm=27987.5488][A
-Epoch 1 batches:  33%|███▎      | 562/1711 [28:37<33:13,  1.74s/it, loss=7077.7280, avg_loss=4597.5883, epoch=0.328, step=562, grad_norm=27987.5488][A
-Epoch 1 batches:  33%|███▎      | 562/1711 [28:44<33:13,  1.74s/it, loss=1205.5350, avg_loss=4591.5634, epoch=0.329, step=563, grad_norm=58143.4609][A
-Epoch 1 batches:  33%|███▎      | 563/1711 [28:44<1:00:35,  3.17s/it, loss=1205.5350, avg_loss=4591.5634, epoch=0.329, step=563, grad_norm=58143.4609][A
-Epoch 1 batches:  33%|███▎      | 563/1711 [28:44<1:00:35,  3.17s/it, loss=56.8531, avg_loss=4583.5231, epoch=0.330, step=564, grad_norm=21192.1836]  [A
-Epoch 1 batches:  33%|███▎      | 564/1711 [28:44<43:50,  2.29s/it, loss=56.8531, avg_loss=4583.5231, epoch=0.330, step=564, grad_norm=21192.1836]  [A
-Epoch 1 batches:  33%|███▎      | 564/1711 [28:44<43:50,  2.29s/it, loss=11386.4912, avg_loss=4595.5638, epoch=0.330, step=565, grad_norm=45882.7617][A
-Epoch 1 batches:  33%|███▎      | 565/1711 [28:44<32:08,  1.68s/it, loss=11386.4912, avg_loss=4595.5638, epoch=0.330, step=565, grad_norm=45882.7617][A
-Epoch 1 batches:  33%|███▎      | 565/1711 [28:52<32:08,  1.68s/it, loss=94.3609, avg_loss=4587.6111, epoch=0.331, step=566, grad_norm=22688.5312]   [A
-Epoch 1 batches:  33%|███▎      | 566/1711 [28:52<1:08:18,  3.58s/it, loss=94.3609, avg_loss=4587.6111, epoch=0.331, step=566, grad_norm=22688.5312][A
-Epoch 1 batches:  33%|███▎      | 566/1711 [28:53<1:08:18,  3.58s/it, loss=18249.6836, avg_loss=4611.7065, epoch=0.331, step=567, grad_norm=45187.0430][A
-Epoch 1 batches:  33%|███▎      | 567/1711 [28:53<49:10,  2.58s/it, loss=18249.6836, avg_loss=4611.7065, epoch=0.331, step=567, grad_norm=45187.0430]  [A
-Epoch 1 batches:  33%|███▎      | 567/1711 [28:53<49:10,  2.58s/it, loss=41.5897, avg_loss=4603.6605, epoch=0.332, step=568, grad_norm=6614.3364]    [A
-Epoch 1 batches:  33%|███▎      | 568/1711 [28:53<35:54,  1.88s/it, loss=41.5897, avg_loss=4603.6605, epoch=0.332, step=568, grad_norm=6614.3364][A
-Epoch 1 batches:  33%|███▎      | 568/1711 [29:00<35:54,  1.88s/it, loss=80.4327, avg_loss=4595.7111, epoch=0.333, step=569, grad_norm=29875.9766][A
-Epoch 1 batches:  33%|███▎      | 569/1711 [29:00<1:06:00,  3.47s/it, loss=80.4327, avg_loss=4595.7111, epoch=0.333, step=569, grad_norm=29875.9766][A
-Epoch 1 batches:  33%|███▎      | 569/1711 [29:00<1:06:00,  3.47s/it, loss=49.7363, avg_loss=4587.7357, epoch=0.333, step=570, grad_norm=16439.9980][A
-Epoch 1 batches:  33%|███▎      | 570/1711 [29:00<47:40,  2.51s/it, loss=49.7363, avg_loss=4587.7357, epoch=0.333, step=570, grad_norm=16439.9980]  [A
-Epoch 1 batches:  33%|███▎      | 570/1711 [29:00<47:40,  2.51s/it, loss=138.7175, avg_loss=4579.9440, epoch=0.334, step=571, grad_norm=21010.5859][A
-Epoch 1 batches:  33%|███▎      | 571/1711 [29:00<34:52,  1.84s/it, loss=138.7175, avg_loss=4579.9440, epoch=0.334, step=571, grad_norm=21010.5859][A
-Epoch 1 batches:  33%|███▎      | 571/1711 [29:07<34:52,  1.84s/it, loss=471.4920, avg_loss=4572.7614, epoch=0.334, step=572, grad_norm=30693.9922][A
-Epoch 1 batches:  33%|███▎      | 572/1711 [29:07<1:04:23,  3.39s/it, loss=471.4920, avg_loss=4572.7614, epoch=0.334, step=572, grad_norm=30693.9922][A
-Epoch 1 batches:  33%|███▎      | 572/1711 [29:09<1:04:23,  3.39s/it, loss=263.4936, avg_loss=4565.2409, epoch=0.335, step=573, grad_norm=34441.4727][A
-Epoch 1 batches:  33%|███▎      | 573/1711 [29:09<52:13,  2.75s/it, loss=263.4936, avg_loss=4565.2409, epoch=0.335, step=573, grad_norm=34441.4727]  [A
-Epoch 1 batches:  33%|███▎      | 573/1711 [29:09<52:13,  2.75s/it, loss=2042.1702, avg_loss=4560.8453, epoch=0.335, step=574, grad_norm=11705.3184][A
-Epoch 1 batches:  34%|███▎      | 574/1711 [29:09<37:54,  2.00s/it, loss=2042.1702, avg_loss=4560.8453, epoch=0.335, step=574, grad_norm=11705.3184][A
-Epoch 1 batches:  34%|███▎      | 574/1711 [29:16<37:54,  2.00s/it, loss=1172.0238, avg_loss=4554.9517, epoch=0.336, step=575, grad_norm=37562.6680][A
-Epoch 1 batches:  34%|███▎      | 575/1711 [29:16<1:07:20,  3.56s/it, loss=1172.0238, avg_loss=4554.9517, epoch=0.336, step=575, grad_norm=37562.6680][A
-Epoch 1 batches:  34%|███▎      | 575/1711 [29:19<1:07:20,  3.56s/it, loss=10.4292, avg_loss=4547.0619, epoch=0.337, step=576, grad_norm=6559.9678]   [A
-Epoch 1 batches:  34%|███▎      | 576/1711 [29:19<1:01:58,  3.28s/it, loss=10.4292, avg_loss=4547.0619, epoch=0.337, step=576, grad_norm=6559.9678][A
-Epoch 1 batches:  34%|███▎      | 576/1711 [29:19<1:01:58,  3.28s/it, loss=12607.0781, avg_loss=4561.0307, epoch=0.337, step=577, grad_norm=48485.1992][A
-Epoch 1 batches:  34%|███▎      | 577/1711 [29:19<44:36,  2.36s/it, loss=12607.0781, avg_loss=4561.0307, epoch=0.337, step=577, grad_norm=48485.1992]  [A
-Epoch 1 batches:  34%|███▎      | 577/1711 [29:26<44:36,  2.36s/it, loss=70.7250, avg_loss=4553.2620, epoch=0.338, step=578, grad_norm=15302.6221]   [A
-Epoch 1 batches:  34%|███▍      | 578/1711 [29:26<1:07:58,  3.60s/it, loss=70.7250, avg_loss=4553.2620, epoch=0.338, step=578, grad_norm=15302.6221][A
-Epoch 1 batches:  34%|███▍      | 578/1711 [29:27<1:07:58,  3.60s/it, loss=1261.0038, avg_loss=4547.5759, epoch=0.338, step=579, grad_norm=32308.4375][A
-Epoch 1 batches:  34%|███▍      | 579/1711 [29:27<57:54,  3.07s/it, loss=1261.0038, avg_loss=4547.5759, epoch=0.338, step=579, grad_norm=32308.4375]  [A
-Epoch 1 batches:  34%|███▍      | 579/1711 [29:28<57:54,  3.07s/it, loss=8.7659, avg_loss=4539.7504, epoch=0.339, step=580, grad_norm=7146.4927]    [A
-Epoch 1 batches:  34%|███▍      | 580/1711 [29:28<41:55,  2.22s/it, loss=8.7659, avg_loss=4539.7504, epoch=0.339, step=580, grad_norm=7146.4927][Aslurmstepd: error: *** JOB 2945115 ON i19 CANCELLED AT 2026-05-24T01:07:58 ***
